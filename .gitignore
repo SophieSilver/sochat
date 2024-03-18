@@ -1,4 +1,5 @@
 target
-*around
+/*around
 .*
 !.gitignore
+*.db*
