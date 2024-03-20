@@ -24,6 +24,8 @@ pub trait Db {
         to: &UserId,
         content: &[u8],
     ) -> send_future!(sqlx::Result<()>);
+
+    fn mark_message_received(&self, ids: &MessageId) -> send_future!(sqlx::Result<()>);
 }
 
 impl Db for SqlitePool {
@@ -71,6 +73,25 @@ impl Db for SqlitePool {
             .await?;
 
             Ok(())
+        }
+    }
+
+    fn mark_message_received(&self, id: &MessageId) -> send_future!(sqlx::Result<()>) {
+        async move {
+            let id = id.as_bytes();
+
+            sqlx::query!(
+                "--sql
+                UPDATE messages
+                    SET is_received = TRUE
+                    WHERE id = ?;
+                ",
+                id
+            )
+            .execute(self)
+            .await?;
+
+            todo!()
         }
     }
 }
