@@ -1,5 +1,7 @@
 use sqlx::SqlitePool;
 
+use super::db::Db;
+
 #[derive(Debug)]
 struct UncloneableState {
     
@@ -19,7 +21,7 @@ impl AppState {
         }
     }
     
-    pub fn db_pool(&self) -> &SqlitePool {
+    pub fn db(&self) -> &(impl Db + Send + Sync) {
         &self.db_connection_pool
     }
 }

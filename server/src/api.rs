@@ -15,11 +15,11 @@ use common::types::{Id, UserId};
 use state::AppState;
 use uuid::Uuid;
 
-use self::db::DbQuery;
+use self::db::Db;
 
 async fn register_user(state: State<AppState>) -> AppResult<OctetStream<UserId>> {
     let new_id = UserId::generate();
-    state.db_pool().insert_user(&new_id).await?;
+    state.db().insert_user(&new_id).await?;
 
     Ok(new_id.into())
 }
