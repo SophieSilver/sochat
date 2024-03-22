@@ -48,54 +48,50 @@ pub trait Db {
 }
 
 impl Db for SqlitePool {
-    fn insert_user(&self, id: &UserId) -> send_future!(sqlx::Result<()>) {
-        async move {
-            let id_bytes = id.as_bytes();
+    async fn insert_user(&self, id: &UserId) -> sqlx::Result<()> {
+        let id_bytes = id.as_bytes();
 
-            sqlx::query!(
-                "--sql
-                INSERT INTO users VALUES (?);
-                ",
-                id_bytes,
-            )
-            .execute(self)
-            .await?;
+        sqlx::query!(
+            "--sql
+            INSERT INTO users VALUES (?);
+            ",
+            id_bytes,
+        )
+        .execute(self)
+        .await?;
 
-            Ok(())
-        }
+        Ok(())
     }
 
-    fn insert_message(
+    async fn insert_message(
         &self,
         id: &MessageId,
         sender: &UserId,
         recipient: &UserId,
         content: &[u8],
-    ) -> send_future!(sqlx::Result<()>) {
-        async move {
-            let id = id.as_bytes();
-            let sender = sender.as_bytes();
-            let recipient = recipient.as_bytes();
+    ) -> sqlx::Result<()> {
+        let id = id.as_bytes();
+        let sender = sender.as_bytes();
+        let recipient = recipient.as_bytes();
 
-            sqlx::query!(
-                "--sql
-                INSERT INTO messages
-                    (id, sender_id, recipient_id, content, is_received)
-                VALUES (?, ?, ?, ?, FALSE);
-                ",
-                id,
-                sender,
-                recipient,
-                content,
-            )
-            .execute(self)
-            .await?;
+        sqlx::query!(
+            "--sql
+            INSERT INTO messages
+                (id, sender_id, recipient_id, content, is_received)
+            VALUES (?, ?, ?, ?, FALSE);
+            ",
+            id,
+            sender,
+            recipient,
+            content,
+        )
+        .execute(self)
+        .await?;
 
-            Ok(())
-        }
+        Ok(())
     }
 
-    fn mark_messages_received(&self, ids: &[MessageId]) -> send_future!(sqlx::Result<()>) {
+    async fn mark_messages_received(&self, ids: &[MessageId]) -> sqlx::Result<()> {
         // SQLite cannot really bind an array of things,
         // so we have to make custom queries without compile time verification
 
@@ -121,71 +117,70 @@ impl Db for SqlitePool {
             string
         });
 
-        async move {
-            //let scope = async_scoped::TokioScope::;
-            // firing all queries at once
-            let tasks = ids.chunks(CHUNK_SIZE).map(|chunk| {
-                let mut query = sqlx::query::<Sqlite>(&QUERY_STRING);
+        //let scope = async_scoped::TokioScope::;
+        // firing all queries at once
+        let tasks = ids.chunks(CHUNK_SIZE).map(|chunk| {
+            let mut query = sqlx::query::<Sqlite>(&QUERY_STRING);
 
-                // doing that instead of directly iterating
-                // because we still need to fill out empty spots with NULLs
-                for i in 0..CHUNK_SIZE {
-                    let id = chunk.get(i).map(|id| id.as_bytes());
-                    query = query.bind(id);
-                }
+            // doing that instead of directly iterating
+            // because we still need to fill out empty spots with NULLs
+            for i in 0..CHUNK_SIZE {
+                let id = chunk.get(i).map(|id| id.as_bytes());
+                query = query.bind(id);
+            }
 
-                // throwing away the results of the futures as we're only really interested in whether it succeeds or not
-                query.execute(self).map_ok(|_| ())
-            });
+            // throwing away the results of the futures as we're only really interested in whether it succeeds or not
+            query.execute(self).map_ok(|_| ())
+        });
 
-            futures_util::future::try_join_all(tasks).await?;
+        futures_util::future::try_join_all(tasks).await?;
 
-            Ok(())
-        }
+        Ok(())
     }
 
-    fn fetch_unread_messages(
+    async fn fetch_unread_messages(
         &self,
         sender: &UserId,
         recipient: &UserId,
         limit: u32,
-    ) -> send_future!(sqlx::Result<Box<[UnreadMessage]>>) {
-        async move {
-            let sender = sender.as_bytes();
-            let recipient = recipient.as_bytes();
+    ) -> sqlx::Result<Box<[UnreadMessage]>> {
+        let sender = sender.as_bytes();
+        let recipient = recipient.as_bytes();
 
-            sqlx::query!(
-                "--sql
-                SELECT id, content FROM messages
-                WHERE sender_id = ?
-                    AND recipient_id = ?
-                    AND is_received = FALSE
-                ORDER BY id ASC     -- we can do that, because message ids are UUIDv7s
-                LIMIT ?;
-                ",
-                sender,
-                recipient,
-                limit,
-            )
-            .fetch(self)
-            .map(|result| {
-                result.and_then(|record| {
-                    Ok(UnreadMessage {
-                        id: MessageId::try_from(&record.id[..])
-                            .map_err(|e| sqlx::Error::Decode(e.into()))?,
-                        content: record.content.into_boxed_slice(),
-                    })
+        sqlx::query!(
+            "--sql
+            SELECT id, content FROM messages
+            WHERE sender_id = ?
+                AND recipient_id = ?
+                AND is_received = FALSE
+            ORDER BY id ASC     -- we can do that, because message ids are UUIDv7s
+            LIMIT ?;
+            ",
+            sender,
+            recipient,
+            limit,
+        )
+        .fetch(self)
+        .map(|result| {
+            result.and_then(|record| {
+                Ok(UnreadMessage {
+                    id: MessageId::try_from(&record.id[..])
+                        .map_err(|e| sqlx::Error::Decode(e.into()))?,
+                    content: record.content.into_boxed_slice(),
                 })
             })
-            .collect()
-            .await
-        }
+        })
+        .collect()
+        .await
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::{HashMap, HashSet}, time::Duration};
+    use std::{
+        collections::{HashMap, HashSet},
+        time::Duration,
+    };
 
     use futures_util::future::try_join_all;
 
@@ -324,22 +319,27 @@ mod tests {
         for (id, content) in &messages {
             pool.insert_message(id, &user1, &user2, content).await?;
         }
-        
+
         // mark the first several messages as received
         let (received_pile, unreceved_pile) = messages.split_at(RECEIVED_COUNT);
         let unreceived_pile = unreceved_pile
             .into_iter()
             .cloned()
             .collect::<HashMap<_, _>>();
-        
+
         let received_ids = received_pile.iter().map(|(id, _)| id.clone()).collect_vec();
 
         pool.mark_messages_received(&received_ids).await?;
-        
-        let unreceived = pool.fetch_unread_messages(&user1, &user2, MESSAGE_COUNT as _).await?;
-        
+
+        let unreceived = pool
+            .fetch_unread_messages(&user1, &user2, MESSAGE_COUNT as _)
+            .await?;
+
         for message in unreceived.iter() {
-            assert_eq!(unreceived_pile[&message.id].as_slice(), &message.content[..]);
+            assert_eq!(
+                unreceived_pile[&message.id].as_slice(),
+                &message.content[..]
+            );
         }
 
         Ok(())
