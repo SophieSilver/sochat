@@ -126,9 +126,10 @@ impl Db for SqlitePool {
         let sender = sender.as_bytes();
         let recipient = recipient.as_bytes();
 
-        sqlx::query!(
+        sqlx::query_as!(
+            UnreadMessage,
             "--sql
-            SELECT id, content FROM messages
+            SELECT id as 'id: MessageId', content FROM messages
             WHERE sender_id = ?
                 AND recipient_id = ?
                 AND is_received = FALSE
@@ -140,15 +141,6 @@ impl Db for SqlitePool {
             limit,
         )
         .fetch(self)
-        .map_ok(|record| {
-            Ok(UnreadMessage {
-                id: MessageId::try_from(&record.id[..])
-                    .map_err(|e| sqlx::Error::Decode(e.into()))?,
-                content: record.content.into_boxed_slice(),
-            })
-        })
-        // unnest the Result<Result<...>> into just a Result<...>
-        .map(|nested_result| nested_result.and_then(|inner| inner))
         .collect()
         .await
     }
