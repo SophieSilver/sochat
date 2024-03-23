@@ -48,6 +48,20 @@ macro_rules! impl_additional_traits_for_id {
                 Self::from_bytes(value)
             }
         }
+
+        impl<'r, DB> sqlx::Decode<'r, DB> for $t
+        where
+            DB: sqlx::Database,
+            for<'a> &'a [u8]: sqlx::Decode<'a, DB>,
+        {
+            fn decode(
+                value: <DB as sqlx::database::HasValueRef<'r>>::ValueRef,
+            ) -> Result<Self, sqlx::error::BoxDynError> {
+                let value = <&[u8] as sqlx::Decode<DB>>::decode(value)?;
+
+                Ok(Self::from_bytes(value)?)
+            }
+        }
     };
 }
 
