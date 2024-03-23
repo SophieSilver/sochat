@@ -2,7 +2,7 @@ use common::types::{message_id::MessageId, Id, UnreadMessage, UserId};
 use futures_util::TryFutureExt;
 use itertools::Itertools;
 use once_cell::sync::Lazy;
-use sqlx::{Sqlite, SqlitePool};
+use sqlx::{Execute, QueryBuilder, Sqlite, SqlitePool};
 use std::{future::Future, iter};
 use tokio_stream::StreamExt;
 
@@ -86,45 +86,33 @@ impl Db for SqlitePool {
         // SQLite cannot really bind an array of things,
         // so we have to make custom queries without compile time verification
 
-        // we are gonna send ids in batches of 32
-        const CHUNK_SIZE: usize = 32;
+        // we are gonna send ids in batches of 1024
+        // we will probably never see more than a few dozen ids here
+        // but just to be on the safe side
+        const BATCH_SIZE: usize = 1024;
 
-        // pre-made query string with 32 placeholders
-        static QUERY_STRING: Lazy<String> = Lazy::new(|| {
-            let mut string = String::from(
+        // I intentionally don't try to send them all at once
+        // because that might cause lock contention on the database
+        for batch in ids.chunks(BATCH_SIZE) {
+            // dynamically create a query with as many ? placeholders as we need
+            let mut query_builder = QueryBuilder::new(
                 "
                 UPDATE messages
                 SET is_received = TRUE
                 WHERE id IN (
                 ",
             );
+            let mut placeholders = query_builder.separated(',');
 
-            #[allow(unstable_name_collisions)]
-            let placeholders = iter::repeat('?').take(CHUNK_SIZE).intersperse(',');
-
-            string.extend(placeholders);
-            string.push_str(");");
-
-            string
-        });
-
-        //let scope = async_scoped::TokioScope::;
-        // firing all queries at once
-        let tasks = ids.chunks(CHUNK_SIZE).map(|chunk| {
-            let mut query = sqlx::query::<Sqlite>(&QUERY_STRING);
-
-            // doing that instead of directly iterating
-            // because we still need to fill out empty spots with NULLs
-            for i in 0..CHUNK_SIZE {
-                let id = chunk.get(i).map(|id| id.as_bytes());
-                query = query.bind(id);
+            for id in batch {
+                placeholders.push_bind(id.as_bytes());
             }
 
-            // throwing away the results of the futures as we're only really interested in whether it succeeds or not
-            query.execute(self).map_ok(|_| ())
-        });
+            query_builder.push(");");
 
-        futures_util::future::try_join_all(tasks).await?;
+            let query = query_builder.build();
+            query.execute(self).await?;
+        }
 
         Ok(())
     }
@@ -180,8 +168,8 @@ mod tests {
         assert_eq!(
             sqlx::query!(
                 "--sql
-            SELECT * FROM users;
-            "
+                SELECT * FROM users;
+                "
             )
             .fetch_one(&pool)
             .await?
