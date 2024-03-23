@@ -10,7 +10,9 @@ anyhow = "^1"
 axum = { version = "^0.7", features = ["ws"] }
 axum-server = { version = "^0.6", features = ["tls-rustls"] }
 base64 = "^0.22"
+bytes = "1.6.0"
 chrono = "^0.4"
+ciborium = "0.2.2"
 common = { version = "0.1.0", path = "../common" }
 ed25519-dalek = { version = "^2", features = ["rand_core"] }
 futures-util = "^0.3"
