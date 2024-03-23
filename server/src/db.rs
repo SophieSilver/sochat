@@ -1,5 +1,5 @@
 use common::types::{message_id::MessageId, Id, UnreadMessage, UserId};
-use futures_util::TryFutureExt;
+use futures_util::{TryFutureExt, TryStreamExt};
 use itertools::Itertools;
 use once_cell::sync::Lazy;
 use sqlx::{Execute, QueryBuilder, Sqlite, SqlitePool};
@@ -140,15 +140,15 @@ impl Db for SqlitePool {
             limit,
         )
         .fetch(self)
-        .map(|result| {
-            result.and_then(|record| {
-                Ok(UnreadMessage {
-                    id: MessageId::try_from(&record.id[..])
-                        .map_err(|e| sqlx::Error::Decode(e.into()))?,
-                    content: record.content.into_boxed_slice(),
-                })
+        .map_ok(|record| {
+            Ok(UnreadMessage {
+                id: MessageId::try_from(&record.id[..])
+                    .map_err(|e| sqlx::Error::Decode(e.into()))?,
+                content: record.content.into_boxed_slice(),
             })
         })
+        // unnest the Result<Result<...>> into just a Result<...>
+        .map(|nested_result| nested_result.and_then(|inner| inner))
         .collect()
         .await
     }
