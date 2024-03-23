@@ -18,7 +18,7 @@ pub struct MessageId {
     uuid: Uuid,
 }
 
-impl Id for MessageId  {
+impl Id for MessageId {
     fn generate() -> Self {
         Self {
             uuid: Uuid::now_v7(),
