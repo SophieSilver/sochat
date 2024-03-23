@@ -1,18 +1,9 @@
-use std::{
-    borrow::Cow,
-    future::{Future, IntoFuture},
-    iter,
-};
-
 use common::types::{message_id::MessageId, Id, UnreadMessage, UserId};
 use futures_util::TryFutureExt;
 use itertools::Itertools;
 use once_cell::sync::Lazy;
-use sqlx::{
-    query::{self, Query},
-    sqlite::SqliteArguments,
-    QueryBuilder, Sqlite, SqlitePool,
-};
+use sqlx::{Sqlite, SqlitePool};
+use std::{future::Future, iter};
 use tokio_stream::StreamExt;
 
 /// Shortcut for `impl Future<Output = t> + Send`
@@ -177,12 +168,7 @@ impl Db for SqlitePool {
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        collections::{HashMap, HashSet},
-        time::Duration,
-    };
-
-    use futures_util::future::try_join_all;
+    use std::collections::HashMap;
 
     use super::*;
 

@@ -2,18 +2,14 @@ pub mod db;
 pub mod state;
 
 use crate::{
-    error::{AppError, AppResult, IntoAppResult},
+    error::AppResult,
     extractors::OctetStream,
 };
 use axum::{
-    body::Bytes,
-    extract::{Path, State},
-    http::StatusCode,
-    routing, Json, Router,
+    extract::State, routing, Router
 };
 use common::types::{Id, UserId};
 use state::AppState;
-use uuid::Uuid;
 
 use self::db::Db;
 

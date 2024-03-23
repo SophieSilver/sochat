@@ -2,7 +2,7 @@ use std::error::Error;
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use common::types::ApiError;
-use thiserror::Error;
+
 
 // TODO: box errors for smaller footprint
 
