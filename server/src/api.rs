@@ -1,17 +1,9 @@
-pub mod db;
 pub mod state;
 
-use crate::{
-    error::AppResult,
-    extractors::OctetStream,
-};
-use axum::{
-    extract::State, routing, Router
-};
+use crate::{db::Db, error::AppResult, extractors::OctetStream};
+use axum::{extract::State, routing, Router};
 use common::types::{Id, UserId};
 use state::AppState;
-
-use self::db::Db;
 
 async fn register_user(state: State<AppState>) -> AppResult<OctetStream<UserId>> {
     let new_id = UserId::generate();

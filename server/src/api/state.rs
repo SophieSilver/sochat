@@ -1,6 +1,6 @@
 use sqlx::SqlitePool;
 
-use super::db::Db;
+use crate::db::Db;
 
 #[derive(Debug)]
 struct UncloneableState {
