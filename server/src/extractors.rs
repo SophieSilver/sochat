@@ -1,14 +1,9 @@
-use std::{
-    cell::RefCell,
-    future::Future,
-    marker::Send,
-    pin::Pin,
-};
+use std::{cell::RefCell, future::Future, marker::Send, pin::Pin};
 
 use axum::{
     body::{Body, Bytes},
     extract::{FromRequest, Request},
-    http::{header, HeaderValue, StatusCode},
+    http::{header, HeaderMap, HeaderValue, StatusCode},
     response::{IntoResponse, Response},
 };
 use bytes::{BufMut, BytesMut};
@@ -64,10 +59,10 @@ where
         let fut = async {
             let bytes = Bytes::from_request(req, state)
                 .await
-                .with_code_and_message(StatusCode::BAD_REQUEST, "Invalid request body")?;
+                .map_err(|e| AppError::new(e.status(), e.body_text()))?;
 
             let inner = T::try_from(&bytes)
-                .with_code_and_message(StatusCode::BAD_REQUEST, "Invalid request body")?;
+                .with_code_and_message(StatusCode::BAD_REQUEST, "Failed to parse the request body")?;
 
             Ok(Self(inner))
         };
@@ -116,14 +111,34 @@ where
             static SCRATCH_BUFFER: RefCell<Box<[u8]>> = RefCell::new(vec![0; SCRATCH_SIZE].into_boxed_slice());
         }
 
+        fn content_type_is_cbor(headers: &HeaderMap) -> bool {
+            headers
+                .get(header::CONTENT_TYPE)
+                .and_then(|content_type| content_type.to_str().ok())
+                .and_then(|content_type| content_type.parse::<mime::Mime>().ok())
+                .map(|content_type| {
+                    content_type.type_() == "application"
+                        && (content_type.subtype() == "cbor"
+                            || content_type.suffix().map_or(false, |name| name == "cbor"))
+                })
+                .unwrap_or(false)
+        }
+
         let fut = async {
+            if !content_type_is_cbor(req.headers()) {
+                return Err(AppError::new(
+                    StatusCode::BAD_REQUEST,
+                    "Expected a request with Content-Type: application/cbor",
+                ));
+            }
+
             let bytes = Bytes::from_request(req, state)
                 .await
-                .with_code_and_message(StatusCode::BAD_REQUEST, "Invalid request body")?;
+                .map_err(|e| AppError::new(e.status(), e.body_text()))?;
 
             let inner = SCRATCH_BUFFER
                 .with_borrow_mut(|mut buf| ciborium::from_reader_with_buffer(&bytes[..], &mut buf))
-                .with_code_and_message(StatusCode::BAD_REQUEST, "Invalid request body")?;
+                .with_code_and_message(StatusCode::BAD_REQUEST, "Failed to parse the request body")?;
 
             Ok(Self(inner))
         };
@@ -154,7 +169,7 @@ where
             header::CONTENT_TYPE,
             HeaderValue::from_static("application/cbor"),
         );
-        
+
         res
     }
 }
