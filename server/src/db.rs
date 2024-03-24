@@ -126,8 +126,6 @@ impl Db for SqlitePool {
 
             query_builder.push(");");
 
-            dbg!(query_builder.sql());
-
             let query = query_builder.build();
             query.execute(self).await?;
         }
