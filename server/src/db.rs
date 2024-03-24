@@ -28,7 +28,12 @@ pub trait Db {
         content: &[u8],
     ) -> send_future!(sqlx::Result<()>);
 
-    fn mark_messages_received(&self, ids: &[MessageId]) -> send_future!(sqlx::Result<()>);
+    fn mark_messages_received(
+        &self,
+        sender: &UserId,
+        recipient: &UserId,
+        ids: &[MessageId],
+    ) -> send_future!(sqlx::Result<()>);
 
     fn fetch_unread_messages(
         &self,
@@ -82,7 +87,12 @@ impl Db for SqlitePool {
         Ok(())
     }
 
-    async fn mark_messages_received(&self, ids: &[MessageId]) -> sqlx::Result<()> {
+    async fn mark_messages_received(
+        &self,
+        sender: &UserId,
+        recipient: &UserId,
+        ids: &[MessageId],
+    ) -> sqlx::Result<()> {
         // SQLite cannot really bind an array of things,
         // so we have to make custom queries without compile time verification
 
@@ -99,9 +109,15 @@ impl Db for SqlitePool {
                 "
                 UPDATE messages
                 SET is_received = TRUE
-                WHERE id IN (
-                ",
+                WHERE sender_id = ",
             );
+
+            query_builder
+                .push_bind(sender.as_bytes())
+                .push(" AND recipient_id = ")
+                .push_bind(recipient.as_bytes())
+                .push(" AND id IN (");
+
             let mut placeholders = query_builder.separated(',');
 
             for id in batch {
@@ -109,6 +125,8 @@ impl Db for SqlitePool {
             }
 
             query_builder.push(");");
+
+            dbg!(query_builder.sql());
 
             let query = query_builder.build();
             query.execute(self).await?;
@@ -295,7 +313,8 @@ mod tests {
 
         let received_ids = received_pile.iter().map(|(id, _)| id.clone()).collect_vec();
 
-        pool.mark_messages_received(&received_ids).await?;
+        pool.mark_messages_received(&user1, &user2, &received_ids)
+            .await?;
 
         let unreceived = pool
             .fetch_unread_messages(&user1, &user2, MESSAGE_COUNT as _)
