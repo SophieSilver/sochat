@@ -1,21 +1,18 @@
 use std::{
     cell::RefCell,
     future::Future,
-    io::Read,
     marker::Send,
-    ops::{Deref, DerefMut},
     pin::Pin,
 };
 
 use axum::{
-    body::Bytes,
+    body::{Body, Bytes},
     extract::{FromRequest, Request},
-    http::StatusCode,
+    http::{header, HeaderValue, StatusCode},
     response::{IntoResponse, Response},
 };
 use bytes::{BufMut, BytesMut};
-use once_cell::sync::Lazy;
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{de::DeserializeOwned, Serialize};
 
 use crate::error::{AppError, IntoAppResult};
 
@@ -142,8 +139,22 @@ where
     fn into_response(self) -> Response {
         let mut buf = BytesMut::new().writer();
 
-        ciborium::into_writer(&self.0, &mut buf).expect("BytesMut writer is infallible");
+        let result = ciborium::into_writer(&self.0, &mut buf);
+        if let Err(_) = result {
+            return AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Could not deserialize response",
+            )
+            .into_response();
+        };
 
-        buf.into_inner().freeze().into_response()
+        let bytes = buf.into_inner().freeze();
+        let mut res = Body::from(bytes).into_response();
+        res.headers_mut().insert(
+            header::CONTENT_TYPE,
+            HeaderValue::from_static("application/cbor"),
+        );
+        
+        res
     }
 }
