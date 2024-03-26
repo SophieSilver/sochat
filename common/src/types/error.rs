@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
@@ -5,5 +7,5 @@ use thiserror::Error;
 #[derive(Debug, Clone, Error, Serialize, Deserialize)]
 #[error("{error}")]
 pub struct ApiError {
-    pub error: String,
+    pub error: Cow<'static, str>,
 }
