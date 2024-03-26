@@ -1,9 +1,6 @@
 use common::types::{message_id::MessageId, Id, UnreadMessage, UserId};
-use futures_util::{TryFutureExt, TryStreamExt};
-use itertools::Itertools;
-use once_cell::sync::Lazy;
-use sqlx::{Execute, QueryBuilder, Sqlite, SqlitePool};
-use std::{future::Future, iter};
+use sqlx::{QueryBuilder, SqlitePool};
+use std::future::Future;
 use tokio_stream::StreamExt;
 
 /// Shortcut for `impl Future<Output = t> + Send`
@@ -165,6 +162,7 @@ impl Db for SqlitePool {
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
+    use itertools::Itertools;
 
     use super::*;
 
