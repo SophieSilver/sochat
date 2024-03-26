@@ -1,4 +1,4 @@
-use std::{cell::RefCell, future::Future, marker::Send, pin::Pin};
+use std::{cell::RefCell, fmt::Debug, future::Future, marker::Send, pin::Pin};
 
 use axum::{
     body::{Body, Bytes},
@@ -37,6 +37,7 @@ macro_rules! impl_wrapper {
 }
 
 /// Allows serializing and deserializing types from bytes using TryInto and TryFrom traits
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct OctetStream<T>(pub T);
 
 impl_wrapper!(OctetStream);
@@ -45,6 +46,7 @@ impl<S, T> FromRequest<S> for OctetStream<T>
 where
     S: Send + Sync,
     T: for<'a> TryFrom<&'a [u8]>,
+    for<'a> <T as TryFrom<&'a [u8]>>::Error: Debug,
 {
     type Rejection = AppError;
 
@@ -61,8 +63,10 @@ where
                 .await
                 .map_err(|e| AppError::new(e.status(), e.body_text()))?;
 
-            let inner = T::try_from(&bytes)
-                .with_code_and_message(StatusCode::BAD_REQUEST, "Failed to parse the request body")?;
+            let inner = T::try_from(&bytes).with_code_and_message(
+                StatusCode::BAD_REQUEST,
+                "Failed to parse the request body",
+            )?;
 
             Ok(Self(inner))
         };
@@ -74,6 +78,7 @@ where
 impl<T> IntoResponse for OctetStream<T>
 where
     for<'a> &'a [u8]: TryFrom<&'a T>,
+    for<'a> <&'a [u8] as TryFrom<&'a T>>::Error: Debug,
     T: 'static,
 {
     fn into_response(self) -> Response {
@@ -86,6 +91,7 @@ where
 }
 
 /// Allows serializing and deserializing types to/from the CBOR format using [`serde`]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Cbor<T>(pub T);
 
 impl_wrapper!(Cbor);
@@ -138,7 +144,10 @@ where
 
             let inner = SCRATCH_BUFFER
                 .with_borrow_mut(|mut buf| ciborium::from_reader_with_buffer(&bytes[..], &mut buf))
-                .with_code_and_message(StatusCode::BAD_REQUEST, "Failed to parse the request body")?;
+                .with_code_and_message(
+                    StatusCode::BAD_REQUEST,
+                    "Failed to parse the request body",
+                )?;
 
             Ok(Self(inner))
         };

@@ -15,6 +15,7 @@ use common::types::{message_id::MessageId, Id, UnreadMessage, UserId};
 use serde::Deserialize;
 use smallvec::SmallVec;
 use state::AppState;
+use tracing::instrument;
 
 #[derive(Debug, Clone, Copy, Deserialize)]
 struct MessagePathParams {
@@ -27,13 +28,16 @@ struct LimitQueryParam {
     pub limit: u32,
 }
 
+#[instrument(skip_all, ret)]
 async fn register_user(state: State<AppState>) -> AppResult<OctetStream<UserId>> {
+    tracing::info!("enter");
     let new_id = UserId::generate();
     state.db().insert_user(&new_id).await?;
 
     Ok(new_id.into())
 }
 
+#[instrument(skip_all, ret)]
 async fn send_message(
     state: State<AppState>,
     Path(MessagePathParams {
@@ -42,6 +46,7 @@ async fn send_message(
     }): Path<MessagePathParams>,
     content: Bytes,
 ) -> AppResult<OctetStream<MessageId>> {
+    tracing::info!("enter");
     let message_id = MessageId::generate();
 
     let result = state
@@ -59,6 +64,7 @@ async fn send_message(
     }
 }
 
+#[instrument[skip_all, fields(message_count = message_ids.len())]]
 async fn mark_received(
     state: State<AppState>,
     Path(MessagePathParams {
@@ -67,6 +73,7 @@ async fn mark_received(
     }): Path<MessagePathParams>,
     Cbor(message_ids): Cbor<SmallVec<[MessageId; 4]>>, // the most common case would only have 1 ID
 ) -> AppResult<StatusCode> {
+    tracing::info!("enter");
     // TODO: have a limit and make it configurable
     state
         .db()
@@ -76,6 +83,7 @@ async fn mark_received(
     Ok(StatusCode::NO_CONTENT)
 }
 
+#[instrument(skip_all, fields(limit))]
 async fn fetch_messages(
     state: State<AppState>,
     Path(MessagePathParams {
@@ -84,6 +92,7 @@ async fn fetch_messages(
     }): Path<MessagePathParams>,
     limit: Option<Query<LimitQueryParam>>,
 ) -> AppResult<Cbor<Box<[UnreadMessage]>>> {
+    tracing::info!("enter");
     // TODO: make this configurable
     const DEFAULT_LIMIT: u32 = 10;
     const MAX_LIMIT: u32 = 32;
@@ -97,6 +106,8 @@ async fn fetch_messages(
         .db()
         .fetch_unread_messages(&sender_id, &recipient_id, limit)
         .await?;
+
+    tracing::info!(count = messages.len(), "Return");
 
     Ok(messages.into())
 }

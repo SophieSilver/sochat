@@ -161,8 +161,8 @@ impl Db for SqlitePool {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
     use itertools::Itertools;
+    use std::collections::HashMap;
 
     use super::*;
 
