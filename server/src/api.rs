@@ -1,9 +1,9 @@
+pub mod extractors;
 pub mod state;
 
 use crate::{
     db::Db,
     error::{AppError, AppResult},
-    extractors::{Cbor, OctetStream},
 };
 use axum::{
     body::Bytes,
@@ -12,6 +12,7 @@ use axum::{
     routing, Router,
 };
 use common::types::{message_id::MessageId, Id, UnreadMessage, UserId};
+use extractors::{Cbor, OctetStream};
 use serde::Deserialize;
 use smallvec::SmallVec;
 use state::AppState;
