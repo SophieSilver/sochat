@@ -2,7 +2,8 @@
 resolver = "2"
 members = ["client", "server", "common"]
 
-
-[profile.dev.package."*"]
-inherits = "release"
-opt-level = 3
+[profile.release]
+strip = "debuginfo"
+# [profile.dev.package."*"]
+# inherits = "release"
+# opt-level = 3
