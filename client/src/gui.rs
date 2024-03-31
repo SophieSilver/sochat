@@ -1,25 +1,34 @@
 use crate::state::AppState;
 use eframe::{AppCreator, CreationContext};
 
-use self::text_input_panel::TextInputPanel;
+use self::{
+    message_display_panel::show_message_display_panel, text_input_panel::TextInputPanelState,
+};
 
+mod message_display_panel;
 mod text_input_panel;
 
 pub struct Gui {
     state: AppState,
-    text_input_panel: TextInputPanel,
+    text_input_panel: TextInputPanelState,
 }
 
 impl Gui {
-    pub fn new(cc: &CreationContext, state: AppState) -> Self {
+    pub fn new<F>(cc: &CreationContext, state_factory: F) -> Self 
+    where 
+        F: FnOnce(&CreationContext) -> AppState
+    {
         Self {
-            state,
-            text_input_panel: TextInputPanel::new(),
+            state: state_factory(cc),
+            text_input_panel: TextInputPanelState::new(),
         }
     }
 
-    pub fn app_creator(state: AppState) -> AppCreator {
-        Box::new(move |cc| Box::new(Self::new(cc, state)))
+    pub fn app_creator<F>(state_factory: F) -> AppCreator 
+    where
+        F: FnOnce(&CreationContext) -> AppState + 'static
+    {
+        Box::new(move |cc| Box::new(Self::new(cc, state_factory)))
     }
 }
 
@@ -27,6 +36,7 @@ impl eframe::App for Gui {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         // TODO: make a way to set up styling
         self.text_input_panel.show(&self.state, ctx);
-        //        CentralPanel::default().show(ctx, |ui| {});
+
+        show_message_display_panel(&self.state, ctx);
     }
 }

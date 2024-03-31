@@ -3,7 +3,7 @@ use egui::{
     TextEdit, TopBottomPanel, Ui,
 };
 
-use crate::state::AppState;
+use crate::{actions, state::AppState};
 
 /// Bottom panel, but it automatically sizes up to the size, returned by the closure passed to `show`
 #[derive(Debug, Clone)]
@@ -68,6 +68,7 @@ impl SizedBottomPanel {
     }
 }
 
+/// Vertical ScrollArea that automatically adjusts it's `min_scrolled_height` with
 #[derive(Debug, Clone)]
 #[must_use = "You should call .show()"]
 struct SizedVerticalScrollArea {
@@ -115,11 +116,11 @@ impl SizedVerticalScrollArea {
     }
 }
 
-pub struct TextInputPanel {
+pub struct TextInputPanelState {
     text: String,
 }
 
-impl TextInputPanel {
+impl TextInputPanelState {
     pub fn new() -> Self {
         Self {
             text: String::new(),
@@ -144,7 +145,7 @@ impl TextInputPanel {
 fn text_input(state: &AppState, text: &mut String, ui: &mut Ui) -> f32 {
     // TODO: make thig configurable
     const MAX_TEXTEDIT_HEIGHT: f32 = 180.0;
-    
+
     let layout = Layout::right_to_left(egui::Align::BOTTOM);
 
     // passing size out of the scroll area's size
@@ -163,13 +164,21 @@ fn text_input(state: &AppState, text: &mut String, ui: &mut Ui) -> f32 {
                         .desired_rows(1)
                         .desired_width(ui.available_width())
                         .show(ui);
-                    
+
                     let desired_height = ui.min_size().y.min(MAX_TEXTEDIT_HEIGHT);
 
                     // one of them is consumed by the scroll area, the other one we will use futher down
                     (desired_height, desired_height)
                 })
                 .inner;
+
+            if send_button_clicked && !text.trim().is_empty() {
+                state
+                    .async_handle()
+                    .spawn(actions::send_message(state.clone(), text.trim().to_owned()));
+                
+                text.clear();
+            }
 
             let desired_height = f32::max(buttons_height, textbox_height);
             desired_height
