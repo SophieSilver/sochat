@@ -1,85 +1,118 @@
-use std::sync::Arc;
+use std::future::Future;
 
-use tokio::{
-    runtime::Handle,
-    sync::{Mutex as TokioMutex, MutexGuard as TokioMutexGuard},
-};
+use crate::store::Store;
+use eframe::CreationContext;
+use egui::Context;
+use tokio::runtime::Handle;
 
-#[derive(Debug, Clone)]
-struct InnerAppState {
-    messages: Vec<String>,
-}
+pub mod repaint_store_lock {
+    use std::ops::{Deref, DerefMut};
 
-// TODO: look into ways of making it impossible to forget to request repaint from egui
+    use crate::store::StoreLockMut;
 
-/// A lock guard that provides access to the shared application state
-#[derive(Debug)]
-pub struct AppStateLock<'a> {
-    guard: TokioMutexGuard<'a, InnerAppState>,
-    // this is so that we can request redraws here when stuff happens
-    egui_ctx: egui::Context,
-}
-
-impl<'a> AppStateLock<'a> {
-    pub fn insert_message(&mut self, message: String) {
-        self.guard.messages.push(message);
-        self.egui_ctx.request_repaint();
+    /// A wrapper for [`StoreLockMut`] that will automatically request repaint from egui after being dropped
+    #[derive(Debug)]
+    pub struct RepaintStoreLock<'a> {
+        store_lock: StoreLockMut<'a>,
+        egui_ctx: egui::Context,
     }
 
-    pub fn messages(&self) -> impl Iterator<Item = &str> {
-        self.guard.messages.iter().map(|m| m.as_str())
+    impl<'a> RepaintStoreLock<'a> {
+        pub fn new(store_lock: StoreLockMut<'a>, egui_ctx: egui::Context) -> Self {
+            Self {
+                store_lock,
+                egui_ctx,
+            }
+        }
+    }
+
+    impl<'a> Deref for RepaintStoreLock<'a> {
+        type Target = StoreLockMut<'a>;
+
+        fn deref(&self) -> &Self::Target {
+            &self.store_lock
+        }
+    }
+
+    impl<'a> DerefMut for RepaintStoreLock<'a> {
+        fn deref_mut(&mut self) -> &mut Self::Target {
+            &mut self.store_lock
+        }
+    }
+
+    impl<'a> Drop for RepaintStoreLock<'a> {
+        fn drop(&mut self) {
+            self.egui_ctx.request_repaint();
+        }
     }
 }
 
-/// Central store for the state of the app
-///
-/// Is actually a wrapper around the reference counted shared state,
-/// therefore, cloning is cheap.
-///
-/// Most actions with the state require locking it first
+pub use repaint_store_lock::RepaintStoreLock;
+
 #[derive(Debug, Clone)]
 pub struct AppState {
-    inner: Arc<TokioMutex<InnerAppState>>,
-    tokio_handle: Handle,
-    egui_ctx: egui::Context,
+    pub ui_store: Store,
+    pub tokio_handle: Handle,
+    pub egui_ctx: Context,
 }
 
 impl AppState {
-    pub fn new(tokio_handle: Handle, egui_ctx: egui::Context) -> Self {
+    pub fn new(ui_store: Store, tokio_handle: Handle, egui_ctx: Context) -> Self {
         Self {
-            inner: Arc::new(TokioMutex::new(InnerAppState {
-                messages: Vec::new(),
-            })),
+            ui_store,
             tokio_handle,
             egui_ctx,
         }
     }
 
+    /// Get a factory function that will construct the [`AppState`] from a [`CreationContext`]
     pub fn factory(
+        ui_store: Store,
         tokio_handle: Handle,
-    ) -> impl (FnOnce(&eframe::CreationContext) -> Self) + 'static {
-        move |cc| Self::new(tokio_handle, cc.egui_ctx.clone())
+    ) -> impl (FnOnce(&CreationContext) -> Self) + 'static {
+        |cc| Self::new(ui_store, tokio_handle, cc.egui_ctx.clone())
     }
 
-    pub fn lock_blocking(&self) -> AppStateLock<'_> {
-        AppStateLock {
-            guard: self.inner.blocking_lock(),
-            egui_ctx: self.egui_ctx.clone(),
+    /// Get a factory function that will construct the [`AppState`] from a [`CreationContext`]
+    /// and call the callback function with the constructed [`AppState`].
+    ///
+    /// This can be used, to, for example, start up tasks that require the [`AppState`]
+    pub fn factory_with_callback<F>(
+        ui_store: Store,
+        tokio_handle: Handle,
+        callback: F,
+    ) -> impl (FnOnce(&CreationContext) -> Self) + 'static
+    where
+        F: FnOnce(&Self) + 'static,
+    {
+        let factory = Self::factory(ui_store, tokio_handle);
+
+        |cc| {
+            let app_state = factory(cc);
+            callback(&app_state);
+            app_state
         }
     }
 
-    pub async fn lock(&self) -> AppStateLock<'_> {
-        AppStateLock {
-            guard: self.inner.lock().await,
-            egui_ctx: self.egui_ctx.clone(),
-        }
+    /// Helper function to spawn async tasks from synchronouse contexts
+    ///
+    /// equivalent to `app_state.`
+    pub fn run_async<F>(&self, future: F)
+    where
+        F: Future + Send + 'static,
+        F::Output: Send + 'static,
+    {
+        self.tokio_handle.spawn(future);
     }
 
-    pub fn async_handle(&self) -> &Handle {
-        &self.tokio_handle
+    /// Blocking variant of `lock_store_with_repaint`
+    pub fn lock_store_with_repaint_blocking(&self) -> RepaintStoreLock {
+        RepaintStoreLock::new(self.ui_store.lock_blocking_mut(), self.egui_ctx.clone())
     }
 
-    pub fn egui_ctx(&self) -> &egui::Context {
-        &self.egui_ctx
+    /// Mutably lock the store and wrap it in [`RepaintStoreLock`],
+    /// which will request repaint from [`egui`] upon falling out of scope
+    pub async fn lock_store_with_repaint(&self) -> RepaintStoreLock {
+        RepaintStoreLock::new(self.ui_store.lock_mut().await, self.egui_ctx.clone())
     }
 }

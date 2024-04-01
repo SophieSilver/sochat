@@ -1,8 +1,8 @@
 use egui::{Color32, Context, Frame, Margin, RichText, Rounding, ScrollArea, Ui};
 
-use crate::state::AppState;
+use crate::store::Store;
 
-pub fn show_message_display_panel(state: &AppState, ctx: &Context) {
+pub fn show_message_display_panel(state: &Store, ctx: &Context) {
     egui::CentralPanel::default().show(ctx, |ui| {
         let scroll_area = ScrollArea::vertical().stick_to_bottom(true);
         scroll_area.show(ui, |ui| {
@@ -13,7 +13,7 @@ pub fn show_message_display_panel(state: &AppState, ctx: &Context) {
     });
 }
 
-fn show_messages(state: &AppState, ui: &mut Ui) {
+fn show_messages(state: &Store, ui: &mut Ui) {
     let state = state.lock_blocking();
     let messages = state.messages();
 

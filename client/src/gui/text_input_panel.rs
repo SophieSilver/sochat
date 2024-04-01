@@ -173,10 +173,8 @@ fn text_input(state: &AppState, text: &mut String, ui: &mut Ui) -> f32 {
                 .inner;
 
             if send_button_clicked && !text.trim().is_empty() {
-                state
-                    .async_handle()
-                    .spawn(actions::send_message(state.clone(), text.trim().to_owned()));
-                
+                state.run_async(actions::send_message(state.clone(), text.clone()));
+
                 text.clear();
             }
 
