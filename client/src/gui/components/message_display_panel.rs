@@ -1,6 +1,6 @@
 use egui::{Color32, Context, Frame, Margin, RichText, Rounding, ScrollArea, Ui};
 
-use crate::store::Store;
+use crate::gui::store::Store;
 
 pub fn show_message_display_panel(state: &Store, ctx: &Context) {
     egui::CentralPanel::default().show(ctx, |ui| {

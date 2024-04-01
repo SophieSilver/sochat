@@ -1,4 +1,4 @@
-use client::{gui::Gui, state::AppState, store::Store};
+use client::{gui::Gui, state::AppState, gui::store::Store};
 use eframe::NativeOptions;
 use eyre::eyre;
 

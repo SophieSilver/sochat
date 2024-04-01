@@ -1,6 +1,6 @@
 use std::future::Future;
 
-use crate::store::Store;
+use crate::gui::store::Store;
 use eframe::CreationContext;
 use egui::Context;
 use tokio::runtime::Handle;
@@ -8,7 +8,7 @@ use tokio::runtime::Handle;
 pub mod repaint_store_lock {
     use std::ops::{Deref, DerefMut};
 
-    use crate::store::StoreLockMut;
+    use crate::gui::store::StoreLockMut;
 
     /// A wrapper for [`StoreLockMut`] that will automatically request repaint from egui after being dropped
     #[derive(Debug)]

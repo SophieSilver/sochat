@@ -1,12 +1,15 @@
 use crate::state::AppState;
 use eframe::{AppCreator, CreationContext};
 
-use self::{
+mod components {
+    pub mod message_display_panel;
+    pub mod text_input_panel;
+}
+use components::{
     message_display_panel::show_message_display_panel, text_input_panel::TextInputPanelState,
 };
 
-mod message_display_panel;
-mod text_input_panel;
+pub mod store;
 
 pub struct Gui {
     state: AppState,
