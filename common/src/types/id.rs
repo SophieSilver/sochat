@@ -27,6 +27,7 @@ pub trait Id: Sized + Copy + Eq + Hash + Serialize + for<'de> Deserialize<'de> {
 }
 
 /// Automatically implement `AsRef<[u8]>`, `TryFrom<&[u8]>`, as well as `From<&T>` for `&[u8]`
+#[macro_export]
 macro_rules! impl_additional_traits_for_id {
     ($t: ty) => {
         impl AsRef<[u8]> for $t {
