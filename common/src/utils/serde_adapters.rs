@@ -19,11 +19,11 @@ pub type BytesOrBase64<ALPHABET = UrlSafe, PADDING = Unpadded> =
     IfIsHumanReadable<Base64<ALPHABET, PADDING>, Bytes>;
 
 /// A type that serializes and deserializes UUIDs or types that can be converted to and from UUIDs using `BytesOrBase64`.
-pub struct CompactUuid<ALPHABET: Alphabet = UrlSafe, PADDING: Format = Unpadded> {
+pub struct BytesOrBase64Uuid<ALPHABET: Alphabet = UrlSafe, PADDING: Format = Unpadded> {
     _phantom: PhantomData<(ALPHABET, PADDING)>,
 }
 
-impl<T, ALPHABET, PADDING> SerializeAs<T> for CompactUuid<ALPHABET, PADDING>
+impl<T, ALPHABET, PADDING> SerializeAs<T> for BytesOrBase64Uuid<ALPHABET, PADDING>
 where
     Uuid: From<T>,
     T: Clone,
@@ -42,7 +42,7 @@ where
     }
 }
 
-impl<'de, T, ALPHABET, PADDING> DeserializeAs<'de, T> for CompactUuid<ALPHABET, PADDING>
+impl<'de, T, ALPHABET, PADDING> DeserializeAs<'de, T> for BytesOrBase64Uuid<ALPHABET, PADDING>
 where
     T: From<Uuid>,
     ALPHABET: Alphabet,

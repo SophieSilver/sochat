@@ -1,6 +1,4 @@
-/// Implement [`sqlx::Decode`] trait for this type.
-///
-/// The provided type must implement `TryFrom<&[u8]>`
+/// Implement [`sqlx::Decode`] trait for a type that implements [`TryFrom<&\[u8\]>`].
 #[macro_export]
 macro_rules! impl_sqlx_decode_from_bytes {
     ($t:ty) => {
