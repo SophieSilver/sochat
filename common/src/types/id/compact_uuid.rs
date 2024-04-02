@@ -91,13 +91,13 @@ impl_additional_traits_for_id!(CompactUuid);
 #[macro_export]
 macro_rules! impl_compact_uuid_wrapper {
     ($t:ty) => {
-        impl Display for $t {
+        impl std::fmt::Display for $t {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                Display::fmt(&self.0, f)
+                std::fmt::Display::fmt(&self.0, f)
             }
         }
         
-        impl Debug for $t {
+        impl std::fmt::Debug for $t {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 f.debug_tuple(stringify!($t))
                     .field(&format_args!("{self}"))
@@ -105,7 +105,7 @@ macro_rules! impl_compact_uuid_wrapper {
             }
         }
         
-        impl Id for $t {
+        impl $crate::types::id::Id for $t {
             fn generate() -> Self {
                 Self(CompactUuid::generate())
             }
@@ -114,11 +114,11 @@ macro_rules! impl_compact_uuid_wrapper {
                 self.0.as_bytes()
             }
         
-            fn from_bytes(bytes: &[u8]) -> Result<Self, IdSliceWrongSizeError> {
+            fn from_bytes(bytes: &[u8]) -> Result<Self, $crate::types::id::IdSliceWrongSizeError> {
                 Ok(Self(CompactUuid::from_bytes(bytes)?))
             }
         }
         
-        impl_additional_traits_for_id!($t);
+        $crate::impl_additional_traits_for_id!($t);
     };
 }
