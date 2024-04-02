@@ -6,7 +6,7 @@ use thiserror::Error;
 /// A trait with common methods for IDs
 ///
 /// Contains common serialization methods for
-pub trait Id: Sized + Clone + Eq + Hash + Serialize + for<'de> Deserialize<'de> {
+pub trait Id: Sized + Copy + Eq + Hash + Serialize + for<'de> Deserialize<'de> {
     /// Create a new ID
     fn generate() -> Self;
 
@@ -31,21 +31,21 @@ macro_rules! impl_additional_traits_for_id {
     ($t: ty) => {
         impl AsRef<[u8]> for $t {
             fn as_ref(&self) -> &[u8] {
-                self.as_bytes()
+                $crate::types::id::Id::as_bytes(self)
             }
         }
 
         impl<'a> From<&'a $t> for &'a [u8] {
             fn from(value: &'a $t) -> Self {
-                value.as_bytes()
+                $crate::types::id::Id::as_bytes(value)
             }
         }
 
         impl TryFrom<&[u8]> for $t {
-            type Error = IdSliceWrongSizeError;
+            type Error = $crate::types::id::IdSliceWrongSizeError;
 
             fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
-                Self::from_bytes(value)
+                <Self as $crate::types::id::Id>::from_bytes(value)
             }
         }
 
@@ -57,6 +57,10 @@ macro_rules! impl_additional_traits_for_id {
 #[error("Tried to create an ID from a byte slice of the wrong size")]
 pub struct IdSliceWrongSizeError;
 
+pub mod compact_uuid;
+pub use compact_uuid::*;
+
 pub mod message_id;
 pub mod user_id;
 pub use user_id::*;
+pub use message_id::*;
