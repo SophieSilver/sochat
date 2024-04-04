@@ -1,14 +1,19 @@
 use std::sync::Arc;
 
+use common::types::UserId;
 use tokio::sync::{Mutex as TokioMutex, MutexGuard as TokioMutexGuard};
 
 /// Underlying data of the store
 #[derive(Debug, Clone)]
 pub struct InnerStore {
+    self_id: UserId,
+    other_id: Option<UserId>,
     messages: Vec<String>,
+    message_box_text: String,
+    other_id_input_line: String,
 }
 
-/// A lock guard that provides immutable access to the shared store
+/// A lock guard that provides access to the shared store
 #[derive(Debug)]
 pub struct StoreLock<'a> {
     guard: TokioMutexGuard<'a, InnerStore>,
@@ -18,17 +23,29 @@ impl<'a> StoreLock<'a> {
     pub fn messages(&self) -> impl Iterator<Item = &str> {
         self.guard.messages.iter().map(|m| m.as_str())
     }
-}
-
-/// a lock guard that provides mutable access to the shared store
-#[derive(Debug)]
-pub struct StoreLockMut<'a> {
-    guard: TokioMutexGuard<'a, InnerStore>,
-}
-
-impl<'a> StoreLockMut<'a> {
+    
     pub fn insert_message(&mut self, message: String) {
         self.guard.messages.push(message);
+    }
+    
+    pub fn message_box_text(&mut self) -> &mut String {
+        &mut self.guard.message_box_text
+    }
+    
+    pub fn other_id_input_line(&mut self) -> &mut String {
+        &mut self.guard.other_id_input_line
+    }
+    
+    pub fn self_id(&self) -> UserId {
+        self.guard.self_id
+    }
+    
+    pub fn other_id(&self) -> Option<UserId> {
+        self.guard.other_id
+    }
+    
+    pub fn set_other_id(&mut self, value: UserId) {
+        self.guard.other_id = Some(value);
     }
 }
 
@@ -44,10 +61,14 @@ pub struct Store {
 }
 
 impl Store {
-    pub fn new() -> Self {
+    pub fn new(self_id: UserId) -> Self {
         Self {
             inner: Arc::new(TokioMutex::new(InnerStore {
                 messages: Vec::new(),
+                message_box_text: String::new(),
+                other_id_input_line: String::new(),      
+                self_id,  
+                other_id: None
             })),
         }
     }
@@ -60,18 +81,6 @@ impl Store {
 
     pub async fn lock(&self) -> StoreLock<'_> {
         StoreLock {
-            guard: self.inner.lock().await,
-        }
-    }
-
-    pub fn lock_blocking_mut(&self) -> StoreLockMut<'_> {
-        StoreLockMut {
-            guard: self.inner.blocking_lock(),
-        }
-    }
-
-    pub async fn lock_mut(&self) -> StoreLockMut<'_> {
-        StoreLockMut {
             guard: self.inner.lock().await,
         }
     }

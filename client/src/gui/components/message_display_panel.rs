@@ -2,7 +2,7 @@ use egui::{Color32, Context, Frame, Margin, RichText, Rounding, ScrollArea, Ui};
 
 use crate::gui::store::Store;
 
-pub fn show_message_display_panel(state: &Store, ctx: &Context) {
+pub fn show(state: &Store, ctx: &Context) {
     egui::CentralPanel::default().show(ctx, |ui| {
         let scroll_area = ScrollArea::vertical().stick_to_bottom(true);
         scroll_area.show(ui, |ui| {

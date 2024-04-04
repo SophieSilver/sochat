@@ -116,33 +116,21 @@ impl SizedVerticalScrollArea {
     }
 }
 
-pub struct TextInputPanelState {
-    text: String,
+pub fn show(state: &AppState, ctx: &Context) {
+    let frame = Frame::side_top_panel(&ctx.style())
+        .inner_margin(10.0)
+        .fill(Color32::from_gray(36));
+
+    SizedBottomPanel::new("TextBottomPanel")
+        .frame(frame)
+        .show(ctx, |ui| {
+            let desired_height = text_input(state, ui);
+
+            ((), desired_height)
+        });
 }
 
-impl TextInputPanelState {
-    pub fn new() -> Self {
-        Self {
-            text: String::new(),
-        }
-    }
-
-    pub fn show(&mut self, state: &AppState, ctx: &Context) {
-        let frame = Frame::side_top_panel(&ctx.style())
-            .inner_margin(10.0)
-            .fill(Color32::from_gray(36));
-
-        SizedBottomPanel::new("TextBottomPanel")
-            .frame(frame)
-            .show(ctx, |ui| {
-                let desired_height = text_input(state, &mut self.text, ui);
-
-                ((), desired_height)
-            });
-    }
-}
-
-fn text_input(state: &AppState, text: &mut String, ui: &mut Ui) -> f32 {
+fn text_input(state: &AppState, ui: &mut Ui) -> f32 {
     // TODO: make thig configurable
     const MAX_TEXTEDIT_HEIGHT: f32 = 180.0;
 
@@ -155,6 +143,9 @@ fn text_input(state: &AppState, text: &mut String, ui: &mut Ui) -> f32 {
             let buttons_height = ui.min_size().y;
 
             let scroll_area = SizedVerticalScrollArea::new("TextInputScrollArea");
+
+            let mut store_lock = state.ui_store.lock_blocking();
+            let text = store_lock.message_box_text();
 
             let textbox_height = scroll_area
                 .show(ui, |ui| {
@@ -173,9 +164,17 @@ fn text_input(state: &AppState, text: &mut String, ui: &mut Ui) -> f32 {
                 .inner;
 
             if send_button_clicked && !text.trim().is_empty() {
-                state.run_async(actions::send_message(state.clone(), text.trim().to_owned()));
-
+                let message = text.trim().to_owned();
                 text.clear();
+
+                if let Some(other_id) = store_lock.other_id() {
+                    state.run_async(actions::send_message(
+                        state.clone(),
+                        message.trim().to_owned(),
+                        store_lock.self_id(),
+                        other_id,
+                    ));
+                }
             }
 
             let desired_height = f32::max(buttons_height, textbox_height);

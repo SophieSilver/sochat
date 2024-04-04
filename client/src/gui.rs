@@ -4,16 +4,15 @@ use eframe::{AppCreator, CreationContext};
 mod components {
     pub mod message_display_panel;
     pub mod text_input_panel;
+    pub mod side_panel;
 }
-use components::{
-    message_display_panel::show_message_display_panel, text_input_panel::TextInputPanelState,
-};
-
 pub mod store;
+
+use self::components::{message_display_panel, side_panel, text_input_panel};
+
 
 pub struct Gui {
     state: AppState,
-    text_input_panel: TextInputPanelState,
 }
 
 impl Gui {
@@ -23,7 +22,6 @@ impl Gui {
     {
         Self {
             state: state_factory(cc),
-            text_input_panel: TextInputPanelState::new(),
         }
     }
 
@@ -38,8 +36,9 @@ impl Gui {
 impl eframe::App for Gui {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         // TODO: make a way to set up styling
-        self.text_input_panel.show(&self.state, ctx);
+        side_panel::show(&self.state, ctx);
+        text_input_panel::show(&self.state, ctx);
 
-        show_message_display_panel(&self.state.ui_store, ctx);
+        message_display_panel::show(&self.state.ui_store, ctx);
     }
 }

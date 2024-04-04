@@ -8,17 +8,17 @@ use tokio::runtime::Handle;
 pub mod repaint_store_lock {
     use std::ops::{Deref, DerefMut};
 
-    use crate::gui::store::StoreLockMut;
+    use crate::gui::store::StoreLock;
 
     /// A wrapper for [`StoreLockMut`] that will automatically request repaint from egui after being dropped
     #[derive(Debug)]
     pub struct RepaintStoreLock<'a> {
-        store_lock: StoreLockMut<'a>,
+        store_lock: StoreLock<'a>,
         egui_ctx: egui::Context,
     }
 
     impl<'a> RepaintStoreLock<'a> {
-        pub fn new(store_lock: StoreLockMut<'a>, egui_ctx: egui::Context) -> Self {
+        pub fn new(store_lock: StoreLock<'a>, egui_ctx: egui::Context) -> Self {
             Self {
                 store_lock,
                 egui_ctx,
@@ -27,7 +27,7 @@ pub mod repaint_store_lock {
     }
 
     impl<'a> Deref for RepaintStoreLock<'a> {
-        type Target = StoreLockMut<'a>;
+        type Target = StoreLock<'a>;
 
         fn deref(&self) -> &Self::Target {
             &self.store_lock
@@ -70,7 +70,7 @@ impl AppState {
         ui_store: Store,
         tokio_handle: Handle,
     ) -> impl (FnOnce(&CreationContext) -> Self) + 'static {
-        |cc| Self::new(ui_store, tokio_handle, cc.egui_ctx.clone())
+        move |cc| Self::new(ui_store, tokio_handle, cc.egui_ctx.clone())
     }
 
     /// Get a factory function that will construct the [`AppState`] from a [`CreationContext`]
@@ -107,12 +107,12 @@ impl AppState {
 
     /// Blocking variant of `lock_store_with_repaint`
     pub fn lock_store_with_repaint_blocking(&self) -> RepaintStoreLock {
-        RepaintStoreLock::new(self.ui_store.lock_blocking_mut(), self.egui_ctx.clone())
+        RepaintStoreLock::new(self.ui_store.lock_blocking(), self.egui_ctx.clone())
     }
 
     /// Mutably lock the store and wrap it in [`RepaintStoreLock`],
     /// which will request repaint from [`egui`] upon falling out of scope
     pub async fn lock_store_with_repaint(&self) -> RepaintStoreLock {
-        RepaintStoreLock::new(self.ui_store.lock_mut().await, self.egui_ctx.clone())
+        RepaintStoreLock::new(self.ui_store.lock().await, self.egui_ctx.clone())
     }
 }
