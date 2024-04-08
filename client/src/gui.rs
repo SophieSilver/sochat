@@ -20,6 +20,8 @@ impl Gui {
     where
         F: FnOnce(&CreationContext) -> AppState,
     {
+        cc.egui_ctx.set_pixels_per_point(1.5);
+        
         Self {
             state: state_factory(cc),
         }
