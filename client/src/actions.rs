@@ -35,11 +35,14 @@ pub async fn start_conversation(state: AppState, other_id: UserId) {
                     store_lock.insert_message(message);
                 }
             }
-            
+
             api::mark_received(
                 self_id,
                 other_id,
-                fetched_messages.iter().map(|message| message.id).collect(),
+                &fetched_messages
+                    .iter()
+                    .map(|message| message.id)
+                    .collect::<Vec<_>>(),
             )
             .await
             .unwrap();
