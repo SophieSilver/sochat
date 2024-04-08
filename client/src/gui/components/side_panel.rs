@@ -8,7 +8,7 @@ pub fn show(state: &AppState, ctx: &Context) {
     SidePanel::left("SidePanel")
         .resizable(false)
         .show(ctx, |ui| {
-            let mut store_lock = state.ui_store.lock_blocking();
+            let mut store_lock = state.ui_store.lock();
 
             let self_id_string = store_lock.self_id().to_string();
             let id_string_length = self_id_string.len();

@@ -46,10 +46,8 @@ pub async fn fetch_unread_messages(to: UserId, from: UserId) -> eyre::Result<Box
 pub async fn mark_received(
     to: UserId,
     from: UserId,
-    ids: impl Iterator<Item = MessageId>,
+    ids: Vec<MessageId>,
 ) -> eyre::Result<()> {
-    let ids = ids.collect::<Vec<_>>();
-
     let mut buf = Vec::<u8>::new();
     ciborium::into_writer(&ids, &mut buf)?;
 

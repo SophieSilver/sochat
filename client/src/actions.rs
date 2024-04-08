@@ -8,15 +8,12 @@ use crate::{api, state::AppState};
 pub async fn send_message(state: AppState, message: String, from: UserId, to: UserId) {
     tokio::spawn(api::send_message(from, to, message.clone()));
 
-    state
-        .lock_store_with_repaint()
-        .await
-        .insert_message(message);
+    state.lock_store_with_repaint().insert_message(message);
 }
 
 pub async fn start_conversation(state: AppState, other_id: UserId) {
     println!("Staring a conversation with {other_id}");
-    let self_id = state.ui_store.lock().await.self_id();
+    let self_id = state.ui_store.lock().self_id();
 
     tokio::spawn(async move {
         loop {
@@ -29,18 +26,23 @@ pub async fn start_conversation(state: AppState, other_id: UserId) {
                 continue;
             }
 
-            let mut store_lock = state.lock_store_with_repaint().await;
+            {
+                let mut store_lock = state.lock_store_with_repaint();
 
-            for message in fetched_messages.iter() {
-                let message = String::from_utf8_lossy(&message.content).into_owned();
-                dbg!(&message);
-                store_lock.insert_message(message);
+                for message in fetched_messages.iter() {
+                    let message = String::from_utf8_lossy(&message.content).into_owned();
+                    dbg!(&message);
+                    store_lock.insert_message(message);
+                }
             }
+            
             api::mark_received(
                 self_id,
                 other_id,
-                fetched_messages.iter().map(|message| message.id),
-            ).await.unwrap();
+                fetched_messages.iter().map(|message| message.id).collect(),
+            )
+            .await
+            .unwrap();
         }
     });
 }

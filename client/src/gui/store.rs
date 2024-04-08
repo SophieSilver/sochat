@@ -1,7 +1,6 @@
-use std::sync::Arc;
+use std::sync::{Arc, Mutex, MutexGuard};
 
 use common::types::UserId;
-use tokio::sync::{Mutex as TokioMutex, MutexGuard as TokioMutexGuard};
 
 /// Underlying data of the store
 #[derive(Debug, Clone)]
@@ -16,7 +15,7 @@ pub struct InnerStore {
 /// A lock guard that provides access to the shared store
 #[derive(Debug)]
 pub struct StoreLock<'a> {
-    guard: TokioMutexGuard<'a, InnerStore>,
+    guard: MutexGuard<'a, InnerStore>,
 }
 
 impl<'a> StoreLock<'a> {
@@ -57,13 +56,13 @@ impl<'a> StoreLock<'a> {
 /// Most actions require first acquiring a lock around the state
 #[derive(Debug, Clone)]
 pub struct Store {
-    inner: Arc<TokioMutex<InnerStore>>,
+    inner: Arc<Mutex<InnerStore>>,
 }
 
 impl Store {
     pub fn new(self_id: UserId) -> Self {
         Self {
-            inner: Arc::new(TokioMutex::new(InnerStore {
+            inner: Arc::new(Mutex::new(InnerStore {
                 messages: Vec::new(),
                 message_box_text: String::new(),
                 other_id_input_line: String::new(),      
@@ -73,15 +72,9 @@ impl Store {
         }
     }
 
-    pub fn lock_blocking(&self) -> StoreLock<'_> {
+    pub fn lock(&self) -> StoreLock<'_> {
         StoreLock {
-            guard: self.inner.blocking_lock(),
-        }
-    }
-
-    pub async fn lock(&self) -> StoreLock<'_> {
-        StoreLock {
-            guard: self.inner.lock().await,
+            guard: self.inner.lock().expect("Mutex poisoned"),
         }
     }
 }

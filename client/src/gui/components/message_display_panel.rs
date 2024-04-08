@@ -14,7 +14,7 @@ pub fn show(state: &Store, ctx: &Context) {
 }
 
 fn show_messages(state: &Store, ui: &mut Ui) {
-    let state = state.lock_blocking();
+    let state = state.lock();
     let messages = state.messages();
 
     for message in messages {

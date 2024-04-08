@@ -106,13 +106,7 @@ impl AppState {
     }
 
     /// Blocking variant of `lock_store_with_repaint`
-    pub fn lock_store_with_repaint_blocking(&self) -> RepaintStoreLock {
-        RepaintStoreLock::new(self.ui_store.lock_blocking(), self.egui_ctx.clone())
-    }
-
-    /// Mutably lock the store and wrap it in [`RepaintStoreLock`],
-    /// which will request repaint from [`egui`] upon falling out of scope
-    pub async fn lock_store_with_repaint(&self) -> RepaintStoreLock {
-        RepaintStoreLock::new(self.ui_store.lock().await, self.egui_ctx.clone())
+    pub fn lock_store_with_repaint(&self) -> RepaintStoreLock {
+        RepaintStoreLock::new(self.ui_store.lock(), self.egui_ctx.clone())
     }
 }
