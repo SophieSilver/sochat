@@ -39,10 +39,7 @@ pub async fn start_conversation(state: AppState, other_id: UserId) {
             api::mark_received(
                 self_id,
                 other_id,
-                &fetched_messages
-                    .iter()
-                    .map(|message| message.id)
-                    .collect::<Vec<_>>(),
+                fetched_messages.iter().map(|message| &message.id),
             )
             .await
             .unwrap();

@@ -1,5 +1,8 @@
 use bytes::Bytes;
-use common::types::{Id, MessageId, UnreadMessage, UserId};
+use common::{
+    types::{Id, MessageId, UnreadMessage, UserId},
+    utils::SerializeSeqFromIter,
+};
 
 // TODO: rework everything about this
 // TODO: have a custom error type
@@ -46,9 +49,9 @@ pub async fn fetch_unread_messages(to: UserId, from: UserId) -> eyre::Result<Box
 pub async fn mark_received(
     to: UserId,
     from: UserId,
-    // TODO: accept iterator instead
-    ids: &[MessageId],
+    ids: impl Iterator<Item = &MessageId>,
 ) -> eyre::Result<()> {
+    let ids = SerializeSeqFromIter::new(ids);
     let mut buf = Vec::<u8>::new();
     ciborium::into_writer(&ids, &mut buf)?;
 
