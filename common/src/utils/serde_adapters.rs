@@ -1,7 +1,10 @@
-use std::marker::PhantomData;
+use std::{cell::Cell, marker::PhantomData, ops::Deref};
 
+use serde::{ser::SerializeSeq, Serialize};
 use serde_with::{
-    base64::{Alphabet, Base64, UrlSafe}, formats::{Format, Unpadded}, Bytes, DeserializeAs, IfIsHumanReadable, Same, SerializeAs
+    base64::{Alphabet, Base64, UrlSafe},
+    formats::{Format, Unpadded},
+    Bytes, DeserializeAs, IfIsHumanReadable, Same, SerializeAs,
 };
 use uuid::Uuid;
 
@@ -91,5 +94,52 @@ where
     {
         let deserialized_proxy = Then::deserialize_as(deserializer)?;
         Ok(deserialized_proxy.into())
+    }
+}
+
+/// A wrapper that serializes an iterator into a sequence without collecting it 
+/// 
+/// Useful when you don't directly hold a slice of the desired type, but can get an iterator
+/// of that type and don't want to unnecessarily collect it into a `Vec`.
+pub struct SerializeSeqFromIter<I> {
+    inner: Cell<Option<I>>,
+}
+
+impl<I> SerializeSeqFromIter<I>
+where
+    I: Iterator,
+    I::Item: Deref,
+    <I::Item as Deref>::Target: Serialize,
+{
+    pub fn new(iter: I) -> Self {
+        Self {
+            inner: Cell::new(Some(iter)),
+        }
+    }
+}
+
+impl<I> Serialize for SerializeSeqFromIter<I>
+where
+    I: Iterator,
+    I::Item: Deref,
+    <I::Item as Deref>::Target: Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let iter = self
+            .inner
+            .take()
+            .expect("SerializeSeqFromIter should only be serialized once");
+        // only set the len to Some if the upper and lower bounds agree
+        let (lower_bound, upper_bound) = iter.size_hint();
+        let iter_len = upper_bound.filter(|&upper| upper == lower_bound);
+
+        let mut seq = serializer.serialize_seq(iter_len)?;
+        for item in iter {
+            seq.serialize_element(&*item)?;
+        }
+        seq.end()
     }
 }
