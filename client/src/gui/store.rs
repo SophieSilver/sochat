@@ -2,13 +2,15 @@ use std::sync::{Arc, Mutex, MutexGuard};
 
 use common::types::UserId;
 
+use crate::types::Message;
+
 /// Underlying data of the store
 #[derive(Debug, Clone)]
 pub struct InnerStore {
     self_id: UserId,
     other_id: Option<UserId>,
-    messages: Vec<String>,
-    message_box_text: String,
+    messages: Vec<Message>,
+    message_text_input: String,
     other_id_input_line: String,
 }
 
@@ -19,16 +21,16 @@ pub struct StoreLock<'a> {
 }
 
 impl<'a> StoreLock<'a> {
-    pub fn messages(&self) -> impl Iterator<Item = &str> {
-        self.guard.messages.iter().map(|m| m.as_str())
+    pub fn messages(&self) -> impl Iterator<Item = &Message> {
+        self.guard.messages.iter()
     }
     
-    pub fn insert_message(&mut self, message: String) {
+    pub fn insert_message(&mut self, message: Message) {
         self.guard.messages.push(message);
     }
     
-    pub fn message_box_text(&mut self) -> &mut String {
-        &mut self.guard.message_box_text
+    pub fn message_text_input(&mut self) -> &mut String {
+        &mut self.guard.message_text_input
     }
     
     pub fn other_id_input_line(&mut self) -> &mut String {
@@ -64,7 +66,7 @@ impl Store {
         Self {
             inner: Arc::new(Mutex::new(InnerStore {
                 messages: Vec::new(),
-                message_box_text: String::new(),
+                message_text_input: String::new(),
                 other_id_input_line: String::new(),      
                 self_id,  
                 other_id: None

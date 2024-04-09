@@ -145,7 +145,7 @@ fn text_input(state: &AppState, ui: &mut Ui) -> f32 {
             let scroll_area = SizedVerticalScrollArea::new("TextInputScrollArea");
 
             let mut store_lock = state.ui_store.lock();
-            let text = store_lock.message_box_text();
+            let text = store_lock.message_text_input();
 
             let textbox_height = scroll_area
                 .show(ui, |ui| {

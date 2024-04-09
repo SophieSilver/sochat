@@ -27,9 +27,9 @@ fn show_messages(state: &Store, ui: &mut Ui) {
                 se: 20.0,
             })
             .inner_margin(Margin::symmetric(12.0, 8.0));
-        
+
         frame.show(ui, |ui| {
-            ui.label(RichText::new(message).color(Color32::WHITE));
+            ui.label(RichText::new(&message.content).color(Color32::WHITE));
         });
     }
 }
