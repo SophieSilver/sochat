@@ -119,7 +119,7 @@ impl SizedVerticalScrollArea {
 pub fn show(state: &AppState, ctx: &Context) {
     let frame = Frame::side_top_panel(&ctx.style())
         .inner_margin(10.0)
-        .fill(Color32::from_gray(36));
+        .fill(Color32::from_gray(32));
 
     SizedBottomPanel::new("TextBottomPanel")
         .frame(frame)
@@ -131,7 +131,7 @@ pub fn show(state: &AppState, ctx: &Context) {
 }
 
 fn text_input(state: &AppState, ui: &mut Ui) -> f32 {
-    // TODO: make thig configurable
+    // TODO: make this configurable
     const MAX_TEXTEDIT_HEIGHT: f32 = 180.0;
 
     let layout = Layout::right_to_left(egui::Align::BOTTOM);
