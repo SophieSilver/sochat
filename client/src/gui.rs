@@ -3,13 +3,12 @@ use eframe::{AppCreator, CreationContext};
 
 mod components {
     pub mod message_display_panel;
-    pub mod text_input_panel;
     pub mod side_panel;
+    pub mod text_input_panel;
 }
 pub mod store;
 
 use self::components::{message_display_panel, side_panel, text_input_panel};
-
 
 pub struct Gui {
     state: AppState,
@@ -20,8 +19,6 @@ impl Gui {
     where
         F: FnOnce(&CreationContext) -> AppState,
     {
-        cc.egui_ctx.set_pixels_per_point(1.5);
-        
         Self {
             state: state_factory(cc),
         }
