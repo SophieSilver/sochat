@@ -35,12 +35,10 @@ pub async fn start_conversation(state: AppState, other_id: UserId) {
 
                 for message in fetched_messages.iter() {
                     let message = String::from_utf8_lossy(&message.content).into_owned();
-                    dbg!(&message);
-                    
-                    let sender_id = store_lock.self_id();
+
                     store_lock.insert_message(Message {
-                        sender_id,
-                        recipient_id: other_id,
+                        sender_id: other_id,
+                        recipient_id: self_id,
                         content: message,
                     });
                 }
