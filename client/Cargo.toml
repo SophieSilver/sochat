@@ -10,7 +10,7 @@ bytes = { version = "1.6.0"}
 ciborium = "0.2.2"
 common = { version = "0.1.0", path = "../common" }
 eframe = { version = "0.27.0" }
-egui = { version = "0.27.0", features = ["serde"] }
+egui = { version = "0.27.0", features = ["serde", "deadlock_detection"] }
 eyre = "0.6.12"
 linkify = "0.10.0"
 reqwest = "0.12.2"
