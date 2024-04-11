@@ -1,4 +1,5 @@
-use std::sync::{Arc, Mutex, MutexGuard};
+use std::sync::Arc;
+use crate::utils::deadlock_detect::{Mutex, MutexGuard};
 
 use common::types::UserId;
 
@@ -24,27 +25,27 @@ impl<'a> StoreLock<'a> {
     pub fn messages(&self) -> impl Iterator<Item = &Message> {
         self.guard.messages.iter()
     }
-    
+
     pub fn insert_message(&mut self, message: Message) {
         self.guard.messages.push(message);
     }
-    
+
     pub fn message_text_input(&mut self) -> &mut String {
         &mut self.guard.message_text_input
     }
-    
+
     pub fn other_id_input_line(&mut self) -> &mut String {
         &mut self.guard.other_id_input_line
     }
-    
+
     pub fn self_id(&self) -> UserId {
         self.guard.self_id
     }
-    
+
     pub fn other_id(&self) -> Option<UserId> {
         self.guard.other_id
     }
-    
+
     pub fn set_other_id(&mut self, value: UserId) {
         self.guard.other_id = Some(value);
     }
@@ -67,16 +68,16 @@ impl Store {
             inner: Arc::new(Mutex::new(InnerStore {
                 messages: Vec::new(),
                 message_text_input: String::new(),
-                other_id_input_line: String::new(),      
-                self_id,  
-                other_id: None
+                other_id_input_line: String::new(),
+                self_id,
+                other_id: None,
             })),
         }
     }
 
     pub fn lock(&self) -> StoreLock<'_> {
         StoreLock {
-            guard: self.inner.lock().expect("Mutex poisoned"),
+            guard: self.inner.lock(),
         }
     }
 }
