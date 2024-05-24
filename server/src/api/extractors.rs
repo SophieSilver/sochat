@@ -7,6 +7,7 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use bytes::{BufMut, BytesMut};
+use common::utils;
 use serde::{de::DeserializeOwned, Serialize};
 
 use crate::error::{AppError, IntoAppResult};
@@ -111,12 +112,6 @@ where
         'life0: 'async_trait,
         Self: 'async_trait,
     {
-        const SCRATCH_SIZE: usize = 64 * 1024;
-
-        thread_local! {
-            static SCRATCH_BUFFER: RefCell<Box<[u8]>> = RefCell::new(vec![0; SCRATCH_SIZE].into_boxed_slice());
-        }
-
         fn content_type_is_cbor(headers: &HeaderMap) -> bool {
             headers
                 .get(header::CONTENT_TYPE)
@@ -142,12 +137,10 @@ where
                 .await
                 .map_err(|e| AppError::new(e.status(), e.body_text()))?;
 
-            let inner = SCRATCH_BUFFER
-                .with_borrow_mut(|mut buf| ciborium::from_reader_with_buffer(&bytes[..], &mut buf))
-                .with_code_and_message(
-                    StatusCode::BAD_REQUEST,
-                    "Failed to parse the request body",
-                )?;
+            let inner = utils::cbor::from_reader(&*bytes).with_code_and_message(
+                StatusCode::BAD_REQUEST,
+                "Failed to parse the request body",
+            )?;
 
             Ok(Self(inner))
         };
