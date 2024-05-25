@@ -1,3 +1,5 @@
+//! Utils for serialization using the CBOR format
+
 use std::{
     cell::RefCell,
     io::{self, Read},

@@ -1,3 +1,5 @@
+//! A UUID that is displayed as base64 instead of hex to be more compact
+
 use std::{
     fmt::{Debug, Display},
     hash::Hash,
@@ -13,11 +15,13 @@ use thiserror::Error;
 use uuid::Uuid;
 
 use super::{Id, IdSliceWrongSizeError};
-
+/// An error that happened when parsing a [`CompactUuid`]
 #[derive(Debug, Clone, PartialEq, Eq, Error)]
 #[error("Could not parse ID")]
 pub enum CompactUuidParseError {
+    /// The Byte slice is the wrong size
     IdSliceWrongSize(#[from] IdSliceWrongSizeError),
+    /// Error when decoding from base64
     Base64Error(#[from] base64::DecodeError),
 }
 

@@ -1,3 +1,5 @@
+//! Adapters for use with [`serde`] and [`serde_with`]
+
 use std::{cell::Cell, marker::PhantomData, ops::Deref};
 
 use serde::{ser::SerializeSeq, Serialize};
@@ -111,6 +113,7 @@ where
     I::Item: Deref,
     <I::Item as Deref>::Target: Serialize,
 {
+    /// Create a new [`SerializeSeqFromIter`] from the give iterator.
     pub fn new(iter: I) -> Self {
         Self {
             inner: Cell::new(Some(iter)),

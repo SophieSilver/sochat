@@ -1,3 +1,5 @@
+//! Statically checked ID types
+
 use std::hash::Hash;
 
 use serde::{Deserialize, Serialize};
@@ -5,7 +7,7 @@ use thiserror::Error;
 
 /// A trait with common methods for IDs
 ///
-/// Contains common serialization methods for
+/// Contains common serialization methods for ID types
 pub trait Id: Sized + Copy + Eq + Hash + Serialize + for<'de> Deserialize<'de> {
     /// Create a new ID
     fn generate() -> Self;
@@ -54,6 +56,7 @@ macro_rules! impl_additional_traits_for_id {
     };
 }
 
+/// An error type that indicates that the user tried to convert a byte slice into an ID, but the slice was the wrong size.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Error)]
 #[error("Tried to create an ID from a byte slice of the wrong size")]
 pub struct IdSliceWrongSizeError;

@@ -1,3 +1,5 @@
+//! Utils for use with SQL and [`sqlx`] crate
+
 /// Implement [`sqlx::Decode`] trait for a type that implements [`TryFrom<&\[u8\]>`].
 #[macro_export]
 macro_rules! impl_sqlx_decode_from_bytes {
