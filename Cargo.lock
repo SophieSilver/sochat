@@ -91,9 +91,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.81"
+version = "1.0.86"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0952808a6c2afd1aa8947271f3a60f1a6763c7b912d210184c5149b5cf147247"
+checksum = "b3d1d046238990b9cf5bcde22a3fb3584ee5cf65fb2765f454ed428c7a0063da"
 
 [[package]]
 name = "arc-swap"
@@ -364,6 +364,7 @@ name = "common"
 version = "0.1.0"
 dependencies = [
  "base64 0.22.0",
+ "ciborium",
  "serde",
  "serde_json",
  "serde_with",
@@ -1128,6 +1129,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "itertools"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "413ee7dfc52ee1a4949ceeb7dbc8a33f2d6c088194d9f922fb8318faf1f01186"
+dependencies = [
+ "either",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1611,7 +1621,10 @@ dependencies = [
 name = "rust_lib_client"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "client_service",
  "flutter_rust_bridge",
+ "tokio",
 ]
 
 [[package]]
@@ -1811,7 +1824,7 @@ dependencies = [
  "common",
  "ed25519-dalek",
  "futures-util",
- "itertools",
+ "itertools 0.13.0",
  "mime",
  "once_cell",
  "serde",
@@ -1938,7 +1951,7 @@ version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ce81b7bd7c4493975347ef60d8c7e8b742d4694f4c49f93e0a12ea263938176c"
 dependencies = [
- "itertools",
+ "itertools 0.12.1",
  "nom",
  "unicode_categories",
 ]
