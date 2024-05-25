@@ -1,3 +1,5 @@
+//! Extension to tracing middleware
+
 mod sealed {
     pub trait Sealed {}
 }
@@ -8,6 +10,7 @@ use sealed::Sealed;
 use tower_http::trace::{HttpMakeClassifier, MakeSpan, TraceLayer};
 use tracing::Level;
 
+/// An extension for [`TraceLayer`] to add connection info to trace spans
 pub trait TraceLayerExt: Sealed {
     /// Helper method to add connection info to spans created by [`TraceLayer`].
     ///

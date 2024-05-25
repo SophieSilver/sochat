@@ -1,4 +1,6 @@
-use std::{cell::RefCell, fmt::Debug, future::Future, marker::Send, pin::Pin};
+//! Additional Axum extractors
+
+use std::{fmt::Debug, future::Future, marker::Send, pin::Pin};
 
 use axum::{
     body::{Body, Bytes},

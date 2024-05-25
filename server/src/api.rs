@@ -1,3 +1,5 @@
+//! Module that defines API endpoints for the server
+
 pub mod extractors;
 pub mod state;
 
@@ -105,7 +107,7 @@ async fn fetch_messages(
 
     let messages = state
         .db()
-        .fetch_unread_messages(&sender_id, &recipient_id, limit)
+        .fetch_unreceived_messages(&sender_id, &recipient_id, limit)
         .await?;
 
     tracing::info!(count = messages.len(), "Return");

@@ -1,3 +1,5 @@
+//! A module for interacting with the database
+
 use common::types::{message_id::MessageId, Id, UnreadMessage, UserId};
 use sqlx::{QueryBuilder, SqlitePool};
 use std::future::Future;
@@ -15,8 +17,10 @@ macro_rules! send_future {
 
 /// Trait for polymorphically running queries on different databases
 pub trait Db {
+    /// Insert a user with the given ID into the database
     fn insert_user(&self, id: &UserId) -> send_future!(sqlx::Result<()>);
-
+    
+    /// Insert a message into the database
     fn insert_message(
         &self,
         id: &MessageId,
@@ -24,15 +28,17 @@ pub trait Db {
         recipient: &UserId,
         content: &[u8],
     ) -> send_future!(sqlx::Result<()>);
-
+    
+    /// Mark a message as received so that it will not be returned by subsequent calls to `fetch_unreceived_messages`
     fn mark_messages_received(
         &self,
         sender: &UserId,
         recipient: &UserId,
         ids: &[MessageId],
     ) -> send_future!(sqlx::Result<()>);
-
-    fn fetch_unread_messages(
+    
+    /// Fetch messages between two users that haven't been marked as received
+    fn fetch_unreceived_messages(
         &self,
         sender: &UserId,
         recipient: &UserId,
@@ -130,7 +136,7 @@ impl Db for SqlitePool {
         Ok(())
     }
 
-    async fn fetch_unread_messages(
+    async fn fetch_unreceived_messages(
         &self,
         sender: &UserId,
         recipient: &UserId,
@@ -267,7 +273,7 @@ mod tests {
         .execute(&pool)
         .await?;
 
-        let messages = pool.fetch_unread_messages(&user1, &user2, 100).await?;
+        let messages = pool.fetch_unreceived_messages(&user1, &user2, 100).await?;
 
         assert_eq!(messages.len(), 1);
         assert_eq!(messages[0].id, id2);
@@ -313,7 +319,7 @@ mod tests {
             .await?;
 
         let unreceived = pool
-            .fetch_unread_messages(&user1, &user2, MESSAGE_COUNT as _)
+            .fetch_unreceived_messages(&user1, &user2, MESSAGE_COUNT as _)
             .await?;
 
         for message in unreceived.iter() {

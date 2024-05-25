@@ -1,9 +1,11 @@
+//! A module for reporting errors in the server's API
+
 use std::{borrow::Cow, error::Error, fmt::Debug};
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use common::types::ApiError;
 
-/// Generic error type with a message and a source
+/// Generic error type with a message and a status code.
 #[derive(Debug, Clone)]
 pub struct AppError {
     error: ApiError,
@@ -11,6 +13,7 @@ pub struct AppError {
 }
 
 impl AppError {
+    /// Create a new instance of the Error by specifying the error code and the message
     pub fn new(code: StatusCode, message: impl Into<Cow<'static, str>>) -> Self {
         let message = message.into();
         tracing::error!(%code, error_message = ?message, "AppError");
@@ -21,14 +24,17 @@ impl AppError {
         }
     }
 
+    /// Create an error with a generic error message and code `500 Internal Server Error`
     pub fn generic() -> Self {
         Self::new(StatusCode::INTERNAL_SERVER_ERROR, "something went wrong")
     }
 
+    /// Get the underlying error
     pub fn error(&self) -> &ApiError {
         &self.error
     }
 
+    /// Get the status code
     pub fn code(&self) -> StatusCode {
         self.code
     }
@@ -49,6 +55,7 @@ impl<E: Error> From<E> for AppError {
     }
 }
 
+/// A type alias for a [`Result<T, AppError>`]
 pub type AppResult<T> = Result<T, AppError>;
 
 impl IntoResponse for AppError {
@@ -57,14 +64,16 @@ impl IntoResponse for AppError {
     }
 }
 
-/// An extension for Result to convert them into AppResults
+/// An extension for to convert [`Result`]s them into [`AppResult`]s
 pub trait IntoAppResult {
+    /// The type of the success variant of the result
     type Out;
+    
     /// If the result is an error, convert it into a generic AppResult
     fn with_generic_error(self) -> AppResult<Self::Out>;
 
-    /// If the result is an error, convert the error into an AppResult by using the
-    /// error's `Display` implementation as the message and the provided status code.
+    /// If the result is an error, convert the error into an AppResult with a generic error message
+    /// and the provided status code.
     fn with_code(self, code: StatusCode) -> AppResult<Self::Out>;
 
     /// If the result is an error, convert the error into an AppResult by using the

@@ -1,3 +1,5 @@
+//! Server library crate
+#![warn(missing_docs)]
 // #![cfg_attr(debug_assertions, allow(dead_code))]
 // #![cfg_attr(debug_assertions, allow(unused_imports))]
 
