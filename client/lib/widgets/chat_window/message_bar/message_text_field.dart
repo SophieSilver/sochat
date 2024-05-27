@@ -7,6 +7,7 @@ class MessageTextField extends StatelessWidget {
   final TextEditingController controller;
   final void Function(String) onSubmit;
   final double lineHeight;
+
   const MessageTextField(
       {super.key,
       required this.controller,
@@ -21,7 +22,6 @@ class MessageTextField extends StatelessWidget {
 
     final fontSize = textStyle?.fontSize ?? 16;
     final verticalPadding = max(0.0, (this.lineHeight - fontSize) / 2.0);
-
     final borderRadius = this.lineHeight / 2.0;
 
     final padding = EdgeInsets.symmetric(
@@ -38,12 +38,16 @@ class MessageTextField extends StatelessWidget {
         child: TextField(
           minLines: 1,
           maxLines: 12,
+          autofocus: true,
+          textInputAction: TextInputAction.newline,
+          onSubmitted: this.onSubmit,
           style: textStyle,
           selectionHeightStyle: BoxHeightStyle.includeLineSpacingMiddle,
           decoration: InputDecoration(
             border: InputBorder.none,
             isDense: true,
             contentPadding: padding,
+            hintText: "Write a message...",
           ),
         ),
       ),

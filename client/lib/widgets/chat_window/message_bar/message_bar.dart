@@ -17,6 +17,10 @@ class _MessageBarState extends State<MessageBar> {
 
   @override
   Widget build(BuildContext context) {
+    const sendButtonSize = 42.0;
+    const iconPadding = 7.0;
+    const iconUnpaddedSize = sendButtonSize - (iconPadding * 2.0);
+
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -34,12 +38,27 @@ class _MessageBarState extends State<MessageBar> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             MessageTextField(
-                controller: controller, lineHeight: 32.0, onSubmit: (_) {}),
-            Container(
-              color: Colors.red,
-              height: 32.0,
-              width: 50.0,
-            )
+                controller: controller,
+                lineHeight: sendButtonSize,
+                onSubmit: (_) {}),
+            // padding
+            SizedBox(
+              width: 10.0,
+            ),
+            // Circular IconButton
+            Ink(
+              decoration: ShapeDecoration(
+                shape: CircleBorder(),
+                color: colorScheme.primaryContainer,
+              ),
+              child: IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.send_rounded),
+                iconSize: iconUnpaddedSize,
+                padding: EdgeInsets.all(iconPadding),
+                color: colorScheme.onPrimaryContainer,
+              ),
+            ),
           ],
         ),
       ),
