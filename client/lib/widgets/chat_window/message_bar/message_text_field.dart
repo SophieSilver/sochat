@@ -8,7 +8,7 @@ class MessageTextField extends StatelessWidget {
   final TextEditingController controller;
   final void Function(String) onSubmit;
   final double lineHeight;
-  
+
   late final _focusNode = FocusNode(onKeyEvent: this._onKeyEvent);
 
   MessageTextField({
@@ -17,18 +17,20 @@ class MessageTextField extends StatelessWidget {
     required this.onSubmit,
     required this.lineHeight,
   });
-  
+
   KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
     // If pressing enter and not pressing shift at the same time,
     // submit the text
-    final enterPressed = event.logicalKey == LogicalKeyboardKey.enter && event is KeyDownEvent;
+    final enterPressed =
+        event.logicalKey == LogicalKeyboardKey.enter && event is KeyDownEvent;
+        
     final shiftHeld = HardwareKeyboard.instance.isShiftPressed;
-    
+
     if (enterPressed && !shiftHeld) {
       this.onSubmit(this.controller.text);
       return KeyEventResult.handled;
     }
-    
+
     return KeyEventResult.ignored;
   }
 
@@ -58,6 +60,7 @@ class MessageTextField extends StatelessWidget {
           maxLines: 12,
           autofocus: true,
           textInputAction: TextInputAction.newline,
+          controller: this.controller,
           onSubmitted: this.onSubmit,
           focusNode: this._focusNode,
           style: textStyle,
