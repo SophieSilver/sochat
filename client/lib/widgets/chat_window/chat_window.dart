@@ -1,4 +1,5 @@
 import 'package:client/widgets/chat_window/message_bar/message_bar.dart';
+import 'package:client/widgets/chat_window/message_list/message_list.dart';
 import 'package:flutter/material.dart';
 
 class ChatWindow extends StatefulWidget {
@@ -19,14 +20,22 @@ class _ChatWindowState extends State<ChatWindow> {
     this._messages = [];
   }
 
+  void addMessage(String message) {
+    this.setState(() {
+      this._messages.add(message);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    AnimatedIcons.add_event;
+    
     return Scaffold(
       body: Column(
         children: <Widget>[
-          Expanded(child: SizedBox.shrink()),
+          MessageList(messages: this._messages),
           MessageBar(onMessageSend: (t) {
-            print("submitted message: ${t}");
+            this.addMessage(t);
           })
         ],
       ),
