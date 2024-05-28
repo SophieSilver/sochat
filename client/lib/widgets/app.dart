@@ -1,7 +1,3 @@
-import 'dart:async';
-import 'dart:io';
-
-import 'package:client/src/rust/api/simple.dart';
 import 'package:client/widgets/home.dart';
 import 'package:flutter/material.dart';
 
