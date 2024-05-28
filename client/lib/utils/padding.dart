@@ -1,6 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
-/// Calculate addiotional padding for text, introduced by lineheight.
+/// Calculate addiotional visual padding for text, introduced by lineheight.
 /// 
 /// For example, if the text has font size 16, and line height 1.5,
 /// then the height of one line of text would actually be 24 pixels,
@@ -18,7 +20,7 @@ import 'package:flutter/material.dart';
 /// This function presumes and even amount of space added at the top and bottom of the text.
 /// That might not always be true. It's recommended to set `textHeightBehavior`'s 
 /// `leadingDistribution` to `TextLeadingDistribution.even`
-double textExtraVerticalPadding(TextStyle style) {
+double textExcessVerticalPadding(TextStyle style) {
   final fontSize = style.fontSize;
   final lineHeight = style.height;
   
@@ -28,5 +30,5 @@ double textExtraVerticalPadding(TextStyle style) {
   
   final lineHeightPixels = fontSize * lineHeight;
   
-  return (lineHeightPixels - fontSize) / 2.0;
+  return max(0.0, (lineHeightPixels - fontSize) / 2.0);
 }
