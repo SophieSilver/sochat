@@ -4,30 +4,35 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class MessageTextField extends StatelessWidget {
+class MessageTextField extends StatefulWidget {
   final TextEditingController controller;
   final void Function(String) onSubmit;
   final double lineHeight;
 
-  late final _focusNode = FocusNode(onKeyEvent: this._onKeyEvent);
-
-  MessageTextField({
+  const MessageTextField({
     super.key,
     required this.controller,
     required this.onSubmit,
     required this.lineHeight,
   });
 
+  @override
+  State<MessageTextField> createState() => _MessageTextFieldState();
+}
+
+class _MessageTextFieldState extends State<MessageTextField> {
+  late final _focusNode = FocusNode(onKeyEvent: this._onKeyEvent);
+
   KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
     // If pressing enter and not pressing shift at the same time,
     // submit the text
     final enterPressed =
         event.logicalKey == LogicalKeyboardKey.enter && event is KeyDownEvent;
-        
+
     final shiftHeld = HardwareKeyboard.instance.isShiftPressed;
 
     if (enterPressed && !shiftHeld) {
-      this.onSubmit(this.controller.text);
+      this.widget.onSubmit(this.widget.controller.text);
       return KeyEventResult.handled;
     }
 
@@ -41,8 +46,8 @@ class MessageTextField extends StatelessWidget {
     final textStyle = theme.textTheme.bodyLarge;
 
     final fontSize = textStyle?.fontSize ?? 16;
-    final verticalPadding = max(0.0, (this.lineHeight - fontSize) / 2.0);
-    final borderRadius = this.lineHeight / 2.0;
+    final verticalPadding = max(0.0, (this.widget.lineHeight - fontSize) / 2.0);
+    final borderRadius = this.widget.lineHeight / 2.0;
 
     final padding = EdgeInsets.symmetric(
       vertical: verticalPadding,
@@ -60,8 +65,8 @@ class MessageTextField extends StatelessWidget {
           maxLines: 12,
           autofocus: true,
           textInputAction: TextInputAction.newline,
-          controller: this.controller,
-          onSubmitted: this.onSubmit,
+          controller: this.widget.controller,
+          onSubmitted: this.widget.onSubmit,
           focusNode: this._focusNode,
           style: textStyle,
           selectionHeightStyle: BoxHeightStyle.includeLineSpacingMiddle,
