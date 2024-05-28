@@ -2,17 +2,35 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MessageTextField extends StatelessWidget {
   final TextEditingController controller;
   final void Function(String) onSubmit;
   final double lineHeight;
+  
+  late final _focusNode = FocusNode(onKeyEvent: this._onKeyEvent);
 
-  const MessageTextField(
-      {super.key,
-      required this.controller,
-      required this.onSubmit,
-      required this.lineHeight});
+  MessageTextField({
+    super.key,
+    required this.controller,
+    required this.onSubmit,
+    required this.lineHeight,
+  });
+  
+  KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
+    // If pressing enter and not pressing shift at the same time,
+    // submit the text
+    final enterPressed = event.logicalKey == LogicalKeyboardKey.enter && event is KeyDownEvent;
+    final shiftHeld = HardwareKeyboard.instance.isShiftPressed;
+    
+    if (enterPressed && !shiftHeld) {
+      this.onSubmit(this.controller.text);
+      return KeyEventResult.handled;
+    }
+    
+    return KeyEventResult.ignored;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +59,7 @@ class MessageTextField extends StatelessWidget {
           autofocus: true,
           textInputAction: TextInputAction.newline,
           onSubmitted: this.onSubmit,
+          focusNode: this._focusNode,
           style: textStyle,
           selectionHeightStyle: BoxHeightStyle.includeLineSpacingMiddle,
           decoration: InputDecoration(
