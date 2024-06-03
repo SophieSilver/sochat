@@ -15,11 +15,9 @@ class MessageBar extends StatefulWidget {
 class _MessageBarState extends State<MessageBar> {
   final TextEditingController controller = TextEditingController();
 
-  void _SubmitMessage(String text) {
+  void _submitMessage(String text) {
     final trimmedText = text.trim();
     if (trimmedText.isEmpty) {
-      print(text);
-      print("here");
       return;
     }
 
@@ -53,7 +51,7 @@ class _MessageBarState extends State<MessageBar> {
             MessageTextField(
                 controller: controller,
                 lineHeight: sendButtonSize,
-                onSubmit: this._SubmitMessage),
+                onSubmit: this._submitMessage),
             // margin
             SizedBox(width: 10.0),
             // Circular IconButton
@@ -63,7 +61,7 @@ class _MessageBarState extends State<MessageBar> {
                 color: colorScheme.primaryContainer,
               ),
               child: IconButton(
-                onPressed: () => this._SubmitMessage(this.controller.text),
+                onPressed: () => this._submitMessage(this.controller.text),
                 icon: Icon(Icons.send_rounded),
                 iconSize: iconUnpaddedSize,
                 padding: EdgeInsets.all(iconPadding),
