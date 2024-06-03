@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:client/utils/padding.dart';
@@ -11,14 +10,12 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double paddingToFontSizeRatio = 1.5;
+    const double paddingToFontSizeRatio = 1.25;
     const double pinchedRadiusCoefficient = 0.4;
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     var textStyle = theme.textTheme.bodyLarge;
-
-    print(textStyle);
 
     if (textStyle?.fontSize == null) {
       textStyle = textStyle?.copyWith(fontSize: 16.0);
