@@ -13,12 +13,11 @@ class ChatWindow extends StatefulWidget {
 }
 
 class _ChatWindowState extends State<ChatWindow> {
-  ConversationState messageState =ConversationState();
+  ConversationState messageState = ConversationState();
 
   void addMessage(String message) {
     this.setState(() {
-    this.messageState.addMessage(message);
-      
+      this.messageState.addMessage(message);
     });
   }
 
@@ -26,17 +25,15 @@ class _ChatWindowState extends State<ChatWindow> {
   Widget build(BuildContext context) {
     AnimatedIcons.add_event;
 
-    return Scaffold(
-      body: Column(
-        children: <Widget>[
-          MessageList(
-            conversationState: this.messageState,
-          ),
-          MessageBar(onMessageSend: (t) {
-            this.addMessage(t);
-          })
-        ],
-      ),
+    return Column(
+      children: <Widget>[
+        MessageList(
+          conversationState: this.messageState,
+        ),
+        MessageBar(onMessageSend: (t) {
+          this.addMessage(t);
+        })
+      ],
     );
   }
 }
