@@ -34,7 +34,9 @@ class _MessageBarState extends State<MessageBar> {
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-
+    
+    
+    // FIXME: solve the issue with messagebar casting shadow on the side panel
     return Material(
       elevation: 10.0,
       child: Container(
