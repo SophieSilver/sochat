@@ -364,6 +364,9 @@ dependencies = [
 [[package]]
 name = "client_service"
 version = "0.1.0"
+dependencies = [
+ "common",
+]
 
 [[package]]
 name = "common"
