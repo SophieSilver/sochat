@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class ConversationState with ChangeNotifier {
+class Conversation with ChangeNotifier {
   final List<String> _messages = [];
   int get messageCount => this._messages.length;
 
-  void addMessage(String message) {
+  void sendMessage(String message) {
     this._messages.add(message);
     this.notifyListeners();
   }

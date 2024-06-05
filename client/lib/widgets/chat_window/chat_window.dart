@@ -1,4 +1,4 @@
-import 'package:client/state/conversation_state.dart';
+import 'package:client/service/conversation.dart';
 import 'package:client/widgets/chat_window/message_bar/message_bar.dart';
 import 'package:client/widgets/chat_window/message_list/message_list.dart';
 import 'package:flutter/material.dart';
@@ -13,13 +13,7 @@ class ChatWindow extends StatefulWidget {
 }
 
 class _ChatWindowState extends State<ChatWindow> {
-  ConversationState messageState = ConversationState();
-
-  void addMessage(String message) {
-    this.setState(() {
-      this.messageState.addMessage(message);
-    });
-  }
+  Conversation conversationState = Conversation();
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +22,9 @@ class _ChatWindowState extends State<ChatWindow> {
     return Column(
       children: <Widget>[
         MessageList(
-          conversationState: this.messageState,
+          conversationState: this.conversationState,
         ),
-        MessageBar(onMessageSend: (t) {
-          this.addMessage(t);
-        })
+        MessageBar(conversation: this.conversationState,)
       ],
     );
   }

@@ -1,10 +1,11 @@
+import 'package:client/service/conversation.dart';
 import 'package:client/widgets/chat_window/message_bar/message_text_field.dart';
 import 'package:flutter/material.dart';
 
 class MessageBar extends StatefulWidget {
-  final void Function(String) onMessageSend;
+  final Conversation conversation;
 
-  const MessageBar({super.key, required this.onMessageSend});
+  const MessageBar({super.key, required this.conversation});
 
   @override
   State<StatefulWidget> createState() {
@@ -13,7 +14,7 @@ class MessageBar extends StatefulWidget {
 }
 
 class _MessageBarState extends State<MessageBar> {
-  final TextEditingController controller = TextEditingController();
+  final TextEditingController _textFieldController = TextEditingController();
 
   void _submitMessage(String text) {
     final trimmedText = text.trim();
@@ -22,8 +23,8 @@ class _MessageBarState extends State<MessageBar> {
     }
 
     // make the textfield empty
-    this.controller.value = TextEditingValue.empty;
-    this.widget.onMessageSend(trimmedText);
+    this._textFieldController.value = TextEditingValue.empty;
+    this.widget.conversation.sendMessage(trimmedText);
   }
 
   @override
@@ -51,7 +52,7 @@ class _MessageBarState extends State<MessageBar> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             MessageTextField(
-                controller: controller,
+                controller: _textFieldController,
                 lineHeight: sendButtonSize,
                 onSubmit: this._submitMessage),
             // margin
@@ -63,7 +64,7 @@ class _MessageBarState extends State<MessageBar> {
                 color: colorScheme.primaryContainer,
               ),
               child: IconButton(
-                onPressed: () => this._submitMessage(this.controller.text),
+                onPressed: () => this._submitMessage(this._textFieldController.text),
                 icon: Icon(Icons.send_rounded),
                 iconSize: iconUnpaddedSize,
                 padding: EdgeInsets.all(iconPadding),

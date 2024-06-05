@@ -1,11 +1,11 @@
 import 'dart:math';
 
-import 'package:client/state/conversation_state.dart';
+import 'package:client/service/conversation.dart';
 import 'package:client/widgets/chat_window/message_list/message_bubble.dart';
 import 'package:flutter/material.dart';
 
 class MessageList extends StatefulWidget {
-  final ConversationState conversationState;
+  final Conversation conversationState;
 
   const MessageList({super.key, required this.conversationState});
 
