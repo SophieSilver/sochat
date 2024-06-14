@@ -3,8 +3,8 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
-import '../frb_generated.dart';
+import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-///frb_marker: #[frb(init)]
-Future<void> initApp() => RustLib.instance.api.crateApiApiInitApp();
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<UserId>>
+abstract class UserId implements RustOpaqueInterface {}

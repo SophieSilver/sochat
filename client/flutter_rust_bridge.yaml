@@ -1,3 +1,7 @@
-rust_input: ../client_frb/src/api/**/*.rs
+rust_input: crate::api
+rust_root: ../client_frb
 dart_output: lib/src/rust
 web: false
+dart_type_rename:
+    DartUserId: UserId
+    DartMessageId: MessageId
