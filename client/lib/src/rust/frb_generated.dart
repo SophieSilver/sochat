@@ -3,6 +3,7 @@
 
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
+import 'api/service.dart';
 import 'api/types/id.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -46,7 +47,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 
   @override
   Future<void> executeRustInitializers() async {
-    await api.crateApiApiInitApp();
+    await api.crateApiInitInitApp();
   }
 
   @override
@@ -57,7 +58,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.0.0-dev.39';
 
   @override
-  int get rustContentHash => -651284689;
+  int get rustContentHash => -877355561;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -68,21 +69,31 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  Future<void> crateApiApiInitApp();
+  Future<void> crateApiInitInitApp();
 
-  bool crateApiTypesIdDartMessageIdEquals(
+  void crateApiServiceServiceAddMessage(
+      {required Service that, required String message});
+
+  String? crateApiServiceServiceGetMessage(
+      {required Service that, required int index});
+
+  int crateApiServiceServiceMessageCount({required Service that});
+
+  Service crateApiServiceServiceNew();
+
+  bool crateApiTypesIdMessageIdEquals(
       {required MessageId that, required MessageId other});
 
-  PlatformInt64 crateApiTypesIdDartMessageIdHashCode({required MessageId that});
+  PlatformInt64 crateApiTypesIdMessageIdHashCode({required MessageId that});
 
-  String crateApiTypesIdDartMessageIdToString({required MessageId that});
+  String crateApiTypesIdMessageIdToStringDart({required MessageId that});
 
-  bool crateApiTypesIdDartUserIdEquals(
+  bool crateApiTypesIdUserIdEquals(
       {required UserId that, required UserId other});
 
-  PlatformInt64 crateApiTypesIdDartUserIdHashCode({required UserId that});
+  PlatformInt64 crateApiTypesIdUserIdHashCode({required UserId that});
 
-  String crateApiTypesIdDartUserIdToString({required UserId that});
+  String crateApiTypesIdUserIdToStringDart({required UserId that});
 
   RustArcIncrementStrongCountFnType
       get rust_arc_increment_strong_count_MessageId;
@@ -91,6 +102,12 @@ abstract class RustLibApi extends BaseApi {
       get rust_arc_decrement_strong_count_MessageId;
 
   CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_MessageIdPtr;
+
+  RustArcIncrementStrongCountFnType get rust_arc_increment_strong_count_Service;
+
+  RustArcDecrementStrongCountFnType get rust_arc_decrement_strong_count_Service;
+
+  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_ServicePtr;
 
   RustArcIncrementStrongCountFnType get rust_arc_increment_strong_count_UserId;
 
@@ -108,7 +125,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  Future<void> crateApiApiInitApp() {
+  Future<void> crateApiInitInitApp() {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -119,201 +136,318 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeSuccessData: sse_decode_unit,
         decodeErrorData: null,
       ),
-      constMeta: kCrateApiApiInitAppConstMeta,
+      constMeta: kCrateApiInitInitAppConstMeta,
       argValues: [],
       apiImpl: this,
     ));
   }
 
-  TaskConstMeta get kCrateApiApiInitAppConstMeta => const TaskConstMeta(
+  TaskConstMeta get kCrateApiInitInitAppConstMeta => const TaskConstMeta(
         debugName: "init_app",
         argNames: [],
       );
 
   @override
-  bool crateApiTypesIdDartMessageIdEquals(
-      {required MessageId that, required MessageId other}) {
+  void crateApiServiceServiceAddMessage(
+      {required Service that, required String message}) {
     return handler.executeSync(SyncTask(
       callFfi: () {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId(
+        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
             that, serializer);
-        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId(
-            other, serializer);
+        sse_encode_String(message, serializer);
         return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 2)!;
       },
       codec: SseCodec(
-        decodeSuccessData: sse_decode_bool,
+        decodeSuccessData: sse_decode_unit,
         decodeErrorData: null,
       ),
-      constMeta: kCrateApiTypesIdDartMessageIdEqualsConstMeta,
-      argValues: [that, other],
+      constMeta: kCrateApiServiceServiceAddMessageConstMeta,
+      argValues: [that, message],
       apiImpl: this,
     ));
   }
 
-  TaskConstMeta get kCrateApiTypesIdDartMessageIdEqualsConstMeta =>
+  TaskConstMeta get kCrateApiServiceServiceAddMessageConstMeta =>
       const TaskConstMeta(
-        debugName: "DartMessageId_equals",
-        argNames: ["that", "other"],
+        debugName: "Service_add_message",
+        argNames: ["that", "message"],
       );
 
   @override
-  PlatformInt64 crateApiTypesIdDartMessageIdHashCode(
-      {required MessageId that}) {
+  String? crateApiServiceServiceGetMessage(
+      {required Service that, required int index}) {
     return handler.executeSync(SyncTask(
       callFfi: () {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId(
+        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
             that, serializer);
+        sse_encode_CastedPrimitive_usize(index, serializer);
         return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
       },
       codec: SseCodec(
-        decodeSuccessData: sse_decode_i_64,
+        decodeSuccessData: sse_decode_opt_String,
         decodeErrorData: null,
       ),
-      constMeta: kCrateApiTypesIdDartMessageIdHashCodeConstMeta,
-      argValues: [that],
+      constMeta: kCrateApiServiceServiceGetMessageConstMeta,
+      argValues: [that, index],
       apiImpl: this,
     ));
   }
 
-  TaskConstMeta get kCrateApiTypesIdDartMessageIdHashCodeConstMeta =>
+  TaskConstMeta get kCrateApiServiceServiceGetMessageConstMeta =>
       const TaskConstMeta(
-        debugName: "DartMessageId_hash_code",
-        argNames: ["that"],
+        debugName: "Service_get_message",
+        argNames: ["that", "index"],
       );
 
   @override
-  String crateApiTypesIdDartMessageIdToString({required MessageId that}) {
+  int crateApiServiceServiceMessageCount({required Service that}) {
     return handler.executeSync(SyncTask(
       callFfi: () {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId(
+        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
             that, serializer);
         return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 4)!;
       },
       codec: SseCodec(
-        decodeSuccessData: sse_decode_String,
+        decodeSuccessData: sse_decode_CastedPrimitive_usize,
         decodeErrorData: null,
       ),
-      constMeta: kCrateApiTypesIdDartMessageIdToStringConstMeta,
+      constMeta: kCrateApiServiceServiceMessageCountConstMeta,
       argValues: [that],
       apiImpl: this,
     ));
   }
 
-  TaskConstMeta get kCrateApiTypesIdDartMessageIdToStringConstMeta =>
+  TaskConstMeta get kCrateApiServiceServiceMessageCountConstMeta =>
       const TaskConstMeta(
-        debugName: "DartMessageId_to_string",
+        debugName: "Service_message_count",
         argNames: ["that"],
       );
 
   @override
-  bool crateApiTypesIdDartUserIdEquals(
-      {required UserId that, required UserId other}) {
+  Service crateApiServiceServiceNew() {
     return handler.executeSync(SyncTask(
       callFfi: () {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId(
-            that, serializer);
-        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId(
-            other, serializer);
         return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 5)!;
+      },
+      codec: SseCodec(
+        decodeSuccessData:
+            sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiServiceServiceNewConstMeta,
+      argValues: [],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiServiceServiceNewConstMeta => const TaskConstMeta(
+        debugName: "Service_new",
+        argNames: [],
+      );
+
+  @override
+  bool crateApiTypesIdMessageIdEquals(
+      {required MessageId that, required MessageId other}) {
+    return handler.executeSync(SyncTask(
+      callFfi: () {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
+            that, serializer);
+        sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
+            other, serializer);
+        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
         decodeErrorData: null,
       ),
-      constMeta: kCrateApiTypesIdDartUserIdEqualsConstMeta,
+      constMeta: kCrateApiTypesIdMessageIdEqualsConstMeta,
       argValues: [that, other],
       apiImpl: this,
     ));
   }
 
-  TaskConstMeta get kCrateApiTypesIdDartUserIdEqualsConstMeta =>
+  TaskConstMeta get kCrateApiTypesIdMessageIdEqualsConstMeta =>
       const TaskConstMeta(
-        debugName: "DartUserId_equals",
+        debugName: "MessageId_equals",
         argNames: ["that", "other"],
       );
 
   @override
-  PlatformInt64 crateApiTypesIdDartUserIdHashCode({required UserId that}) {
+  PlatformInt64 crateApiTypesIdMessageIdHashCode({required MessageId that}) {
     return handler.executeSync(SyncTask(
       callFfi: () {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId(
+        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
             that, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
+        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 7)!;
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_i_64,
         decodeErrorData: null,
       ),
-      constMeta: kCrateApiTypesIdDartUserIdHashCodeConstMeta,
+      constMeta: kCrateApiTypesIdMessageIdHashCodeConstMeta,
       argValues: [that],
       apiImpl: this,
     ));
   }
 
-  TaskConstMeta get kCrateApiTypesIdDartUserIdHashCodeConstMeta =>
+  TaskConstMeta get kCrateApiTypesIdMessageIdHashCodeConstMeta =>
       const TaskConstMeta(
-        debugName: "DartUserId_hash_code",
+        debugName: "MessageId_hash_code",
         argNames: ["that"],
       );
 
   @override
-  String crateApiTypesIdDartUserIdToString({required UserId that}) {
+  String crateApiTypesIdMessageIdToStringDart({required MessageId that}) {
     return handler.executeSync(SyncTask(
       callFfi: () {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId(
+        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
             that, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 7)!;
+        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8)!;
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_String,
         decodeErrorData: null,
       ),
-      constMeta: kCrateApiTypesIdDartUserIdToStringConstMeta,
+      constMeta: kCrateApiTypesIdMessageIdToStringDartConstMeta,
       argValues: [that],
       apiImpl: this,
     ));
   }
 
-  TaskConstMeta get kCrateApiTypesIdDartUserIdToStringConstMeta =>
+  TaskConstMeta get kCrateApiTypesIdMessageIdToStringDartConstMeta =>
       const TaskConstMeta(
-        debugName: "DartUserId_to_string",
+        debugName: "MessageId_to_string_dart",
+        argNames: ["that"],
+      );
+
+  @override
+  bool crateApiTypesIdUserIdEquals(
+      {required UserId that, required UserId other}) {
+    return handler.executeSync(SyncTask(
+      callFfi: () {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+            that, serializer);
+        sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+            other, serializer);
+        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 11)!;
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_bool,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiTypesIdUserIdEqualsConstMeta,
+      argValues: [that, other],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiTypesIdUserIdEqualsConstMeta =>
+      const TaskConstMeta(
+        debugName: "UserId_equals",
+        argNames: ["that", "other"],
+      );
+
+  @override
+  PlatformInt64 crateApiTypesIdUserIdHashCode({required UserId that}) {
+    return handler.executeSync(SyncTask(
+      callFfi: () {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+            that, serializer);
+        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 12)!;
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_i_64,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiTypesIdUserIdHashCodeConstMeta,
+      argValues: [that],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiTypesIdUserIdHashCodeConstMeta =>
+      const TaskConstMeta(
+        debugName: "UserId_hash_code",
+        argNames: ["that"],
+      );
+
+  @override
+  String crateApiTypesIdUserIdToStringDart({required UserId that}) {
+    return handler.executeSync(SyncTask(
+      callFfi: () {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+            that, serializer);
+        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 13)!;
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_String,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiTypesIdUserIdToStringDartConstMeta,
+      argValues: [that],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiTypesIdUserIdToStringDartConstMeta =>
+      const TaskConstMeta(
+        debugName: "UserId_to_string_dart",
         argNames: ["that"],
       );
 
   RustArcIncrementStrongCountFnType
       get rust_arc_increment_strong_count_MessageId => wire
-          .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId;
+          .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId;
 
   RustArcDecrementStrongCountFnType
       get rust_arc_decrement_strong_count_MessageId => wire
-          .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId;
+          .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId;
+
+  RustArcIncrementStrongCountFnType
+      get rust_arc_increment_strong_count_Service => wire
+          .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService;
+
+  RustArcDecrementStrongCountFnType
+      get rust_arc_decrement_strong_count_Service => wire
+          .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService;
 
   RustArcIncrementStrongCountFnType
       get rust_arc_increment_strong_count_UserId => wire
-          .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId;
+          .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId;
 
   RustArcDecrementStrongCountFnType
       get rust_arc_decrement_strong_count_UserId => wire
-          .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId;
+          .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId;
 
   @protected
   MessageId
-      dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId(
+      dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return MessageIdImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
+  Service
+      dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
+          dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ServiceImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   UserId
-      dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId(
+      dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
           dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return UserIdImpl.frbInternalDcoDecode(raw as List<dynamic>);
@@ -321,31 +455,54 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   MessageId
-      dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId(
+      dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return MessageIdImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
+  Service
+      dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
+          dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ServiceImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   UserId
-      dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId(
+      dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
           dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return UserIdImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
+  int dco_decode_CastedPrimitive_usize(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    throw UnimplementedError(
+        'Not implemented in this codec, please use the other one');
+  }
+
+  @protected
   MessageId
-      dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId(
+      dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return MessageIdImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
+  Service
+      dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
+          dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ServiceImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   UserId
-      dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId(
+      dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
           dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return UserIdImpl.frbInternalDcoDecode(raw as List<dynamic>);
@@ -355,6 +512,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   String dco_decode_String(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as String;
+  }
+
+  @protected
+  IdExt dco_decode_TraitDef_IdExt(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    throw UnimplementedError();
   }
 
   @protected
@@ -373,6 +536,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as Uint8List;
+  }
+
+  @protected
+  String? dco_decode_opt_String(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_String(raw);
   }
 
   @protected
@@ -395,7 +564,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   MessageId
-      sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId(
+      sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return MessageIdImpl.frbInternalSseDecode(
@@ -403,8 +572,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  Service
+      sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
+          SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ServiceImpl.frbInternalSseDecode(
+        sse_decode_usize(deserializer), sse_decode_i_32(deserializer));
+  }
+
+  @protected
   UserId
-      sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId(
+      sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
           SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return UserIdImpl.frbInternalSseDecode(
@@ -413,7 +591,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   MessageId
-      sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId(
+      sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return MessageIdImpl.frbInternalSseDecode(
@@ -421,8 +599,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  Service
+      sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
+          SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ServiceImpl.frbInternalSseDecode(
+        sse_decode_usize(deserializer), sse_decode_i_32(deserializer));
+  }
+
+  @protected
   UserId
-      sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId(
+      sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
           SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return UserIdImpl.frbInternalSseDecode(
@@ -430,8 +617,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  int sse_decode_CastedPrimitive_usize(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_usize(deserializer);
+    return inner.toInt();
+  }
+
+  @protected
   MessageId
-      sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId(
+      sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return MessageIdImpl.frbInternalSseDecode(
@@ -439,8 +633,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  Service
+      sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
+          SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ServiceImpl.frbInternalSseDecode(
+        sse_decode_usize(deserializer), sse_decode_i_32(deserializer));
+  }
+
+  @protected
   UserId
-      sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId(
+      sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
           SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return UserIdImpl.frbInternalSseDecode(
@@ -474,6 +677,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  String? sse_decode_opt_String(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_String(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
   int sse_decode_u_8(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getUint8();
@@ -498,7 +712,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
-      sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId(
+      sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           MessageId self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
@@ -507,7 +721,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
-      sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId(
+      sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
+          Service self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+        (self as ServiceImpl).frbInternalSseEncode(move: true), serializer);
+  }
+
+  @protected
+  void
+      sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
           UserId self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
@@ -516,7 +739,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
-      sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId(
+      sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           MessageId self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
@@ -525,7 +748,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
-      sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId(
+      sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
+          Service self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+        (self as ServiceImpl).frbInternalSseEncode(move: false), serializer);
+  }
+
+  @protected
+  void
+      sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
           UserId self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
@@ -533,8 +765,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_CastedPrimitive_usize(int self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(sseEncodeCastedPrimitiveU64(self), serializer);
+  }
+
+  @protected
   void
-      sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId(
+      sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           MessageId self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
@@ -543,7 +781,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
-      sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId(
+      sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
+          Service self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+        (self as ServiceImpl).frbInternalSseEncode(move: null), serializer);
+  }
+
+  @protected
+  void
+      sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
           UserId self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
@@ -574,6 +821,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     serializer.buffer.putUint8List(self);
+  }
+
+  @protected
+  void sse_encode_opt_String(String? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_String(self, serializer);
+    }
   }
 
   @protected
@@ -620,15 +877,45 @@ class MessageIdImpl extends RustOpaque implements MessageId {
   );
 
   bool equals({required MessageId other}) => RustLib.instance.api
-      .crateApiTypesIdDartMessageIdEquals(that: this, other: other);
+      .crateApiTypesIdMessageIdEquals(that: this, other: other);
 
   PlatformInt64 get hashCode =>
-      RustLib.instance.api.crateApiTypesIdDartMessageIdHashCode(
+      RustLib.instance.api.crateApiTypesIdMessageIdHashCode(
         that: this,
       );
 
   String toString() =>
-      RustLib.instance.api.crateApiTypesIdDartMessageIdToString(
+      RustLib.instance.api.crateApiTypesIdMessageIdToStringDart(
+        that: this,
+      );
+}
+
+@sealed
+class ServiceImpl extends RustOpaque implements Service {
+  // Not to be used by end users
+  ServiceImpl.frbInternalDcoDecode(List<dynamic> wire)
+      : super.frbInternalDcoDecode(wire, _kStaticData);
+
+  // Not to be used by end users
+  ServiceImpl.frbInternalSseDecode(BigInt ptr, int externalSizeOnNative)
+      : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
+
+  static final _kStaticData = RustArcStaticData(
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_Service,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_Service,
+    rustArcDecrementStrongCountPtr:
+        RustLib.instance.api.rust_arc_decrement_strong_count_ServicePtr,
+  );
+
+  void addMessage({required String message}) => RustLib.instance.api
+      .crateApiServiceServiceAddMessage(that: this, message: message);
+
+  String? getMessage({required int index}) => RustLib.instance.api
+      .crateApiServiceServiceGetMessage(that: this, index: index);
+
+  int messageCount() => RustLib.instance.api.crateApiServiceServiceMessageCount(
         that: this,
       );
 }
@@ -653,14 +940,14 @@ class UserIdImpl extends RustOpaque implements UserId {
   );
 
   bool equals({required UserId other}) => RustLib.instance.api
-      .crateApiTypesIdDartUserIdEquals(that: this, other: other);
+      .crateApiTypesIdUserIdEquals(that: this, other: other);
 
   PlatformInt64 get hashCode =>
-      RustLib.instance.api.crateApiTypesIdDartUserIdHashCode(
+      RustLib.instance.api.crateApiTypesIdUserIdHashCode(
         that: this,
       );
 
-  String toString() => RustLib.instance.api.crateApiTypesIdDartUserIdToString(
+  String toString() => RustLib.instance.api.crateApiTypesIdUserIdToStringDart(
         that: this,
       );
 }

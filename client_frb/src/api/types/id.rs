@@ -1,4 +1,4 @@
-use std::{any::Any, mem};
+use std::mem;
 
 use super::marker::Opaque;
 use client_service::common::types::Id;

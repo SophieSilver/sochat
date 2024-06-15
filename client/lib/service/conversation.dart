@@ -1,19 +1,13 @@
+import 'package:client/service/rust_service.dart';
 import 'package:flutter/material.dart';
 
 class Conversation with ChangeNotifier {
-  final List<String> _messages = [];
-  int get messageCount => this._messages.length;
+  int get messageCount => RustService.instance.messageCount();
 
   void sendMessage(String message) {
-    this._messages.add(message);
+    RustService.instance.addMessage(message: message);
     this.notifyListeners();
   }
 
-  String? getMessage(int index) {
-    if (index < 0 || index >= this._messages.length) {
-      return null;
-    }
-
-    return this._messages[index];
-  }
+  String? getMessage(int index) => RustService.instance.getMessage(index: index);
 }

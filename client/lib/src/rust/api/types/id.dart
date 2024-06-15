@@ -6,8 +6,10 @@
 import '../../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<DartMessageId>>
-abstract class MessageId implements RustOpaqueInterface {
+// These functions are ignored (category: IgnoreBecauseExplicitAttribute): `equals`
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MessageId>>
+abstract class MessageId implements RustOpaqueInterface, IdExt {
   bool equals({required MessageId other});
 
   PlatformInt64 get hashCode;
@@ -16,16 +18,16 @@ abstract class MessageId implements RustOpaqueInterface {
 
   @override
   bool operator ==(Object other) {
-    // using runtimeType instead of is operator so that it's easier to write the macro
-    if (other.runtimeType != this.runtimeType) {
+    if (this.runtimeType != other.runtimeType) {
       return false;
     }
+
     return this.equals(other: other as dynamic);
   }
 }
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<DartUserId>>
-abstract class UserId implements RustOpaqueInterface {
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<UserId>>
+abstract class UserId implements RustOpaqueInterface, IdExt {
   bool equals({required UserId other});
 
   PlatformInt64 get hashCode;
@@ -34,10 +36,16 @@ abstract class UserId implements RustOpaqueInterface {
 
   @override
   bool operator ==(Object other) {
-    // using runtimeType instead of is operator so that it's easier to write the macro
-    if (other.runtimeType != this.runtimeType) {
+    if (this.runtimeType != other.runtimeType) {
       return false;
     }
+
     return this.equals(other: other as dynamic);
   }
+}
+
+abstract class IdExt {
+  PlatformInt64 get hashCode;
+
+  String toString();
 }

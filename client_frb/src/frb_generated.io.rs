@@ -4,6 +4,8 @@
 // Section: imports
 
 use super::*;
+use crate::api::service::*;
+use crate::api::types::id::IdExt;
 use crate::api::types::id::*;
 use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
 use flutter_rust_bridge::for_generated::{transform_result_dco, Lockable};
@@ -14,29 +16,43 @@ use flutter_rust_bridge::{Handler, IntoIntoDart};
 flutter_rust_bridge::frb_generated_boilerplate_io!();
 
 #[no_mangle]
-pub extern "C" fn frbgen_client_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId(
+pub extern "C" fn frbgen_client_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
     ptr: *const std::ffi::c_void,
 ) {
-    MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<DartMessageId>>::increment_strong_count(ptr as _);
+    MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MessageId>>::increment_strong_count(ptr as _);
 }
 
 #[no_mangle]
-pub extern "C" fn frbgen_client_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartMessageId(
+pub extern "C" fn frbgen_client_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
     ptr: *const std::ffi::c_void,
 ) {
-    MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<DartMessageId>>::decrement_strong_count(ptr as _);
+    MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MessageId>>::decrement_strong_count(ptr as _);
 }
 
 #[no_mangle]
-pub extern "C" fn frbgen_client_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId(
+pub extern "C" fn frbgen_client_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
     ptr: *const std::ffi::c_void,
 ) {
-    MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<DartUserId>>::increment_strong_count(ptr as _);
+    MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Service>>::increment_strong_count(ptr as _);
 }
 
 #[no_mangle]
-pub extern "C" fn frbgen_client_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDartUserId(
+pub extern "C" fn frbgen_client_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
     ptr: *const std::ffi::c_void,
 ) {
-    MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<DartUserId>>::decrement_strong_count(ptr as _);
+    MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Service>>::decrement_strong_count(ptr as _);
+}
+
+#[no_mangle]
+pub extern "C" fn frbgen_client_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+    ptr: *const std::ffi::c_void,
+) {
+    MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<UserId>>::increment_strong_count(ptr as _);
+}
+
+#[no_mangle]
+pub extern "C" fn frbgen_client_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+    ptr: *const std::ffi::c_void,
+) {
+    MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<UserId>>::decrement_strong_count(ptr as _);
 }
