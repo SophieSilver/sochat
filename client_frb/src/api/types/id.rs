@@ -1,78 +1,68 @@
-use std::{borrow::Borrow, mem};
+use std::{any::Any, mem};
 
-pub use client_service::common::types::id::{Id, MessageId, UserId};
+use super::marker::Opaque;
+use client_service::common::types::Id;
+pub use client_service::common::types::{MessageId, UserId};
 use flutter_rust_bridge::frb;
 
-macro_rules! wrap_id {
-    ($dart_name: ident, $name: ident) => {
-        // we do this as dart code, because the operator doesn't take Self,
-        // it takes Object that we're supposed to downcast and there is
-        // currently
-        #[frb(dart_code = "
+/// Trait for extending Id types for use with [`flutter_rust_bridge`]
+pub trait IdExt: Id + ToString {
+    // renamed to avoid conflict with ToString::to_string
+    #[frb(sync, name = "to_string")]
+    fn to_string_dart(&self) -> String {
+        self.to_string()
+    }
+
+    #[frb(sync, getter)]
+    fn hash_code(&self) -> i64 {
+        const SIZE: usize = mem::size_of::<i64>();
+
+        let bytes = self.as_bytes();
+        let mut hash_code_bytes = [0u8; SIZE];
+
+        for (index, &byte) in bytes.iter().enumerate() {
+            // XORing with the byte at that location
+            hash_code_bytes[index % SIZE] ^= byte;
+        }
+
+        i64::from_le_bytes(hash_code_bytes)
+    }
+
+    /// For internal use in the operator == implementation, use == instead of this method
+    #[frb(sync, ignore)]
+    fn equals(self, other: Self) -> bool {
+        self == other
+    }
+}
+
+macro_rules! extend_id {
+    ($type_name: ident, $mirror_name: ident) => {
+        #[frb(
+            mirror($type_name),
+            dart_code =
+        "
             @override
             bool operator ==(Object other) {
-                // using runtimeType instead of is operator so that it's easier to write the macro
-                if (other.runtimeType != this.runtimeType) {
+                if (this.runtimeType != other.runtimeType) {
                     return false;
                 }
+                
                 return this.equals(other: other as dynamic);
             }
-        ")]
-        #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-        pub struct $dart_name($name);
+        "
+        )]
+        struct $mirror_name {
+            _opq: Opaque,
+        }
 
-        impl $dart_name {
+        impl IdExt for $type_name {
             #[frb(sync)]
-            pub fn to_string(&self) -> String {
-                format!("{}", self.0)
-            }
-
-            #[frb(sync)]
-            pub fn equals(&self, other: &Self) -> bool {
+            fn equals(self, other: Self) -> bool {
                 self == other
-            }
-
-            #[frb(sync, getter)]
-            pub fn hash_code(&self) -> i64 {
-                const SIZE: usize = mem::size_of::<i64>();
-
-                let bytes = self.0.as_bytes();
-                let mut hash_code_bytes = [0u8; SIZE];
-
-                for (index, &byte) in bytes.iter().enumerate() {
-                    // XORing with the byte at that location
-                    hash_code_bytes[index % SIZE] ^= byte;
-                }
-
-                i64::from_le_bytes(hash_code_bytes)
-            }
-        }
-
-        impl From<$dart_name> for $name {
-            fn from(value: $dart_name) -> Self {
-                value.0
-            }
-        }
-
-        impl From<$name> for $dart_name {
-            fn from(value: $name) -> Self {
-                Self(value)
-            }
-        }
-
-        impl AsRef<$name> for $dart_name {
-            fn as_ref(&self) -> &$name {
-                &self.0
-            }
-        }
-
-        impl Borrow<$name> for $dart_name {
-            fn borrow(&self) -> &$name {
-                &self.0
             }
         }
     };
 }
 
-wrap_id!(DartUserId, UserId);
-wrap_id!(DartMessageId, MessageId);
+extend_id!(UserId, _UserIdMirror);
+extend_id!(MessageId, _MessageIdMirror);
