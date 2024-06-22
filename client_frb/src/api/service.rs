@@ -13,14 +13,14 @@ impl Service {
         Self { messages: Arc::default() }
     }
     
-    #[frb(sync, type_64bit_int)]
-    pub fn message_count(&self) -> usize {
-        self.messages.lock().unwrap().len()
+    #[frb(sync)]
+    pub fn message_count(&self) -> i64 {
+        self.messages.lock().unwrap().len() as i64
     }
 
-    #[frb(sync, type_64bit_int)]
-    pub fn get_message(&self, index: usize) -> Option<String> {
-        self.messages.lock().unwrap().get(index).cloned()
+    #[frb(sync)]
+    pub fn get_message(&self, index: i64) -> Option<String> {
+        self.messages.lock().unwrap().get(index as usize).cloned()
     }
 
     #[frb(sync)]
