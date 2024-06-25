@@ -1,70 +1,53 @@
+import 'package:client/service/conversation.dart';
+import 'package:client/src/rust/api/types/id.dart';
+import 'package:client/widgets/side_panel/new_conversation_tab/new_conversation_tab.dart';
 import 'package:flutter/material.dart';
 
-class SidePanelContent extends StatelessWidget {
-  const SidePanelContent({super.key});
+class SidePanelContent extends StatefulWidget {
+  final void Function(Conversation) onSwitchConversation;
+
+  const SidePanelContent({super.key, required this.onSwitchConversation});
+
+  @override
+  State<SidePanelContent> createState() => _SidePanelContentState();
+}
+
+class _SidePanelContentState extends State<SidePanelContent> {
+  List<Conversation> conversations = [];
+  
+  void addConversation(UserId other) {
+    final UserId selfId = UserId.parse("AAAAAAAAAAAAAAAAAAAAAA");
+    
+    if (other == selfId) {
+              return;
+            }
+    final newConversation = Conversation(self: selfId, other: other);
+    
+    this.setState(() {
+      this.conversations.add(newConversation);
+    });
+    // TODO: switch to the new convo
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(10.0),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                "Your ID: ",
-                style: TextStyle(inherit: true, fontSize: 16.0, height: 1.5),
-              ),
-              SelectableText(
-                "JNkjnknjkfs2342fjsdfn_",
-                style: TextStyle(
-                  fontFamily: "Consolas",
-                  inherit: true,
-                  fontSize: 16.0,
-                  height: 1.5,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 10.0),
-          OutlinedButton(onPressed: () {}, child: Text("Copy ID")),
-          // FilledButton(onPressed: () {}, child: Text("hi"),),
-          SizedBox(height: 30.0),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                "Other ID: ",
-                style: TextStyle(inherit: true, fontSize: 16.0, height: 1.5),
-              ),
-              SizedBox(
-                width: 250.0,
-                child: TextField(
-                  onSubmitted: (value) {
-                    print(value);
-                  },
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(100.0),
-                    ),
-                    isDense: true,
-                  ),
-                  style: TextStyle(
-                    fontFamily: "Consolas",
-                    inherit: true,
-                    fontSize: 16.0,
-                    height: 1.5,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        NewConversationTab(
+          onSubmitId: this.addConversation
+        ),
+        this.conversations.isEmpty
+            ? Expanded(
+                child: Center(
+                    child: Text(
+                "No Contacts",
+                style: theme.textTheme.headlineSmall,
+              )))
+            : Placeholder(),
+      ],
     );
   }
 }

@@ -1,8 +1,10 @@
+import 'package:client/service/conversation.dart';
 import 'package:client/widgets/side_panel/side_panel_content.dart';
 import 'package:flutter/material.dart';
 
 class SidePanel extends StatelessWidget {
-  const SidePanel({super.key});
+  final void Function(Conversation) onSwitchConversation;
+  const SidePanel({super.key, required this.onSwitchConversation});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,9 @@ class SidePanel extends StatelessWidget {
         children: [
           SizedBox(
             width: sidePanelWidth,
-            child: SidePanelContent(),
+            child: SidePanelContent(
+              onSwitchConversation: this.onSwitchConversation,
+            ),
           ),
           VerticalDivider(
             color: colorScheme.secondaryContainer,

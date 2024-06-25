@@ -4,7 +4,9 @@ import 'package:client/widgets/chat_window/message_list/message_list.dart';
 import 'package:flutter/material.dart';
 
 class ChatWindow extends StatefulWidget {
-  const ChatWindow({super.key});
+  final Conversation conversation;
+  
+  const ChatWindow({super.key, required this.conversation});
 
   @override
   State<StatefulWidget> createState() {
@@ -13,8 +15,6 @@ class ChatWindow extends StatefulWidget {
 }
 
 class _ChatWindowState extends State<ChatWindow> {
-  Conversation conversationState = Conversation();
-
   @override
   Widget build(BuildContext context) {
     AnimatedIcons.add_event;
@@ -22,9 +22,9 @@ class _ChatWindowState extends State<ChatWindow> {
     return Column(
       children: <Widget>[
         MessageList(
-          conversationState: this.conversationState,
+          conversationState: this.widget.conversation,
         ),
-        MessageBar(conversation: this.conversationState,)
+        MessageBar(conversation: this.widget.conversation,)
       ],
     );
   }
