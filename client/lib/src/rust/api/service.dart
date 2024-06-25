@@ -5,16 +5,21 @@
 
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
+import 'types/id.dart';
 
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `fmt`
+// These functions are ignored because they are not marked as `pub`: `inner`
+// These types are ignored because they are not used by any `pub` functions: `ServiceInner`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `default`, `fmt`, `fmt`
 
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Service>>
 abstract class Service implements RustOpaqueInterface {
-  void addMessage({required String message});
+  String? getMessage(
+      {required UserId from, required UserId to, required PlatformInt64 index});
 
-  String? getMessage({required PlatformInt64 index});
-
-  PlatformInt64 messageCount();
+  PlatformInt64 messageCount({required UserId from, required UserId to});
 
   factory Service() => RustLib.instance.api.crateApiServiceServiceNew();
+
+  void sendMessage(
+      {required UserId from, required UserId to, required String message});
 }

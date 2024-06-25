@@ -108,32 +108,38 @@ pub extern "C" fn frbgen_client_wire__crate__api__init__init_app(port_: i64) {
 }
 
 #[no_mangle]
-pub extern "C" fn frbgen_client_wire__crate__api__service__Service_add_message(
-    that: usize,
-    message: *mut wire_cst_list_prim_u_8_strict,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
-    wire__crate__api__service__Service_add_message_impl(that, message)
-}
-
-#[no_mangle]
 pub extern "C" fn frbgen_client_wire__crate__api__service__Service_get_message(
     that: usize,
+    from: usize,
+    to: usize,
     index: i64,
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
-    wire__crate__api__service__Service_get_message_impl(that, index)
+    wire__crate__api__service__Service_get_message_impl(that, from, to, index)
 }
 
 #[no_mangle]
 pub extern "C" fn frbgen_client_wire__crate__api__service__Service_message_count(
     that: usize,
+    from: usize,
+    to: usize,
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
-    wire__crate__api__service__Service_message_count_impl(that)
+    wire__crate__api__service__Service_message_count_impl(that, from, to)
 }
 
 #[no_mangle]
 pub extern "C" fn frbgen_client_wire__crate__api__service__Service_new(
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
     wire__crate__api__service__Service_new_impl()
+}
+
+#[no_mangle]
+pub extern "C" fn frbgen_client_wire__crate__api__service__Service_send_message(
+    that: usize,
+    from: usize,
+    to: usize,
+    message: *mut wire_cst_list_prim_u_8_strict,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
+    wire__crate__api__service__Service_send_message_impl(that, from, to, message)
 }
 
 #[no_mangle]

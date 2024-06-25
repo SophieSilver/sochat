@@ -397,58 +397,49 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__init__init_app =
       _wire__crate__api__init__init_appPtr.asFunction<void Function(int)>();
 
-  WireSyncRust2DartDco wire__crate__api__service__Service_add_message(
-    int that,
-    ffi.Pointer<wire_cst_list_prim_u_8_strict> message,
-  ) {
-    return _wire__crate__api__service__Service_add_message(
-      that,
-      message,
-    );
-  }
-
-  late final _wire__crate__api__service__Service_add_messagePtr = _lookup<
-          ffi.NativeFunction<
-              WireSyncRust2DartDco Function(
-                  ffi.UintPtr, ffi.Pointer<wire_cst_list_prim_u_8_strict>)>>(
-      'frbgen_client_wire__crate__api__service__Service_add_message');
-  late final _wire__crate__api__service__Service_add_message =
-      _wire__crate__api__service__Service_add_messagePtr.asFunction<
-          WireSyncRust2DartDco Function(
-              int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)>();
-
   WireSyncRust2DartDco wire__crate__api__service__Service_get_message(
     int that,
+    int from,
+    int to,
     int index,
   ) {
     return _wire__crate__api__service__Service_get_message(
       that,
+      from,
+      to,
       index,
     );
   }
 
   late final _wire__crate__api__service__Service_get_messagePtr = _lookup<
           ffi.NativeFunction<
-              WireSyncRust2DartDco Function(ffi.UintPtr, ffi.Int64)>>(
+              WireSyncRust2DartDco Function(
+                  ffi.UintPtr, ffi.UintPtr, ffi.UintPtr, ffi.Int64)>>(
       'frbgen_client_wire__crate__api__service__Service_get_message');
   late final _wire__crate__api__service__Service_get_message =
       _wire__crate__api__service__Service_get_messagePtr
-          .asFunction<WireSyncRust2DartDco Function(int, int)>();
+          .asFunction<WireSyncRust2DartDco Function(int, int, int, int)>();
 
   WireSyncRust2DartDco wire__crate__api__service__Service_message_count(
     int that,
+    int from,
+    int to,
   ) {
     return _wire__crate__api__service__Service_message_count(
       that,
+      from,
+      to,
     );
   }
 
-  late final _wire__crate__api__service__Service_message_countPtr =
-      _lookup<ffi.NativeFunction<WireSyncRust2DartDco Function(ffi.UintPtr)>>(
-          'frbgen_client_wire__crate__api__service__Service_message_count');
+  late final _wire__crate__api__service__Service_message_countPtr = _lookup<
+          ffi.NativeFunction<
+              WireSyncRust2DartDco Function(
+                  ffi.UintPtr, ffi.UintPtr, ffi.UintPtr)>>(
+      'frbgen_client_wire__crate__api__service__Service_message_count');
   late final _wire__crate__api__service__Service_message_count =
       _wire__crate__api__service__Service_message_countPtr
-          .asFunction<WireSyncRust2DartDco Function(int)>();
+          .asFunction<WireSyncRust2DartDco Function(int, int, int)>();
 
   WireSyncRust2DartDco wire__crate__api__service__Service_new() {
     return _wire__crate__api__service__Service_new();
@@ -460,6 +451,30 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__service__Service_new =
       _wire__crate__api__service__Service_newPtr
           .asFunction<WireSyncRust2DartDco Function()>();
+
+  WireSyncRust2DartDco wire__crate__api__service__Service_send_message(
+    int that,
+    int from,
+    int to,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> message,
+  ) {
+    return _wire__crate__api__service__Service_send_message(
+      that,
+      from,
+      to,
+      message,
+    );
+  }
+
+  late final _wire__crate__api__service__Service_send_messagePtr = _lookup<
+          ffi.NativeFunction<
+              WireSyncRust2DartDco Function(ffi.UintPtr, ffi.UintPtr,
+                  ffi.UintPtr, ffi.Pointer<wire_cst_list_prim_u_8_strict>)>>(
+      'frbgen_client_wire__crate__api__service__Service_send_message');
+  late final _wire__crate__api__service__Service_send_message =
+      _wire__crate__api__service__Service_send_messagePtr.asFunction<
+          WireSyncRust2DartDco Function(
+              int, int, int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)>();
 
   WireSyncRust2DartDco wire__crate__api__types__id__MessageId_equals(
     int that,

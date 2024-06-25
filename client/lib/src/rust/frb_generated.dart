@@ -59,7 +59,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.0.0';
 
   @override
-  int get rustContentHash => -953689754;
+  int get rustContentHash => -316241126;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -72,15 +72,22 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 abstract class RustLibApi extends BaseApi {
   Future<void> crateApiInitInitApp();
 
-  void crateApiServiceServiceAddMessage(
-      {required Service that, required String message});
-
   String? crateApiServiceServiceGetMessage(
-      {required Service that, required PlatformInt64 index});
+      {required Service that,
+      required UserId from,
+      required UserId to,
+      required PlatformInt64 index});
 
-  PlatformInt64 crateApiServiceServiceMessageCount({required Service that});
+  PlatformInt64 crateApiServiceServiceMessageCount(
+      {required Service that, required UserId from, required UserId to});
 
   Service crateApiServiceServiceNew();
+
+  void crateApiServiceServiceSendMessage(
+      {required Service that,
+      required UserId from,
+      required UserId to,
+      required String message});
 
   bool crateApiTypesIdMessageIdEquals(
       {required MessageId that, required MessageId other});
@@ -151,49 +158,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  void crateApiServiceServiceAddMessage(
-      {required Service that, required String message}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
-        var arg0 =
-            cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
-                that);
-        var arg1 = cst_encode_String(message);
-        return wire.wire__crate__api__service__Service_add_message(arg0, arg1);
-      },
-      codec: DcoCodec(
-        decodeSuccessData: dco_decode_unit,
-        decodeErrorData: null,
-      ),
-      constMeta: kCrateApiServiceServiceAddMessageConstMeta,
-      argValues: [that, message],
-      apiImpl: this,
-    ));
-  }
-
-  TaskConstMeta get kCrateApiServiceServiceAddMessageConstMeta =>
-      const TaskConstMeta(
-        debugName: "Service_add_message",
-        argNames: ["that", "message"],
-      );
-
-  @override
   String? crateApiServiceServiceGetMessage(
-      {required Service that, required PlatformInt64 index}) {
+      {required Service that,
+      required UserId from,
+      required UserId to,
+      required PlatformInt64 index}) {
     return handler.executeSync(SyncTask(
       callFfi: () {
         var arg0 =
             cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
                 that);
-        var arg1 = cst_encode_i_64(index);
-        return wire.wire__crate__api__service__Service_get_message(arg0, arg1);
+        var arg1 =
+            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+                from);
+        var arg2 =
+            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+                to);
+        var arg3 = cst_encode_i_64(index);
+        return wire.wire__crate__api__service__Service_get_message(
+            arg0, arg1, arg2, arg3);
       },
       codec: DcoCodec(
         decodeSuccessData: dco_decode_opt_String,
         decodeErrorData: null,
       ),
       constMeta: kCrateApiServiceServiceGetMessageConstMeta,
-      argValues: [that, index],
+      argValues: [that, from, to, index],
       apiImpl: this,
     ));
   }
@@ -201,24 +191,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiServiceServiceGetMessageConstMeta =>
       const TaskConstMeta(
         debugName: "Service_get_message",
-        argNames: ["that", "index"],
+        argNames: ["that", "from", "to", "index"],
       );
 
   @override
-  PlatformInt64 crateApiServiceServiceMessageCount({required Service that}) {
+  PlatformInt64 crateApiServiceServiceMessageCount(
+      {required Service that, required UserId from, required UserId to}) {
     return handler.executeSync(SyncTask(
       callFfi: () {
         var arg0 =
             cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
                 that);
-        return wire.wire__crate__api__service__Service_message_count(arg0);
+        var arg1 =
+            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+                from);
+        var arg2 =
+            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+                to);
+        return wire.wire__crate__api__service__Service_message_count(
+            arg0, arg1, arg2);
       },
       codec: DcoCodec(
         decodeSuccessData: dco_decode_i_64,
         decodeErrorData: null,
       ),
       constMeta: kCrateApiServiceServiceMessageCountConstMeta,
-      argValues: [that],
+      argValues: [that, from, to],
       apiImpl: this,
     ));
   }
@@ -226,7 +224,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiServiceServiceMessageCountConstMeta =>
       const TaskConstMeta(
         debugName: "Service_message_count",
-        argNames: ["that"],
+        argNames: ["that", "from", "to"],
       );
 
   @override
@@ -249,6 +247,43 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiServiceServiceNewConstMeta => const TaskConstMeta(
         debugName: "Service_new",
         argNames: [],
+      );
+
+  @override
+  void crateApiServiceServiceSendMessage(
+      {required Service that,
+      required UserId from,
+      required UserId to,
+      required String message}) {
+    return handler.executeSync(SyncTask(
+      callFfi: () {
+        var arg0 =
+            cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
+                that);
+        var arg1 =
+            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+                from);
+        var arg2 =
+            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+                to);
+        var arg3 = cst_encode_String(message);
+        return wire.wire__crate__api__service__Service_send_message(
+            arg0, arg1, arg2, arg3);
+      },
+      codec: DcoCodec(
+        decodeSuccessData: dco_decode_unit,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiServiceServiceSendMessageConstMeta,
+      argValues: [that, from, to, message],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiServiceServiceSendMessageConstMeta =>
+      const TaskConstMeta(
+        debugName: "Service_send_message",
+        argNames: ["that", "from", "to", "message"],
       );
 
   @override
@@ -1051,16 +1086,23 @@ class ServiceImpl extends RustOpaque implements Service {
         RustLib.instance.api.rust_arc_decrement_strong_count_ServicePtr,
   );
 
-  void addMessage({required String message}) => RustLib.instance.api
-      .crateApiServiceServiceAddMessage(that: this, message: message);
+  String? getMessage(
+          {required UserId from,
+          required UserId to,
+          required PlatformInt64 index}) =>
+      RustLib.instance.api.crateApiServiceServiceGetMessage(
+          that: this, from: from, to: to, index: index);
 
-  String? getMessage({required PlatformInt64 index}) => RustLib.instance.api
-      .crateApiServiceServiceGetMessage(that: this, index: index);
+  PlatformInt64 messageCount({required UserId from, required UserId to}) =>
+      RustLib.instance.api
+          .crateApiServiceServiceMessageCount(that: this, from: from, to: to);
 
-  PlatformInt64 messageCount() =>
-      RustLib.instance.api.crateApiServiceServiceMessageCount(
-        that: this,
-      );
+  void sendMessage(
+          {required UserId from,
+          required UserId to,
+          required String message}) =>
+      RustLib.instance.api.crateApiServiceServiceSendMessage(
+          that: this, from: from, to: to, message: message);
 }
 
 @sealed
