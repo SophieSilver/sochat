@@ -1,4 +1,4 @@
-use std::mem;
+use std::{mem, str::FromStr};
 
 use super::marker::Opaque;
 use client_service::common::types::Id;
@@ -6,11 +6,19 @@ pub use client_service::common::types::{MessageId, UserId};
 use flutter_rust_bridge::frb;
 
 /// Trait for extending Id types for use with [`flutter_rust_bridge`]
-pub trait IdExt: Id + ToString {
+pub trait IdExt: Id + ToString + FromStr
+where
+    Self::Err: std::error::Error + Send + Sync + 'static,
+{
     // renamed to avoid conflict with ToString::to_string
     #[frb(sync, name = "to_string")]
     fn to_string_dart(&self) -> String {
         self.to_string()
+    }
+
+    #[frb(sync, positional)]
+    fn parse( value: String) -> anyhow::Result<Self> {
+        Ok(Self::from_str(&value)?)
     }
 
     #[frb(sync, getter)]
@@ -29,7 +37,7 @@ pub trait IdExt: Id + ToString {
     }
 
     /// For internal use in the operator == implementation, use == instead of this method
-    #[frb(sync, ignore)]
+    #[frb(sync, positional)]
     fn equals(self, other: Self) -> bool {
         self == other
     }
@@ -47,7 +55,7 @@ macro_rules! extend_id {
                     return false;
                 }
                 
-                return this.equals(other: other as dynamic);
+                return this.equals(other as dynamic);
             }
         "
         )]
@@ -55,12 +63,7 @@ macro_rules! extend_id {
             _opq: Opaque,
         }
 
-        impl IdExt for $type_name {
-            #[frb(sync)]
-            fn equals(self, other: Self) -> bool {
-                self == other
-            }
-        }
+        impl IdExt for $type_name { }
     };
 }
 

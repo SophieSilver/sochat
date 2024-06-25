@@ -59,7 +59,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.0.0';
 
   @override
-  int get rustContentHash => -877355561;
+  int get rustContentHash => -953689754;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -87,12 +87,16 @@ abstract class RustLibApi extends BaseApi {
 
   PlatformInt64 crateApiTypesIdMessageIdHashCode({required MessageId that});
 
+  MessageId crateApiTypesIdMessageIdParse({required String value});
+
   String crateApiTypesIdMessageIdToStringDart({required MessageId that});
 
   bool crateApiTypesIdUserIdEquals(
       {required UserId that, required UserId other});
 
   PlatformInt64 crateApiTypesIdUserIdHashCode({required UserId that});
+
+  UserId crateApiTypesIdUserIdParse({required String value});
 
   String crateApiTypesIdUserIdToStringDart({required UserId that});
 
@@ -302,6 +306,30 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  MessageId crateApiTypesIdMessageIdParse({required String value}) {
+    return handler.executeSync(SyncTask(
+      callFfi: () {
+        var arg0 = cst_encode_String(value);
+        return wire.wire__crate__api__types__id__MessageId_parse(arg0);
+      },
+      codec: DcoCodec(
+        decodeSuccessData:
+            dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId,
+        decodeErrorData: dco_decode_AnyhowException,
+      ),
+      constMeta: kCrateApiTypesIdMessageIdParseConstMeta,
+      argValues: [value],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiTypesIdMessageIdParseConstMeta =>
+      const TaskConstMeta(
+        debugName: "MessageId_parse",
+        argNames: ["value"],
+      );
+
+  @override
   String crateApiTypesIdMessageIdToStringDart({required MessageId that}) {
     return handler.executeSync(SyncTask(
       callFfi: () {
@@ -381,6 +409,29 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  UserId crateApiTypesIdUserIdParse({required String value}) {
+    return handler.executeSync(SyncTask(
+      callFfi: () {
+        var arg0 = cst_encode_String(value);
+        return wire.wire__crate__api__types__id__UserId_parse(arg0);
+      },
+      codec: DcoCodec(
+        decodeSuccessData:
+            dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId,
+        decodeErrorData: dco_decode_AnyhowException,
+      ),
+      constMeta: kCrateApiTypesIdUserIdParseConstMeta,
+      argValues: [value],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiTypesIdUserIdParseConstMeta => const TaskConstMeta(
+        debugName: "UserId_parse",
+        argNames: ["value"],
+      );
+
+  @override
   String crateApiTypesIdUserIdToStringDart({required UserId that}) {
     return handler.executeSync(SyncTask(
       callFfi: () {
@@ -428,6 +479,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   RustArcDecrementStrongCountFnType
       get rust_arc_decrement_strong_count_UserId => wire
           .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId;
+
+  @protected
+  AnyhowException dco_decode_AnyhowException(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return AnyhowException(raw as String);
+  }
 
   @protected
   MessageId
@@ -553,6 +610,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   BigInt dco_decode_usize(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dcoDecodeU64(raw);
+  }
+
+  @protected
+  AnyhowException sse_decode_AnyhowException(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_String(deserializer);
+    return AnyhowException(inner);
   }
 
   @protected
@@ -787,6 +851,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_AnyhowException(
+      AnyhowException self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.message, serializer);
+  }
+
+  @protected
   void
       sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           MessageId self, SseSerializer serializer) {
@@ -946,7 +1017,8 @@ class MessageIdImpl extends RustOpaque implements MessageId {
         RustLib.instance.api.rust_arc_decrement_strong_count_MessageIdPtr,
   );
 
-  bool equals({required MessageId other}) => RustLib.instance.api
+  /// For internal use in the operator == implementation, use == instead of this method
+  bool equals(MessageId other) => RustLib.instance.api
       .crateApiTypesIdMessageIdEquals(that: this, other: other);
 
   PlatformInt64 get hashCode =>
@@ -1010,7 +1082,8 @@ class UserIdImpl extends RustOpaque implements UserId {
         RustLib.instance.api.rust_arc_decrement_strong_count_UserIdPtr,
   );
 
-  bool equals({required UserId other}) => RustLib.instance.api
+  /// For internal use in the operator == implementation, use == instead of this method
+  bool equals(UserId other) => RustLib.instance.api
       .crateApiTypesIdUserIdEquals(that: this, other: other);
 
   PlatformInt64 get hashCode =>

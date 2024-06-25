@@ -17,6 +17,14 @@ flutter_rust_bridge::frb_generated_boilerplate_io!();
 
 // Section: dart2rust
 
+impl CstDecode<flutter_rust_bridge::for_generated::anyhow::Error>
+    for *mut wire_cst_list_prim_u_8_strict
+{
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> flutter_rust_bridge::for_generated::anyhow::Error {
+        unimplemented!()
+    }
+}
 impl CstDecode<MessageId> for usize {
     // Codec=Cst (C-struct based), see doc to use other codecs
     fn cst_decode(self) -> MessageId {
@@ -144,6 +152,13 @@ pub extern "C" fn frbgen_client_wire__crate__api__types__id__MessageId_hash_code
 }
 
 #[no_mangle]
+pub extern "C" fn frbgen_client_wire__crate__api__types__id__MessageId_parse(
+    value: *mut wire_cst_list_prim_u_8_strict,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
+    wire__crate__api__types__id__MessageId_parse_impl(value)
+}
+
+#[no_mangle]
 pub extern "C" fn frbgen_client_wire__crate__api__types__id__MessageId_to_string_dart(
     that: usize,
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -163,6 +178,13 @@ pub extern "C" fn frbgen_client_wire__crate__api__types__id__UserId_hash_code(
     that: usize,
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
     wire__crate__api__types__id__UserId_hash_code_impl(that)
+}
+
+#[no_mangle]
+pub extern "C" fn frbgen_client_wire__crate__api__types__id__UserId_parse(
+    value: *mut wire_cst_list_prim_u_8_strict,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
+    wire__crate__api__types__id__UserId_parse_impl(value)
 }
 
 #[no_mangle]

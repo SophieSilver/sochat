@@ -6,13 +6,17 @@
 import '../../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored (category: IgnoreBecauseExplicitAttribute): `equals`
+// These functions are ignored (category: IgnoreBecauseSelfTypeNotAllowed): `equals`
 
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MessageId>>
 abstract class MessageId implements RustOpaqueInterface, IdExt {
-  bool equals({required MessageId other});
+  /// For internal use in the operator == implementation, use == instead of this method
+  bool equals(MessageId other);
 
   PlatformInt64 get hashCode;
+
+  static MessageId parse(String value) =>
+      RustLib.instance.api.crateApiTypesIdMessageIdParse(value: value);
 
   String toString();
 
@@ -22,15 +26,19 @@ abstract class MessageId implements RustOpaqueInterface, IdExt {
       return false;
     }
 
-    return this.equals(other: other as dynamic);
+    return this.equals(other as dynamic);
   }
 }
 
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<UserId>>
 abstract class UserId implements RustOpaqueInterface, IdExt {
-  bool equals({required UserId other});
+  /// For internal use in the operator == implementation, use == instead of this method
+  bool equals(UserId other);
 
   PlatformInt64 get hashCode;
+
+  static UserId parse(String value) =>
+      RustLib.instance.api.crateApiTypesIdUserIdParse(value: value);
 
   String toString();
 
@@ -40,7 +48,7 @@ abstract class UserId implements RustOpaqueInterface, IdExt {
       return false;
     }
 
-    return this.equals(other: other as dynamic);
+    return this.equals(other as dynamic);
   }
 }
 

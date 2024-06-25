@@ -29,6 +29,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserIdPtr;
 
   @protected
+  AnyhowException dco_decode_AnyhowException(dynamic raw);
+
+  @protected
   MessageId
       dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           dynamic raw);
@@ -101,6 +104,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   BigInt dco_decode_usize(dynamic raw);
 
   @protected
+  AnyhowException sse_decode_AnyhowException(SseDeserializer deserializer);
+
+  @protected
   MessageId
       sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           SseDeserializer deserializer);
@@ -171,6 +177,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int sse_decode_i_32(SseDeserializer deserializer);
+
+  @protected
+  ffi.Pointer<wire_cst_list_prim_u_8_strict> cst_encode_AnyhowException(
+      AnyhowException raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    throw UnimplementedError();
+  }
 
   @protected
   ffi.Pointer<wire_cst_list_prim_u_8_strict> cst_encode_String(String raw) {
@@ -250,6 +263,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void cst_encode_unit(void raw);
+
+  @protected
+  void sse_encode_AnyhowException(
+      AnyhowException self, SseSerializer serializer);
 
   @protected
   void
@@ -477,6 +494,24 @@ class RustLibWire implements BaseWire {
       _wire__crate__api__types__id__MessageId_hash_codePtr
           .asFunction<WireSyncRust2DartDco Function(int)>();
 
+  WireSyncRust2DartDco wire__crate__api__types__id__MessageId_parse(
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> value,
+  ) {
+    return _wire__crate__api__types__id__MessageId_parse(
+      value,
+    );
+  }
+
+  late final _wire__crate__api__types__id__MessageId_parsePtr = _lookup<
+          ffi.NativeFunction<
+              WireSyncRust2DartDco Function(
+                  ffi.Pointer<wire_cst_list_prim_u_8_strict>)>>(
+      'frbgen_client_wire__crate__api__types__id__MessageId_parse');
+  late final _wire__crate__api__types__id__MessageId_parse =
+      _wire__crate__api__types__id__MessageId_parsePtr.asFunction<
+          WireSyncRust2DartDco Function(
+              ffi.Pointer<wire_cst_list_prim_u_8_strict>)>();
+
   WireSyncRust2DartDco wire__crate__api__types__id__MessageId_to_string_dart(
     int that,
   ) {
@@ -524,6 +559,24 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__types__id__UserId_hash_code =
       _wire__crate__api__types__id__UserId_hash_codePtr
           .asFunction<WireSyncRust2DartDco Function(int)>();
+
+  WireSyncRust2DartDco wire__crate__api__types__id__UserId_parse(
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> value,
+  ) {
+    return _wire__crate__api__types__id__UserId_parse(
+      value,
+    );
+  }
+
+  late final _wire__crate__api__types__id__UserId_parsePtr = _lookup<
+          ffi.NativeFunction<
+              WireSyncRust2DartDco Function(
+                  ffi.Pointer<wire_cst_list_prim_u_8_strict>)>>(
+      'frbgen_client_wire__crate__api__types__id__UserId_parse');
+  late final _wire__crate__api__types__id__UserId_parse =
+      _wire__crate__api__types__id__UserId_parsePtr.asFunction<
+          WireSyncRust2DartDco Function(
+              ffi.Pointer<wire_cst_list_prim_u_8_strict>)>();
 
   WireSyncRust2DartDco wire__crate__api__types__id__UserId_to_string_dart(
     int that,
