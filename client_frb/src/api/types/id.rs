@@ -1,9 +1,8 @@
-use std::{mem, str::FromStr};
-
-use super::marker::Opaque;
+use crate::api::types::marker::Opaque;
 use client_service::common::types::Id;
 pub use client_service::common::types::{MessageId, UserId};
 use flutter_rust_bridge::frb;
+use std::{mem, str::FromStr};
 
 /// Trait for extending Id types for use with [`flutter_rust_bridge`]
 pub trait IdExt: Id + ToString + FromStr
@@ -16,8 +15,9 @@ where
         self.to_string()
     }
 
+    /// Parse ID from a string
     #[frb(sync, positional)]
-    fn parse( value: String) -> anyhow::Result<Self> {
+    fn parse(value: String) -> anyhow::Result<Self> {
         Ok(Self::from_str(&value)?)
     }
 
@@ -36,9 +36,9 @@ where
         i64::from_le_bytes(hash_code_bytes)
     }
 
-    /// For internal use in the operator == implementation, use == instead of this method
+    /// Use instead of == operator due to FRB limitations
     #[frb(sync, positional)]
-    fn equals(self, other: Self) -> bool {
+    fn equals(&self, other: &Self) -> bool {
         self == other
     }
 }
@@ -47,23 +47,23 @@ macro_rules! extend_id {
     ($type_name: ident, $mirror_name: ident) => {
         #[frb(
             mirror($type_name),
-            dart_code =
-        "
-            @override
-            bool operator ==(Object other) {
-                if (this.runtimeType != other.runtimeType) {
-                    return false;
-                }
-                
-                return this.equals(other as dynamic);
-            }
-        "
+        //     dart_code =
+        // "
+        //     @override
+        //     bool operator ==(Object other) {
+        //         if (this.runtimeType != other.runtimeType) {
+        //             return false;
+        //         }
+
+        //         return this.equals(other as dynamic);
+        //     }
+        // "
         )]
         struct $mirror_name {
             _opq: Opaque,
         }
 
-        impl IdExt for $type_name { }
+        impl IdExt for $type_name {}
     };
 }
 

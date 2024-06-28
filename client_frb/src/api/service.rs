@@ -28,30 +28,35 @@ impl Service {
     fn inner(&self) -> impl DerefMut<Target = ServiceInner> + '_ {
         self.messages.lock().unwrap()
     }
-
+    
+    // MAKE SURE TO TAKE IDs by reference,
+    // This is because if you take them by value
+    // FRB will move them out of Arcs and dispose of the Arcs
+    // Causing "Arc" used after being disposed errors
+    
     #[frb(sync)]
-    pub fn message_count(&self, from: UserId, to: UserId) -> i64 {
+    pub fn message_count(&self, from: &UserId, to: &UserId) -> i64 {
         self.inner()
             .messages
-            .get(&(from, to))
+            .get(&(*from, *to))
             .map(|v| v.len())
             .unwrap_or(0) as _
     }
 
     #[frb(sync)]
-    pub fn get_message(&self, from: UserId, to: UserId, index: i64) -> Option<String> {
+    pub fn get_message(&self, from: &UserId, to: &UserId, index: i64) -> Option<String> {
         self.inner()
             .messages
-            .get(&(from, to))?
+            .get(&(*from, *to))?
             .get(usize::try_from(index).unwrap())
             .cloned()
     }
 
     #[frb(sync)]
-    pub fn send_message(&self, from: UserId, to: UserId, message: String) {
+    pub fn send_message(&self, from: &UserId, to: &UserId, message: String) {
         self.inner()
             .messages
-            .entry((from, to))
+            .entry((*from, *to))
             .or_default()
             .push(message);
     }

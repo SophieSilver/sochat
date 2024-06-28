@@ -71,8 +71,8 @@ fn wire__crate__api__service__Service_get_message_impl(
     that: impl CstDecode<
         RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Service>>,
     >,
-    from: impl CstDecode<UserId>,
-    to: impl CstDecode<UserId>,
+    from: impl CstDecode<RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<UserId>>>,
+    to: impl CstDecode<RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<UserId>>>,
     index: impl CstDecode<i64>,
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::DcoCodec, _>(
@@ -88,23 +88,35 @@ fn wire__crate__api__service__Service_get_message_impl(
             let api_index = index.cst_decode();
             transform_result_dco::<_, _, ()>((move || {
                 let mut api_that_guard = None;
+                let mut api_from_guard = None;
+                let mut api_to_guard = None;
                 let decode_indices_ =
                     flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
                         flutter_rust_bridge::for_generated::LockableOrderInfo::new(
                             &api_that, 0, false,
                         ),
+                        flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                            &api_from, 1, false,
+                        ),
+                        flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                            &api_to, 2, false,
+                        ),
                     ]);
                 for i in decode_indices_ {
                     match i {
                         0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                        1 => api_from_guard = Some(api_from.lockable_decode_sync_ref()),
+                        2 => api_to_guard = Some(api_to.lockable_decode_sync_ref()),
                         _ => unreachable!(),
                     }
                 }
                 let api_that_guard = api_that_guard.unwrap();
+                let api_from_guard = api_from_guard.unwrap();
+                let api_to_guard = api_to_guard.unwrap();
                 let output_ok = Result::<_, ()>::Ok(crate::api::service::Service::get_message(
                     &*api_that_guard,
-                    api_from,
-                    api_to,
+                    &*api_from_guard,
+                    &*api_to_guard,
                     api_index,
                 ))?;
                 Ok(output_ok)
@@ -116,8 +128,8 @@ fn wire__crate__api__service__Service_message_count_impl(
     that: impl CstDecode<
         RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Service>>,
     >,
-    from: impl CstDecode<UserId>,
-    to: impl CstDecode<UserId>,
+    from: impl CstDecode<RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<UserId>>>,
+    to: impl CstDecode<RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<UserId>>>,
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::DcoCodec, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
@@ -131,23 +143,35 @@ fn wire__crate__api__service__Service_message_count_impl(
             let api_to = to.cst_decode();
             transform_result_dco::<_, _, ()>((move || {
                 let mut api_that_guard = None;
+                let mut api_from_guard = None;
+                let mut api_to_guard = None;
                 let decode_indices_ =
                     flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
                         flutter_rust_bridge::for_generated::LockableOrderInfo::new(
                             &api_that, 0, false,
                         ),
+                        flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                            &api_from, 1, false,
+                        ),
+                        flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                            &api_to, 2, false,
+                        ),
                     ]);
                 for i in decode_indices_ {
                     match i {
                         0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                        1 => api_from_guard = Some(api_from.lockable_decode_sync_ref()),
+                        2 => api_to_guard = Some(api_to.lockable_decode_sync_ref()),
                         _ => unreachable!(),
                     }
                 }
                 let api_that_guard = api_that_guard.unwrap();
+                let api_from_guard = api_from_guard.unwrap();
+                let api_to_guard = api_to_guard.unwrap();
                 let output_ok = Result::<_, ()>::Ok(crate::api::service::Service::message_count(
                     &*api_that_guard,
-                    api_from,
-                    api_to,
+                    &*api_from_guard,
+                    &*api_to_guard,
                 ))?;
                 Ok(output_ok)
             })())
@@ -174,8 +198,8 @@ fn wire__crate__api__service__Service_send_message_impl(
     that: impl CstDecode<
         RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Service>>,
     >,
-    from: impl CstDecode<UserId>,
-    to: impl CstDecode<UserId>,
+    from: impl CstDecode<RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<UserId>>>,
+    to: impl CstDecode<RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<UserId>>>,
     message: impl CstDecode<String>,
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::DcoCodec, _>(
@@ -191,24 +215,36 @@ fn wire__crate__api__service__Service_send_message_impl(
             let api_message = message.cst_decode();
             transform_result_dco::<_, _, ()>((move || {
                 let mut api_that_guard = None;
+                let mut api_from_guard = None;
+                let mut api_to_guard = None;
                 let decode_indices_ =
                     flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
                         flutter_rust_bridge::for_generated::LockableOrderInfo::new(
                             &api_that, 0, false,
                         ),
+                        flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                            &api_from, 1, false,
+                        ),
+                        flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                            &api_to, 2, false,
+                        ),
                     ]);
                 for i in decode_indices_ {
                     match i {
                         0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                        1 => api_from_guard = Some(api_from.lockable_decode_sync_ref()),
+                        2 => api_to_guard = Some(api_to.lockable_decode_sync_ref()),
                         _ => unreachable!(),
                     }
                 }
                 let api_that_guard = api_that_guard.unwrap();
+                let api_from_guard = api_from_guard.unwrap();
+                let api_to_guard = api_to_guard.unwrap();
                 let output_ok = Result::<_, ()>::Ok({
                     crate::api::service::Service::send_message(
                         &*api_that_guard,
-                        api_from,
-                        api_to,
+                        &*api_from_guard,
+                        &*api_to_guard,
                         api_message,
                     );
                 })?;
@@ -218,8 +254,12 @@ fn wire__crate__api__service__Service_send_message_impl(
     )
 }
 fn wire__crate__api__types__id__MessageId_equals_impl(
-    that: impl CstDecode<MessageId>,
-    other: impl CstDecode<MessageId>,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MessageId>>,
+    >,
+    other: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MessageId>>,
+    >,
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::DcoCodec, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
@@ -231,8 +271,29 @@ fn wire__crate__api__types__id__MessageId_equals_impl(
             let api_that = that.cst_decode();
             let api_other = other.cst_decode();
             transform_result_dco::<_, _, ()>((move || {
+                let mut api_that_guard = None;
+                let mut api_other_guard = None;
+                let decode_indices_ =
+                    flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                        flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                            &api_that, 0, false,
+                        ),
+                        flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                            &api_other, 1, false,
+                        ),
+                    ]);
+                for i in decode_indices_ {
+                    match i {
+                        0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                        1 => api_other_guard = Some(api_other.lockable_decode_sync_ref()),
+                        _ => unreachable!(),
+                    }
+                }
+                let api_that_guard = api_that_guard.unwrap();
+                let api_other_guard = api_other_guard.unwrap();
                 let output_ok = Result::<_, ()>::Ok(crate::api::types::id::MessageId::equals(
-                    api_that, api_other,
+                    &*api_that_guard,
+                    &*api_other_guard,
                 ))?;
                 Ok(output_ok)
             })())
@@ -332,8 +393,10 @@ fn wire__crate__api__types__id__MessageId_to_string_dart_impl(
     )
 }
 fn wire__crate__api__types__id__UserId_equals_impl(
-    that: impl CstDecode<UserId>,
-    other: impl CstDecode<UserId>,
+    that: impl CstDecode<RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<UserId>>>,
+    other: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<UserId>>,
+    >,
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::DcoCodec, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
@@ -345,8 +408,29 @@ fn wire__crate__api__types__id__UserId_equals_impl(
             let api_that = that.cst_decode();
             let api_other = other.cst_decode();
             transform_result_dco::<_, _, ()>((move || {
+                let mut api_that_guard = None;
+                let mut api_other_guard = None;
+                let decode_indices_ =
+                    flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                        flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                            &api_that, 0, false,
+                        ),
+                        flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                            &api_other, 1, false,
+                        ),
+                    ]);
+                for i in decode_indices_ {
+                    match i {
+                        0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                        1 => api_other_guard = Some(api_other.lockable_decode_sync_ref()),
+                        _ => unreachable!(),
+                    }
+                }
+                let api_that_guard = api_that_guard.unwrap();
+                let api_other_guard = api_other_guard.unwrap();
                 let output_ok = Result::<_, ()>::Ok(crate::api::types::id::UserId::equals(
-                    api_that, api_other,
+                    &*api_that_guard,
+                    &*api_other_guard,
                 ))?;
                 Ok(output_ok)
             })())
