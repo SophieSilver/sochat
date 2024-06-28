@@ -23,17 +23,20 @@ where
 
     #[frb(sync, getter)]
     fn hash_code(&self) -> i64 {
-        const SIZE: usize = mem::size_of::<i64>();
+        unimplemented!("Please avoid hashing IDs. \n\
+Due to FRB limitations equality operator cannot be overriden, therefore a hashCode cannot be defined correctly");
 
-        let bytes = self.as_bytes();
-        let mut hash_code_bytes = [0u8; SIZE];
+        // const SIZE: usize = mem::size_of::<i64>();
 
-        for (index, &byte) in bytes.iter().enumerate() {
-            // XORing with the byte at that location
-            hash_code_bytes[index % SIZE] ^= byte;
-        }
+        // let bytes = self.as_bytes();
+        // let mut hash_code_bytes = [0u8; SIZE];
 
-        i64::from_le_bytes(hash_code_bytes)
+        // for (index, &byte) in bytes.iter().enumerate() {
+        //     // XORing with the byte at that location
+        //     hash_code_bytes[index % SIZE] ^= byte;
+        // }
+
+        // i64::from_le_bytes(hash_code_bytes)
     }
 
     /// Use instead of == operator due to FRB limitations
@@ -46,19 +49,19 @@ where
 macro_rules! extend_id {
     ($type_name: ident, $mirror_name: ident) => {
         #[frb(
-            mirror($type_name),
-        //     dart_code =
-        // "
-        //     @override
-        //     bool operator ==(Object other) {
-        //         if (this.runtimeType != other.runtimeType) {
-        //             return false;
-        //         }
+                    mirror($type_name),
+                //     dart_code =
+                // "
+                //     @override
+                //     bool operator ==(Object other) {
+                //         if (this.runtimeType != other.runtimeType) {
+                //             return false;
+                //         }
 
-        //         return this.equals(other as dynamic);
-        //     }
-        // "
-        )]
+                //         return this.equals(other as dynamic);
+                //     }
+                // "
+                )]
         struct $mirror_name {
             _opq: Opaque,
         }
