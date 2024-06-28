@@ -49,7 +49,7 @@ class _NewConversationTabState extends State<NewConversationTab> {
     final colorScheme = theme.colorScheme;
 
     return Material(
-      elevation: 16.0,
+      elevation: 1.0,
       shadowColor: Colors.transparent,
       color: colorScheme.surfaceContainerHigh,
       surfaceTintColor: colorScheme.surfaceTint,

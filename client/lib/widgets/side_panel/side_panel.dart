@@ -14,8 +14,7 @@ class SidePanel extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Material(
-      elevation: 4.0,
-      surfaceTintColor: colorScheme.surfaceTint,
+      color: colorScheme.surfaceContainerLow,
       child: Row(
         children: [
           SizedBox(

@@ -1,5 +1,6 @@
 import 'package:client/service/conversation.dart';
 import 'package:client/src/rust/api/types/id.dart';
+import 'package:client/widgets/side_panel/contact_list/contact_list.dart';
 import 'package:client/widgets/side_panel/new_conversation_tab/new_conversation_tab.dart';
 import 'package:flutter/material.dart';
 
@@ -14,19 +15,30 @@ class SidePanelContent extends StatefulWidget {
 
 class _SidePanelContentState extends State<SidePanelContent> {
   List<Conversation> conversations = [];
-  
+  int? selectedConversation;
+
   void addConversation(UserId other) {
     final UserId selfId = UserId.parse("AAAAAAAAAAAAAAAAAAAAAA");
-    
-    if (other == selfId) {
-              return;
-            }
+
+    if (other.equals(selfId)) {
+      return;
+    }
     final newConversation = Conversation(self: selfId, other: other);
-    
+
     this.setState(() {
       this.conversations.add(newConversation);
     });
+
     // TODO: switch to the new convo
+  }
+
+  void selectConversation(int conversationIndex) {
+    this.setState(() {
+      this.selectedConversation = conversationIndex;
+    });
+    this
+        .widget
+        .onSwitchConversation(this.conversations[this.selectedConversation!]);
   }
 
   @override
@@ -36,9 +48,7 @@ class _SidePanelContentState extends State<SidePanelContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        NewConversationTab(
-          onSubmitId: this.addConversation
-        ),
+        NewConversationTab(onSubmitId: this.addConversation),
         this.conversations.isEmpty
             ? Expanded(
                 child: Center(
@@ -46,7 +56,11 @@ class _SidePanelContentState extends State<SidePanelContent> {
                 "No Contacts",
                 style: theme.textTheme.headlineSmall,
               )))
-            : Placeholder(),
+            : ContactList(
+                conversationList: this.conversations,
+                selectedConversation: this.selectedConversation,
+                onSelected: this.selectConversation,
+              ),
       ],
     );
   }

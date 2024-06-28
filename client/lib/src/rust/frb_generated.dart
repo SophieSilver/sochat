@@ -169,10 +169,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
                 that);
         var arg1 =
-            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+            cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
                 from);
         var arg2 =
-            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+            cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
                 to);
         var arg3 = cst_encode_i_64(index);
         return wire.wire__crate__api__service__Service_get_message(
@@ -203,10 +203,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
                 that);
         var arg1 =
-            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+            cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
                 from);
         var arg2 =
-            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+            cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
                 to);
         return wire.wire__crate__api__service__Service_message_count(
             arg0, arg1, arg2);
@@ -261,10 +261,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerService(
                 that);
         var arg1 =
-            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+            cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
                 from);
         var arg2 =
-            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+            cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
                 to);
         var arg3 = cst_encode_String(message);
         return wire.wire__crate__api__service__Service_send_message(
@@ -292,10 +292,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     return handler.executeSync(SyncTask(
       callFfi: () {
         var arg0 =
-            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
+            cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
                 that);
         var arg1 =
-            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
+            cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
                 other);
         return wire.wire__crate__api__types__id__MessageId_equals(arg0, arg1);
       },
@@ -395,10 +395,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     return handler.executeSync(SyncTask(
       callFfi: () {
         var arg0 =
-            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+            cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
                 that);
         var arg1 =
-            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+            cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
                 other);
         return wire.wire__crate__api__types__id__UserId_equals(arg0, arg1);
       },
@@ -1052,7 +1052,7 @@ class MessageIdImpl extends RustOpaque implements MessageId {
         RustLib.instance.api.rust_arc_decrement_strong_count_MessageIdPtr,
   );
 
-  /// For internal use in the operator == implementation, use == instead of this method
+  /// Use instead of == operator due to FRB limitations
   bool equals(MessageId other) => RustLib.instance.api
       .crateApiTypesIdMessageIdEquals(that: this, other: other);
 
@@ -1124,7 +1124,7 @@ class UserIdImpl extends RustOpaque implements UserId {
         RustLib.instance.api.rust_arc_decrement_strong_count_UserIdPtr,
   );
 
-  /// For internal use in the operator == implementation, use == instead of this method
+  /// Use instead of == operator due to FRB limitations
   bool equals(UserId other) => RustLib.instance.api
       .crateApiTypesIdUserIdEquals(that: this, other: other);
 

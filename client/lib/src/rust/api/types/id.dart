@@ -10,46 +10,30 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MessageId>>
 abstract class MessageId implements RustOpaqueInterface, IdExt {
-  /// For internal use in the operator == implementation, use == instead of this method
+  /// Use instead of == operator due to FRB limitations
   bool equals(MessageId other);
 
   PlatformInt64 get hashCode;
 
+  /// Parse ID from a string
   static MessageId parse(String value) =>
       RustLib.instance.api.crateApiTypesIdMessageIdParse(value: value);
 
   String toString();
-
-  @override
-  bool operator ==(Object other) {
-    if (this.runtimeType != other.runtimeType) {
-      return false;
-    }
-
-    return this.equals(other as dynamic);
-  }
 }
 
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<UserId>>
 abstract class UserId implements RustOpaqueInterface, IdExt {
-  /// For internal use in the operator == implementation, use == instead of this method
+  /// Use instead of == operator due to FRB limitations
   bool equals(UserId other);
 
   PlatformInt64 get hashCode;
 
+  /// Parse ID from a string
   static UserId parse(String value) =>
       RustLib.instance.api.crateApiTypesIdUserIdParse(value: value);
 
   String toString();
-
-  @override
-  bool operator ==(Object other) {
-    if (this.runtimeType != other.runtimeType) {
-      return false;
-    }
-
-    return this.equals(other as dynamic);
-  }
 }
 
 abstract class IdExt {

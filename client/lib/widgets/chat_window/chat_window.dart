@@ -22,7 +22,7 @@ class _ChatWindowState extends State<ChatWindow> {
     return Column(
       children: <Widget>[
         MessageList(
-          conversationState: this.widget.conversation,
+          conversation: this.widget.conversation,
         ),
         MessageBar(conversation: this.widget.conversation,)
       ],

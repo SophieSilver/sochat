@@ -5,9 +5,9 @@ import 'package:client/widgets/chat_window/message_list/message_bubble.dart';
 import 'package:flutter/material.dart';
 
 class MessageList extends StatefulWidget {
-  final Conversation conversationState;
+  final Conversation conversation;
 
-  const MessageList({super.key, required this.conversationState});
+  const MessageList({super.key, required this.conversation});
 
   @override
   State<MessageList> createState() => _MessageListState();
@@ -20,19 +20,19 @@ class _MessageListState extends State<MessageList> {
   @override
   void initState() {
     super.initState();
-    this.widget.conversationState.addListener(this._onNewMessage);
+    this.widget.conversation.addListener(this._onNewMessage);
   }
 
   @override
   void didUpdateWidget(covariant MessageList oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.conversationState == this.widget.conversationState) {
+    if (oldWidget.conversation == this.widget.conversation) {
       return;
     }
 
-    oldWidget.conversationState.removeListener(this._onNewMessage);
-    this.widget.conversationState.addListener(this._onNewMessage);
+    oldWidget.conversation.removeListener(this._onNewMessage);
+    this.widget.conversation.addListener(this._onNewMessage);
   }
 
   void _onNewMessage() {
@@ -60,7 +60,7 @@ class _MessageListState extends State<MessageList> {
 
   Widget? _itemBuilder(BuildContext context, int index) {
     print(index);
-    final message = this.widget.conversationState.getMessage(index);
+    final message = this.widget.conversation.getMessage(index);
 
     return message == null ? null : MessageBubble(text: message);
   }
@@ -78,7 +78,7 @@ class _MessageListState extends State<MessageList> {
         child: ListView.builder(
           itemBuilder: this._itemBuilder,
           cacheExtent: 5000,
-          itemCount: this.widget.conversationState.messageCount,
+          itemCount: this.widget.conversation.messageCount,
           controller: this._listController,
         ),
       ),
@@ -87,7 +87,7 @@ class _MessageListState extends State<MessageList> {
 
   @override
   void dispose() {
-    this.widget.conversationState.removeListener(this._onNewMessage);
+    this.widget.conversation.removeListener(this._onNewMessage);
     super.dispose();
   }
 }

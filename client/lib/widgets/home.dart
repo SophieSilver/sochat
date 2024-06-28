@@ -22,7 +22,11 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
     return Material(
+      color: colorScheme.surfaceContainerLowest,
       child: Row(
         children: [
           SidePanel(

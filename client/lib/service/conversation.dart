@@ -14,6 +14,12 @@ class Conversation with ChangeNotifier {
     RustService.instance.sendMessage(from: this.self, to: this.other, message: message);
     this.notifyListeners();
   }
+  
+  @override
+  void dispose() {
+    print("DISPOSING OF CONVERSATION TO ${this.other}");
+    super.dispose();
+  }
 
   String? getMessage(int index) => RustService.instance.getMessage(from: this.self, to: this.other, index: index);
 }
