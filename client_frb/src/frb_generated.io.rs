@@ -236,6 +236,13 @@ pub extern "C" fn frbgen_client_wire__crate__api__types__message__ChatMessage_au
 }
 
 #[no_mangle]
+pub extern "C" fn frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_get_id(
+    that: usize,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
+    wire__crate__api__types__message__ChatMessage_auto_accessor_get_id_impl(that)
+}
+
+#[no_mangle]
 pub extern "C" fn frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_get_to(
     that: usize,
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -256,6 +263,14 @@ pub extern "C" fn frbgen_client_wire__crate__api__types__message__ChatMessage_au
     from: usize,
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
     wire__crate__api__types__message__ChatMessage_auto_accessor_set_from_impl(that, from)
+}
+
+#[no_mangle]
+pub extern "C" fn frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_set_id(
+    that: usize,
+    id: usize,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
+    wire__crate__api__types__message__ChatMessage_auto_accessor_set_id_impl(that, id)
 }
 
 #[no_mangle]

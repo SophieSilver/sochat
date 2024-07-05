@@ -722,6 +722,22 @@ class RustLibWire implements BaseWire {
           .asFunction<WireSyncRust2DartDco Function(int)>();
 
   WireSyncRust2DartDco
+      wire__crate__api__types__message__ChatMessage_auto_accessor_get_id(
+    int that,
+  ) {
+    return _wire__crate__api__types__message__ChatMessage_auto_accessor_get_id(
+      that,
+    );
+  }
+
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_get_idPtr =
+      _lookup<ffi.NativeFunction<WireSyncRust2DartDco Function(ffi.UintPtr)>>(
+          'frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_get_id');
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_get_id =
+      _wire__crate__api__types__message__ChatMessage_auto_accessor_get_idPtr
+          .asFunction<WireSyncRust2DartDco Function(int)>();
+
+  WireSyncRust2DartDco
       wire__crate__api__types__message__ChatMessage_auto_accessor_get_to(
     int that,
   ) {
@@ -778,6 +794,26 @@ class RustLibWire implements BaseWire {
           'frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_set_from');
   late final _wire__crate__api__types__message__ChatMessage_auto_accessor_set_from =
       _wire__crate__api__types__message__ChatMessage_auto_accessor_set_fromPtr
+          .asFunction<WireSyncRust2DartDco Function(int, int)>();
+
+  WireSyncRust2DartDco
+      wire__crate__api__types__message__ChatMessage_auto_accessor_set_id(
+    int that,
+    int id,
+  ) {
+    return _wire__crate__api__types__message__ChatMessage_auto_accessor_set_id(
+      that,
+      id,
+    );
+  }
+
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_set_idPtr =
+      _lookup<
+              ffi.NativeFunction<
+                  WireSyncRust2DartDco Function(ffi.UintPtr, ffi.UintPtr)>>(
+          'frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_set_id');
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_set_id =
+      _wire__crate__api__types__message__ChatMessage_auto_accessor_set_idPtr
           .asFunction<WireSyncRust2DartDco Function(int, int)>();
 
   WireSyncRust2DartDco

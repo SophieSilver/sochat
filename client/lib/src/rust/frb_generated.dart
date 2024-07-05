@@ -60,7 +60,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.0.0';
 
   @override
-  int get rustContentHash => -2088944100;
+  int get rustContentHash => 884587943;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -114,6 +114,9 @@ abstract class RustLibApi extends BaseApi {
   UserId crateApiTypesMessageChatMessageAutoAccessorGetFrom(
       {required ChatMessage that});
 
+  MessageId crateApiTypesMessageChatMessageAutoAccessorGetId(
+      {required ChatMessage that});
+
   UserId crateApiTypesMessageChatMessageAutoAccessorGetTo(
       {required ChatMessage that});
 
@@ -122,6 +125,9 @@ abstract class RustLibApi extends BaseApi {
 
   void crateApiTypesMessageChatMessageAutoAccessorSetFrom(
       {required ChatMessage that, required UserId from});
+
+  void crateApiTypesMessageChatMessageAutoAccessorSetId(
+      {required ChatMessage that, required MessageId id});
 
   void crateApiTypesMessageChatMessageAutoAccessorSetTo(
       {required ChatMessage that, required UserId to});
@@ -579,6 +585,36 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
 
   @override
+  MessageId crateApiTypesMessageChatMessageAutoAccessorGetId(
+      {required ChatMessage that}) {
+    return handler.executeSync(SyncTask(
+      callFfi: () {
+        var arg0 =
+            cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+                that);
+        return wire
+            .wire__crate__api__types__message__ChatMessage_auto_accessor_get_id(
+                arg0);
+      },
+      codec: DcoCodec(
+        decodeSuccessData:
+            dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiTypesMessageChatMessageAutoAccessorGetIdConstMeta,
+      argValues: [that],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta
+      get kCrateApiTypesMessageChatMessageAutoAccessorGetIdConstMeta =>
+          const TaskConstMeta(
+            debugName: "ChatMessage_auto_accessor_get_id",
+            argNames: ["that"],
+          );
+
+  @override
   UserId crateApiTypesMessageChatMessageAutoAccessorGetTo(
       {required ChatMessage that}) {
     return handler.executeSync(SyncTask(
@@ -669,6 +705,38 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           const TaskConstMeta(
             debugName: "ChatMessage_auto_accessor_set_from",
             argNames: ["that", "from"],
+          );
+
+  @override
+  void crateApiTypesMessageChatMessageAutoAccessorSetId(
+      {required ChatMessage that, required MessageId id}) {
+    return handler.executeSync(SyncTask(
+      callFfi: () {
+        var arg0 =
+            cst_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+                that);
+        var arg1 =
+            cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
+                id);
+        return wire
+            .wire__crate__api__types__message__ChatMessage_auto_accessor_set_id(
+                arg0, arg1);
+      },
+      codec: DcoCodec(
+        decodeSuccessData: dco_decode_unit,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiTypesMessageChatMessageAutoAccessorSetIdConstMeta,
+      argValues: [that, id],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta
+      get kCrateApiTypesMessageChatMessageAutoAccessorSetIdConstMeta =>
+          const TaskConstMeta(
+            debugName: "ChatMessage_auto_accessor_set_id",
+            argNames: ["that", "id"],
           );
 
   @override
@@ -1420,6 +1488,11 @@ class ChatMessageImpl extends RustOpaque implements ChatMessage {
         that: this,
       );
 
+  MessageId get id =>
+      RustLib.instance.api.crateApiTypesMessageChatMessageAutoAccessorGetId(
+        that: this,
+      );
+
   UserId get to =>
       RustLib.instance.api.crateApiTypesMessageChatMessageAutoAccessorGetTo(
         that: this,
@@ -1432,6 +1505,9 @@ class ChatMessageImpl extends RustOpaque implements ChatMessage {
   void set from(UserId from) =>
       RustLib.instance.api.crateApiTypesMessageChatMessageAutoAccessorSetFrom(
           that: this, from: from);
+
+  void set id(MessageId id) => RustLib.instance.api
+      .crateApiTypesMessageChatMessageAutoAccessorSetId(that: this, id: id);
 
   void set to(UserId to) => RustLib.instance.api
       .crateApiTypesMessageChatMessageAutoAccessorSetTo(that: this, to: to);

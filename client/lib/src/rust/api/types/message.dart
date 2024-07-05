@@ -15,11 +15,15 @@ abstract class ChatMessage implements RustOpaqueInterface {
 
   UserId get from;
 
+  MessageId get id;
+
   UserId get to;
 
   void set content(String content);
 
   void set from(UserId from);
+
+  void set id(MessageId id);
 
   void set to(UserId to);
 }
