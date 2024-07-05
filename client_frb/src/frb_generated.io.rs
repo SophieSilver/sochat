@@ -7,6 +7,7 @@ use super::*;
 use crate::api::service::*;
 use crate::api::types::id::IdExt;
 use crate::api::types::id::*;
+use crate::api::types::message::*;
 use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
 use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
 use flutter_rust_bridge::{Handler, IntoIntoDart};
@@ -23,6 +24,16 @@ impl CstDecode<flutter_rust_bridge::for_generated::anyhow::Error>
     // Codec=Cst (C-struct based), see doc to use other codecs
     fn cst_decode(self) -> flutter_rust_bridge::for_generated::anyhow::Error {
         unimplemented!()
+    }
+}
+impl CstDecode<ChatMessage> for usize {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> ChatMessage {
+        flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(CstDecode::<
+            RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ChatMessage>>,
+        >::cst_decode(
+            self
+        ))
     }
 }
 impl CstDecode<MessageId> for usize {
@@ -53,6 +64,16 @@ impl CstDecode<UserId> for usize {
         >::cst_decode(
             self
         ))
+    }
+}
+impl CstDecode<RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ChatMessage>>>
+    for usize
+{
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(
+        self,
+    ) -> RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ChatMessage>> {
+        unsafe { decode_rust_opaque_nom(self as _) }
     }
 }
 impl CstDecode<RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MessageId>>>
@@ -198,6 +219,69 @@ pub extern "C" fn frbgen_client_wire__crate__api__types__id__UserId_to_string_da
     that: usize,
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
     wire__crate__api__types__id__UserId_to_string_dart_impl(that)
+}
+
+#[no_mangle]
+pub extern "C" fn frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_get_content(
+    that: usize,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
+    wire__crate__api__types__message__ChatMessage_auto_accessor_get_content_impl(that)
+}
+
+#[no_mangle]
+pub extern "C" fn frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_get_from(
+    that: usize,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
+    wire__crate__api__types__message__ChatMessage_auto_accessor_get_from_impl(that)
+}
+
+#[no_mangle]
+pub extern "C" fn frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_get_to(
+    that: usize,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
+    wire__crate__api__types__message__ChatMessage_auto_accessor_get_to_impl(that)
+}
+
+#[no_mangle]
+pub extern "C" fn frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_set_content(
+    that: usize,
+    content: *mut wire_cst_list_prim_u_8_strict,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
+    wire__crate__api__types__message__ChatMessage_auto_accessor_set_content_impl(that, content)
+}
+
+#[no_mangle]
+pub extern "C" fn frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_set_from(
+    that: usize,
+    from: usize,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
+    wire__crate__api__types__message__ChatMessage_auto_accessor_set_from_impl(that, from)
+}
+
+#[no_mangle]
+pub extern "C" fn frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_set_to(
+    that: usize,
+    to: usize,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
+    wire__crate__api__types__message__ChatMessage_auto_accessor_set_to_impl(that, to)
+}
+
+#[no_mangle]
+pub extern "C" fn frbgen_client_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+    ptr: *const std::ffi::c_void,
+) {
+    unsafe {
+        StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ChatMessage>>::increment_strong_count(ptr as _);
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn frbgen_client_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+    ptr: *const std::ffi::c_void,
+) {
+    unsafe {
+        StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ChatMessage>>::decrement_strong_count(ptr as _);
+    }
 }
 
 #[no_mangle]

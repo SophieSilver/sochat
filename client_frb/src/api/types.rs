@@ -1,4 +1,5 @@
 pub mod id;
+pub mod message;
 
 pub mod marker {
     use flutter_rust_bridge::frb;

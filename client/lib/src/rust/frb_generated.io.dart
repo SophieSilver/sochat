@@ -5,6 +5,7 @@
 
 import 'api/service.dart';
 import 'api/types/id.dart';
+import 'api/types/message.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi' as ffi;
@@ -19,6 +20,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     required super.portManager,
   });
 
+  CrossPlatformFinalizerArg
+      get rust_arc_decrement_strong_count_ChatMessagePtr => wire
+          ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessagePtr;
+
   CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_MessageIdPtr =>
       wire._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageIdPtr;
 
@@ -30,6 +35,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   AnyhowException dco_decode_AnyhowException(dynamic raw);
+
+  @protected
+  ChatMessage
+      dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+          dynamic raw);
 
   @protected
   MessageId
@@ -47,6 +57,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
           dynamic raw);
 
   @protected
+  ChatMessage
+      dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+          dynamic raw);
+
+  @protected
+  ChatMessage
+      dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+          dynamic raw);
+
+  @protected
   MessageId
       dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           dynamic raw);
@@ -59,6 +79,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   UserId
       dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+          dynamic raw);
+
+  @protected
+  ChatMessage
+      dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
           dynamic raw);
 
   @protected
@@ -107,6 +132,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   AnyhowException sse_decode_AnyhowException(SseDeserializer deserializer);
 
   @protected
+  ChatMessage
+      sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+          SseDeserializer deserializer);
+
+  @protected
   MessageId
       sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           SseDeserializer deserializer);
@@ -122,6 +152,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
           SseDeserializer deserializer);
 
   @protected
+  ChatMessage
+      sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+          SseDeserializer deserializer);
+
+  @protected
+  ChatMessage
+      sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+          SseDeserializer deserializer);
+
+  @protected
   MessageId
       sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           SseDeserializer deserializer);
@@ -134,6 +174,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   UserId
       sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
+          SseDeserializer deserializer);
+
+  @protected
+  ChatMessage
+      sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
           SseDeserializer deserializer);
 
   @protected
@@ -220,6 +265,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  int cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+      ChatMessage raw);
+
+  @protected
   int cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
       MessageId raw);
 
@@ -232,6 +281,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       UserId raw);
 
   @protected
+  int cst_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+      ChatMessage raw);
+
+  @protected
+  int cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+      ChatMessage raw);
+
+  @protected
   int cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
       MessageId raw);
 
@@ -242,6 +299,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   int cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
       UserId raw);
+
+  @protected
+  int cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+      ChatMessage raw);
 
   @protected
   int cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
@@ -270,6 +331,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+      sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+          ChatMessage self, SseSerializer serializer);
+
+  @protected
+  void
       sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           MessageId self, SseSerializer serializer);
 
@@ -285,6 +351,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+      sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+          ChatMessage self, SseSerializer serializer);
+
+  @protected
+  void
+      sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+          ChatMessage self, SseSerializer serializer);
+
+  @protected
+  void
       sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
           MessageId self, SseSerializer serializer);
 
@@ -297,6 +373,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void
       sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerUserId(
           UserId self, SseSerializer serializer);
+
+  @protected
+  void
+      sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+          ChatMessage self, SseSerializer serializer);
 
   @protected
   void
@@ -607,6 +688,149 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__types__id__UserId_to_string_dart =
       _wire__crate__api__types__id__UserId_to_string_dartPtr
           .asFunction<WireSyncRust2DartDco Function(int)>();
+
+  WireSyncRust2DartDco
+      wire__crate__api__types__message__ChatMessage_auto_accessor_get_content(
+    int that,
+  ) {
+    return _wire__crate__api__types__message__ChatMessage_auto_accessor_get_content(
+      that,
+    );
+  }
+
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_get_contentPtr =
+      _lookup<ffi.NativeFunction<WireSyncRust2DartDco Function(ffi.UintPtr)>>(
+          'frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_get_content');
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_get_content =
+      _wire__crate__api__types__message__ChatMessage_auto_accessor_get_contentPtr
+          .asFunction<WireSyncRust2DartDco Function(int)>();
+
+  WireSyncRust2DartDco
+      wire__crate__api__types__message__ChatMessage_auto_accessor_get_from(
+    int that,
+  ) {
+    return _wire__crate__api__types__message__ChatMessage_auto_accessor_get_from(
+      that,
+    );
+  }
+
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_get_fromPtr =
+      _lookup<ffi.NativeFunction<WireSyncRust2DartDco Function(ffi.UintPtr)>>(
+          'frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_get_from');
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_get_from =
+      _wire__crate__api__types__message__ChatMessage_auto_accessor_get_fromPtr
+          .asFunction<WireSyncRust2DartDco Function(int)>();
+
+  WireSyncRust2DartDco
+      wire__crate__api__types__message__ChatMessage_auto_accessor_get_to(
+    int that,
+  ) {
+    return _wire__crate__api__types__message__ChatMessage_auto_accessor_get_to(
+      that,
+    );
+  }
+
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_get_toPtr =
+      _lookup<ffi.NativeFunction<WireSyncRust2DartDco Function(ffi.UintPtr)>>(
+          'frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_get_to');
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_get_to =
+      _wire__crate__api__types__message__ChatMessage_auto_accessor_get_toPtr
+          .asFunction<WireSyncRust2DartDco Function(int)>();
+
+  WireSyncRust2DartDco
+      wire__crate__api__types__message__ChatMessage_auto_accessor_set_content(
+    int that,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> content,
+  ) {
+    return _wire__crate__api__types__message__ChatMessage_auto_accessor_set_content(
+      that,
+      content,
+    );
+  }
+
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_set_contentPtr =
+      _lookup<
+              ffi.NativeFunction<
+                  WireSyncRust2DartDco Function(ffi.UintPtr,
+                      ffi.Pointer<wire_cst_list_prim_u_8_strict>)>>(
+          'frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_set_content');
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_set_content =
+      _wire__crate__api__types__message__ChatMessage_auto_accessor_set_contentPtr
+          .asFunction<
+              WireSyncRust2DartDco Function(
+                  int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)>();
+
+  WireSyncRust2DartDco
+      wire__crate__api__types__message__ChatMessage_auto_accessor_set_from(
+    int that,
+    int from,
+  ) {
+    return _wire__crate__api__types__message__ChatMessage_auto_accessor_set_from(
+      that,
+      from,
+    );
+  }
+
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_set_fromPtr =
+      _lookup<
+              ffi.NativeFunction<
+                  WireSyncRust2DartDco Function(ffi.UintPtr, ffi.UintPtr)>>(
+          'frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_set_from');
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_set_from =
+      _wire__crate__api__types__message__ChatMessage_auto_accessor_set_fromPtr
+          .asFunction<WireSyncRust2DartDco Function(int, int)>();
+
+  WireSyncRust2DartDco
+      wire__crate__api__types__message__ChatMessage_auto_accessor_set_to(
+    int that,
+    int to,
+  ) {
+    return _wire__crate__api__types__message__ChatMessage_auto_accessor_set_to(
+      that,
+      to,
+    );
+  }
+
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_set_toPtr =
+      _lookup<
+              ffi.NativeFunction<
+                  WireSyncRust2DartDco Function(ffi.UintPtr, ffi.UintPtr)>>(
+          'frbgen_client_wire__crate__api__types__message__ChatMessage_auto_accessor_set_to');
+  late final _wire__crate__api__types__message__ChatMessage_auto_accessor_set_to =
+      _wire__crate__api__types__message__ChatMessage_auto_accessor_set_toPtr
+          .asFunction<WireSyncRust2DartDco Function(int, int)>();
+
+  void
+      rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessagePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+          'frbgen_client_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage');
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage =
+      _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessagePtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
+  void
+      rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessagePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+          'frbgen_client_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage');
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessage =
+      _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerChatMessagePtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   void
       rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMessageId(
