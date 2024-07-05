@@ -1,5 +1,4 @@
-use client_service::common::types::{MessageId, UserId};
-use flutter_rust_bridge::frb;
+use client_lib::common::types::{MessageId, UserId};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ChatMessage {

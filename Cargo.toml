@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["client_service", "client_frb", "server", "common", "client_service"]
+members = ["client_frb", "server", "common", "client_lib"]
 
 [profile.release]
 strip = "debuginfo"

@@ -21,7 +21,7 @@ use state::AppState;
 use tracing::instrument;
 
 #[derive(Debug, Clone, Copy, Deserialize)]
-struct MessagePathParams {
+struct MessageParams {
     pub sender_id: UserId,
     pub recipient_id: UserId,
 }
@@ -43,10 +43,10 @@ async fn register_user(state: State<AppState>) -> AppResult<OctetStream<UserId>>
 #[instrument(skip_all, ret)]
 async fn send_message(
     state: State<AppState>,
-    Path(MessagePathParams {
+    Path(MessageParams {
         sender_id,
         recipient_id,
-    }): Path<MessagePathParams>,
+    }): Path<MessageParams>,
     content: Bytes,
 ) -> AppResult<OctetStream<MessageId>> {
     tracing::info!("enter");
@@ -70,10 +70,10 @@ async fn send_message(
 #[instrument[skip_all, fields(message_count = message_ids.len())]]
 async fn mark_received(
     state: State<AppState>,
-    Path(MessagePathParams {
+    Path(MessageParams {
         sender_id,
         recipient_id,
-    }): Path<MessagePathParams>,
+    }): Path<MessageParams>,
     Cbor(message_ids): Cbor<SmallVec<[MessageId; 4]>>, // the most common case would only have 1 ID
 ) -> AppResult<StatusCode> {
     tracing::info!("enter");
@@ -89,10 +89,10 @@ async fn mark_received(
 #[instrument(skip_all, fields(limit))]
 async fn fetch_messages(
     state: State<AppState>,
-    Path(MessagePathParams {
+    Path(MessageParams {
         sender_id,
         recipient_id,
-    }): Path<MessagePathParams>,
+    }): Path<MessageParams>,
     limit: Option<Query<LimitQueryParam>>,
 ) -> AppResult<Cbor<Box<[UnreadMessage]>>> {
     tracing::info!("enter");

@@ -4,7 +4,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use client_service::common::types::UserId;
+use client_lib::common::types::{Id, UserId};
 use flutter_rust_bridge::frb;
 
 #[derive(Debug, Default)]
@@ -14,6 +14,7 @@ struct ServiceInner {
 
 #[derive(Debug, Clone)]
 pub struct Service {
+    this: UserId,
     messages: Arc<Mutex<ServiceInner>>,
 }
 
@@ -21,6 +22,7 @@ impl Service {
     #[frb(sync)]
     pub fn new() -> Self {
         Self {
+            this: UserId::generate(),
             messages: Arc::default(),
         }
     }

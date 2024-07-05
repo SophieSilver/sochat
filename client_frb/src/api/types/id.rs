@@ -1,8 +1,8 @@
 use crate::api::types::marker::Opaque;
-use client_service::common::types::Id;
-pub use client_service::common::types::{MessageId, UserId};
+use client_lib::common::types::Id;
+pub use client_lib::common::types::{MessageId, UserId};
 use flutter_rust_bridge::frb;
-use std::{mem, str::FromStr};
+use std::str::FromStr;
 
 /// Trait for extending Id types for use with [`flutter_rust_bridge`]
 pub trait IdExt: Id + ToString + FromStr
@@ -49,19 +49,19 @@ Due to FRB limitations equality operator cannot be overriden, therefore a hashCo
 macro_rules! extend_id {
     ($type_name: ident, $mirror_name: ident) => {
         #[frb(
-                    mirror($type_name),
-                //     dart_code =
-                // "
-                //     @override
-                //     bool operator ==(Object other) {
-                //         if (this.runtimeType != other.runtimeType) {
-                //             return false;
-                //         }
+                            mirror($type_name),
+                        //     dart_code =
+                        // "
+                        //     @override
+                        //     bool operator ==(Object other) {
+                        //         if (this.runtimeType != other.runtimeType) {
+                        //             return false;
+                        //         }
 
-                //         return this.equals(other as dynamic);
-                //     }
-                // "
-                )]
+                        //         return this.equals(other as dynamic);
+                        //     }
+                        // "
+                        )]
         struct $mirror_name {
             _opq: Opaque,
         }

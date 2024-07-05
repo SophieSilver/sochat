@@ -8,6 +8,6 @@ crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
 flutter_rust_bridge = "=2.0.0"
-client_service = { path = "../client_service" }
+client_lib = { path = "../client_lib" }
 tokio = { version = "1.37.0", features = ["rt", "rt-multi-thread"] }
 anyhow = "1.0.86"
