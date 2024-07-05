@@ -29,6 +29,7 @@ impl Service {
         self.messages.lock().unwrap()
     }
     
+    // IMPORTANT!!!
     // MAKE SURE TO TAKE IDs by reference,
     // This is because if you take them by value
     // FRB will move them out of Arcs and dispose of the Arcs
