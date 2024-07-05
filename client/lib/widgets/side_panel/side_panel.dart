@@ -24,7 +24,7 @@ class SidePanel extends StatelessWidget {
             ),
           ),
           VerticalDivider(
-            color: colorScheme.secondaryContainer,
+            color: colorScheme.surfaceContainerHigh,
             width: 2.0,
             thickness: 2.0,
           ),
