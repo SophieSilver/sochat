@@ -7,6 +7,7 @@ use std::{
 use client_lib::common::types::{Id, UserId};
 use flutter_rust_bridge::frb;
 
+#[frb(ignore)]
 #[derive(Debug, Default)]
 struct ServiceInner {
     messages: HashMap<(UserId, UserId), Vec<String>>,
