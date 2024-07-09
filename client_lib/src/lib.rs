@@ -1,4 +1,5 @@
 pub use common;
 
 pub mod types;
-pub mod http_client;
+pub mod http_utils;
+pub mod server_connection;
