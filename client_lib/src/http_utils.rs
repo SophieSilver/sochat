@@ -4,7 +4,7 @@
 //! as well as additional serialization formats for request bodies
 
 use common::utils::cbor;
-use reqwest::{tls, Certificate, Client, ClientBuilder, RequestBuilder, Response};
+use reqwest::{header, tls, Certificate, Client, ClientBuilder, RequestBuilder, Response};
 use serde::{de::DeserializeOwned, Serialize};
 use std::{future::Future, io, time::Duration};
 use thiserror::Error;
@@ -65,7 +65,7 @@ pub trait ClientExt: Sealed + Sized {
 /// Extension trait for [`reqwest::RequestBuilder`]
 pub trait RequestBuilderExt: Sealed + Sized {
     /// Send a CBOR body
-    /// 
+    ///
     /// # Errors
     /// This method fails when serializing the payload with CBOR fails
     fn cbor<T: Serialize + ?Sized>(self, cbor: &T) -> Result<Self, CborSerializeError>;
@@ -74,7 +74,7 @@ pub trait RequestBuilderExt: Sealed + Sized {
 /// Extension trait for [`reqwest::Response`]
 pub trait ResponseExt: Sealed + Sized {
     /// Try to deserialize the response body as CBOR
-    /// 
+    ///
     /// # Errors
     /// This method fails when:
     /// * Fetching the response body fails
@@ -102,10 +102,12 @@ impl ClientExt for Client {
 }
 
 impl RequestBuilderExt for RequestBuilder {
-    fn cbor<T: Serialize + ?Sized>(self, cbor: &T) -> Result<Self, CborSerializeError> {
+    fn cbor<T: Serialize + ?Sized>(mut self, cbor: &T) -> Result<Self, CborSerializeError> {
         let mut buf = Vec::<u8>::new();
 
         ciborium::into_writer(cbor, &mut buf)?;
+
+        self = self.header(header::CONTENT_TYPE, "application/cbor");
 
         Ok(self.body(buf))
     }
