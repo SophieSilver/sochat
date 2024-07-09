@@ -1,3 +1,8 @@
+//! Various extensions to the HTTP client.
+//!
+//! These extensions provide the default configurations for the http client,
+//! as well as additional serialization formats for request bodies
+
 use common::utils::cbor;
 use reqwest::{tls, Certificate, Client, ClientBuilder, RequestBuilder, Response};
 use serde::{de::DeserializeOwned, Serialize};
@@ -24,30 +29,56 @@ const USER_AGENT: &str = "SoChatClient/0.0";
 
 // ERRORS
 
+/// Error when serializing an object with CBOR
 #[derive(Debug, Error)]
 #[error(transparent)]
 pub struct CborSerializeError(#[from] ciborium::ser::Error<io::Error>);
 
+/// Error when trying to parse request body with CBOR
 #[derive(Debug, Error)]
 #[error(transparent)]
 pub enum ResponseCborError {
+    /// Error that initiated from the request itself
     Request(#[from] reqwest::Error),
+
+    /// Error while deserializing the response body with CBOR
     Cbor(#[from] ciborium::de::Error<io::Error>),
 }
 
 // EXTENSION TRAITS
 
+/// Extension trait for [`reqwest::Client`]
 pub trait ClientExt: Sealed + Sized {
+    /// Create a new HTTP client configured for sochat with built in root certificate
+    ///
+    /// # Errors
+    /// see [`reqwest::ClientBuilder::build#errors`]
     fn sochat_new() -> reqwest::Result<Self>;
 
+    /// Create a new HTTP client configured for sochat with supplied certificates
+    ///
+    /// # Errors
+    /// see [`reqwest::ClientBuilder::build#errors`]
     fn sochat_with_certs<C: IntoIterator<Item = Certificate>>(certs: C) -> reqwest::Result<Self>;
 }
 
+/// Extension trait for [`reqwest::RequestBuilder`]
 pub trait RequestBuilderExt: Sealed + Sized {
+    /// Send a CBOR body
+    /// 
+    /// # Errors
+    /// This method fails when serializing the payload with CBOR fails
     fn cbor<T: Serialize + ?Sized>(self, cbor: &T) -> Result<Self, CborSerializeError>;
 }
 
+/// Extension trait for [`reqwest::Response`]
 pub trait ResponseExt: Sealed + Sized {
+    /// Try to deserialize the response body as CBOR
+    /// 
+    /// # Errors
+    /// This method fails when:
+    /// * Fetching the response body fails
+    /// * Trying to deserialize the response body with CBOR fails
     fn cbor<T: DeserializeOwned>(self)
         -> impl Future<Output = Result<T, ResponseCborError>> + Send;
 }
