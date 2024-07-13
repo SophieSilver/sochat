@@ -3,7 +3,7 @@
 //! These extensions provide the default configurations for the http client,
 //! as well as additional serialization formats for request bodies
 
-use common::utils::cbor;
+use common::{types::ApiError, utils::cbor};
 use reqwest::{header, tls, Certificate, Client, ClientBuilder, RequestBuilder, Response};
 use serde::{de::DeserializeOwned, Serialize};
 use std::{future::Future, io, time::Duration};
@@ -28,21 +28,33 @@ const DEFAULT_CONNECT_TIMEOUT: Duration = Duration::from_secs(15);
 const USER_AGENT: &str = "SoChatClient/0.0";
 
 // ERRORS
+#[derive(Debug, Error)]
+#[error(transparent)]
+pub enum CborError {
+    Serialize(#[from] ciborium::ser::Error<io::Error>),
+    Deserialize(#[from] ciborium::de::Error<io::Error>),
+}
+
+impl From<CborSerializeError> for CborError {
+    fn from(value: CborSerializeError) -> Self {
+        Self::Serialize(value.0)
+    }
+}
 
 /// Error when serializing an object with CBOR
 #[derive(Debug, Error)]
 #[error(transparent)]
 pub struct CborSerializeError(#[from] ciborium::ser::Error<io::Error>);
 
-/// Error when trying to parse request body with CBOR
+/// Error when trying to parse request body.
 #[derive(Debug, Error)]
 #[error(transparent)]
-pub enum ResponseCborError {
+pub enum ResponseError {
     /// Error that initiated from the request itself
     Request(#[from] reqwest::Error),
 
     /// Error while deserializing the response body with CBOR
-    Cbor(#[from] ciborium::de::Error<io::Error>),
+    Deserialize(#[from] ciborium::de::Error<io::Error>),
 }
 
 // EXTENSION TRAITS
@@ -79,8 +91,25 @@ pub trait ResponseExt: Sealed + Sized {
     /// This method fails when:
     /// * Fetching the response body fails
     /// * Trying to deserialize the response body with CBOR fails
-    fn cbor<T: DeserializeOwned>(self)
-        -> impl Future<Output = Result<T, ResponseCborError>> + Send;
+    fn cbor<T: DeserializeOwned>(self) -> impl Future<Output = Result<T, ResponseError>> + Send;
+
+    /// Check if the status code indicates an error, if so return the error, otherwise return the original response.
+    /// 
+    /// # Returns
+    /// This function returns a double result.
+    /// 
+    /// The outer result indicates whether fetching and deserializing the response body was successful.
+    /// 
+    /// The inner result indicates whether the request succeded or not.
+    /// 
+    /// Thus, this function returns:
+    /// - `Ok(Ok(self))` if the response's status isn't an error.
+    /// - `Ok(Err(api_error))` if the response's status is an error.
+    /// - `Err(response_error)` if the response's status is an error but 
+    /// fetching or deserializing the response body has failed.
+    fn filter_api_error(
+        self,
+    ) -> impl Future<Output = Result<Result<Self, ApiError>, ResponseError>> + Send;
 }
 
 // IMPLS
@@ -103,6 +132,7 @@ impl ClientExt for Client {
 
 impl RequestBuilderExt for RequestBuilder {
     fn cbor<T: Serialize + ?Sized>(mut self, cbor: &T) -> Result<Self, CborSerializeError> {
+        // TODO: use Bytes here for cheaper cloning
         let mut buf = Vec::<u8>::new();
 
         ciborium::into_writer(cbor, &mut buf)?;
@@ -114,10 +144,20 @@ impl RequestBuilderExt for RequestBuilder {
 }
 
 impl ResponseExt for Response {
-    async fn cbor<T: DeserializeOwned>(self) -> Result<T, ResponseCborError> {
+    async fn cbor<T: DeserializeOwned>(self) -> Result<T, ResponseError> {
         let bytes = self.bytes().await?;
 
         Ok(cbor::from_reader(&bytes as &[u8])?)
+    }
+    // TODO: store the status code somewhere
+    async fn filter_api_error(self) -> Result<Result<Self, ApiError>, ResponseError> {
+        let is_error = self.status().is_client_error() || self.status().is_server_error();
+
+        if !is_error {
+            return Ok(Ok(self));
+        }
+
+        Ok(Err(self.cbor::<ApiError>().await?))
     }
 }
 
