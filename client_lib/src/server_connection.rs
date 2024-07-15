@@ -66,7 +66,7 @@ impl ServerConnection {
             .send()
             .await?;
 
-        let response = response.filter_api_error().await?;
+        let response = response.filter_status_error().await?;
 
         let bytes = response.bytes().await?;
         let id = UserId::from_bytes(&bytes).map_err(SerializationError::from)?;
@@ -90,7 +90,7 @@ impl ServerConnection {
             .body(content.into())
             .send()
             .await?
-            .filter_api_error()
+            .filter_status_error()
             .await?;
 
         let bytes = response.bytes().await?;

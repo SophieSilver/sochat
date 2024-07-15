@@ -79,7 +79,7 @@ pub trait ResponseExt: Sealed + Sized {
     /// - `Ok(Err(api_error))` if the response's status is an error.
     /// - `Err(response_error)` if the response's status is an error but 
     /// fetching or deserializing the response body has failed.
-    fn filter_api_error(
+    fn filter_status_error(
         self,
     ) -> impl Future<Output = Result<Self, StatusError>> + Send;
 }
@@ -121,7 +121,7 @@ impl ResponseExt for Response {
         Ok(cbor::from_reader(&bytes as &[u8])?)
     }
     // TODO: store the status code somewhere
-    async fn filter_api_error(self) -> Result<Self, StatusError>  {
+    async fn filter_status_error(self) -> Result<Self, StatusError>  {
         let status = self.status();
         let is_error = status.is_client_error() || status.is_server_error();
 
