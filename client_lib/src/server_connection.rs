@@ -5,8 +5,8 @@ use reqwest::Client;
 use thiserror::Error;
 
 use crate::http_utils::{
-    error::{CborError, ResponseError, StatusError},
-    ResponseExt,
+    error::{CborError, CborSerializeError, ResponseError, StatusError},
+    RequestBuilderExt, ResponseExt,
 };
 
 // TODO: unhardcode this
@@ -35,6 +35,12 @@ impl From<ResponseError> for ServerConnectionError {
                 Self::Serialize(SerializationError::Cbor(CborError::from(e)))
             }
         }
+    }
+}
+
+impl From<CborSerializeError> for ServerConnectionError {
+    fn from(value: CborSerializeError) -> Self {
+        Self::Serialize(SerializationError::Cbor(CborError::from(value)))
     }
 }
 
@@ -120,5 +126,27 @@ impl ServerConnection {
         let messages = response.cbor::<Box<[UnreadMessage]>>().await?;
 
         Ok(messages)
+    }
+
+    pub async fn mark_messages_received<I: AsRef<[MessageId]>>(
+        &self,
+        sender: UserId,
+        recipient: UserId,
+        ids: I,
+    ) -> Result<(), ServerConnectionError> //
+    {
+        let ids = ids.as_ref();
+
+        let _response = self.client
+            .post(format!(
+                "{SERVER_ADDR}/messages/from/{sender}/to/{recipient}/received"
+            ))
+            .cbor(ids)?
+            .send()
+            .await?
+            .filter_status_error()
+            .await?;
+
+        Ok(())
     }
 }
