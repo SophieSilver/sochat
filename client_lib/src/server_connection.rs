@@ -70,9 +70,9 @@ impl ServerConnection {
             .client
             .post(format!("{SERVER_ADDR}/users"))
             .send()
+            .await?
+            .filter_status_error()
             .await?;
-
-        let response = response.filter_status_error().await?;
 
         let bytes = response.bytes().await?;
         let id = UserId::from_bytes(&bytes).map_err(SerializationError::from)?;
