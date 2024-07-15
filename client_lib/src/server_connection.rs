@@ -1,6 +1,6 @@
 //! Communication with a backend server
 use bytes::Bytes;
-use common::types::{ApiError, Id, MessageId, UserId};
+use common::types::{ApiError, Id, MessageId, UnreadMessage, UserId};
 use reqwest::Client;
 use thiserror::Error;
 
@@ -97,5 +97,28 @@ impl ServerConnection {
         let message_id = MessageId::from_bytes(&bytes).map_err(SerializationError::from)?;
 
         Ok(message_id)
+    }
+
+    /// Fetch unread messages from one user to another
+    pub async fn fetch_messages(
+        &self,
+        sender: UserId,
+        recipient: UserId,
+        limit: u32,
+    ) -> Result<Box<[UnreadMessage]>, ServerConnectionError> //
+    {
+        let response = self
+            .client
+            .get(format!(
+                "{SERVER_ADDR}/messages/from/{sender}/to/{recipient}?limit={limit}"
+            ))
+            .send()
+            .await?
+            .filter_status_error()
+            .await?;
+
+        let messages = response.cbor::<Box<[UnreadMessage]>>().await?;
+
+        Ok(messages)
     }
 }
