@@ -4,13 +4,16 @@
 //! as well as additional serialization formats for request bodies
 
 use common::{types::ApiError, utils::cbor};
+use error::{CborSerializeError, ResponseError, StatusError};
 use reqwest::{header, tls, Certificate, Client, ClientBuilder, RequestBuilder, Response};
 use serde::{de::DeserializeOwned, Serialize};
 use std::{future::Future, io, time::Duration};
 use thiserror::Error;
 
-// SEALED TRAIT
+// ERRORS
+pub mod error;
 
+// SEALED TRAIT
 mod private {
     use reqwest::{Client, RequestBuilder, Response};
 
@@ -23,42 +26,11 @@ mod private {
 use private::Sealed;
 
 // CONSTANTS
-
 const DEFAULT_CONNECT_TIMEOUT: Duration = Duration::from_secs(15);
 const USER_AGENT: &str = "SoChatClient/0.0";
 
-// ERRORS
-#[derive(Debug, Error)]
-#[error(transparent)]
-pub enum CborError {
-    Serialize(#[from] ciborium::ser::Error<io::Error>),
-    Deserialize(#[from] ciborium::de::Error<io::Error>),
-}
-
-impl From<CborSerializeError> for CborError {
-    fn from(value: CborSerializeError) -> Self {
-        Self::Serialize(value.0)
-    }
-}
-
-/// Error when serializing an object with CBOR
-#[derive(Debug, Error)]
-#[error(transparent)]
-pub struct CborSerializeError(#[from] ciborium::ser::Error<io::Error>);
-
-/// Error when trying to parse request body.
-#[derive(Debug, Error)]
-#[error(transparent)]
-pub enum ResponseError {
-    /// Error that initiated from the request itself
-    Request(#[from] reqwest::Error),
-
-    /// Error while deserializing the response body with CBOR
-    Deserialize(#[from] ciborium::de::Error<io::Error>),
-}
 
 // EXTENSION TRAITS
-
 /// Extension trait for [`reqwest::Client`]
 pub trait ClientExt: Sealed + Sized {
     /// Create a new HTTP client configured for sochat with built in root certificate
@@ -109,11 +81,10 @@ pub trait ResponseExt: Sealed + Sized {
     /// fetching or deserializing the response body has failed.
     fn filter_api_error(
         self,
-    ) -> impl Future<Output = Result<Result<Self, ApiError>, ResponseError>> + Send;
+    ) -> impl Future<Output = Result<Self, StatusError>> + Send;
 }
 
 // IMPLS
-
 impl ClientExt for Client {
     fn sochat_new() -> reqwest::Result<Self> {
         default_builder().tls_built_in_root_certs(true).build()
@@ -150,14 +121,19 @@ impl ResponseExt for Response {
         Ok(cbor::from_reader(&bytes as &[u8])?)
     }
     // TODO: store the status code somewhere
-    async fn filter_api_error(self) -> Result<Result<Self, ApiError>, ResponseError> {
-        let is_error = self.status().is_client_error() || self.status().is_server_error();
+    async fn filter_api_error(self) -> Result<Self, StatusError>  {
+        let status = self.status();
+        let is_error = status.is_client_error() || status.is_server_error();
 
         if !is_error {
-            return Ok(Ok(self));
+            return Ok(self);
         }
 
-        Ok(Err(self.cbor::<ApiError>().await?))
+        let error = self.cbor::<ApiError>().await;
+        Err(StatusError {
+            status,
+            source: error,
+        })
     }
 }
 

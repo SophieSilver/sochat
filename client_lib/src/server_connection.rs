@@ -4,7 +4,10 @@ use common::types::{ApiError, Id, MessageId, UserId};
 use reqwest::Client;
 use thiserror::Error;
 
-use crate::http_utils::{CborError, ResponseError, ResponseExt};
+use crate::http_utils::{
+    error::{CborError, ResponseError, StatusError},
+    ResponseExt,
+};
 
 // TODO: unhardcode this
 const SERVER_ADDR: &str = "127.0.0.1:11800";
@@ -21,7 +24,7 @@ pub enum SerializationError {
 pub enum ServerConnectionError {
     Request(#[from] reqwest::Error),
     Serialize(#[from] SerializationError),
-    Api(#[from] ApiError),
+    Status(#[from] StatusError),
 }
 
 impl From<ResponseError> for ServerConnectionError {
@@ -63,7 +66,7 @@ impl ServerConnection {
             .send()
             .await?;
 
-        let response = response.filter_api_error().await??;
+        let response = response.filter_api_error().await?;
 
         let bytes = response.bytes().await?;
         let id = UserId::from_bytes(&bytes).map_err(SerializationError::from)?;
@@ -88,7 +91,7 @@ impl ServerConnection {
             .send()
             .await?
             .filter_api_error()
-            .await??;
+            .await?;
 
         let bytes = response.bytes().await?;
         let message_id = MessageId::from_bytes(&bytes).map_err(SerializationError::from)?;
