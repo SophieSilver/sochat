@@ -10,7 +10,7 @@ use crate::http_utils::{
 };
 
 // TODO: unhardcode this
-const SERVER_ADDR: &str = "127.0.0.1:11800";
+const SERVER_ADDR: &str = "http://127.0.0.1:11800";
 
 #[derive(Debug, Error)]
 #[error(transparent)]
