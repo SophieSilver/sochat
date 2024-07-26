@@ -7,8 +7,7 @@ use common::{types::ApiError, utils::cbor};
 use error::{CborSerializeError, ResponseError, StatusError};
 use reqwest::{header, tls, Certificate, Client, ClientBuilder, RequestBuilder, Response};
 use serde::{de::DeserializeOwned, Serialize};
-use std::{future::Future, io, time::Duration};
-use thiserror::Error;
+use std::{future::Future, time::Duration};
 
 // ERRORS
 pub mod error;
