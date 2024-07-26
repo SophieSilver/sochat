@@ -1,6 +1,6 @@
 //! Communication with a backend server
 use bytes::Bytes;
-use common::types::{ApiError, Id, MessageId, UnreadMessage, UserId};
+use common::types::{Id, MessageId, UnreadMessage, UserId};
 use reqwest::Client;
 use thiserror::Error;
 
