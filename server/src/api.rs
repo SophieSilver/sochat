@@ -7,20 +7,13 @@ use crate::{
     db::Db,
     error::{AppError, AppResult},
 };
-use axum::{
-    body::Bytes,
-    extract::{Path, Query, State},
-    http::StatusCode,
-    routing, Router,
-};
+use axum::{extract::State, http::StatusCode, routing, Router};
 use common::types::{
     api_params::{FetchMessagesParams, MarkReceivedParams, SendMessageParams},
     message_id::MessageId,
     Id, UnreadMessage, UserId,
 };
 use extractors::{Cbor, OctetStream};
-use serde::Deserialize;
-use smallvec::SmallVec;
 use state::AppState;
 use tracing::instrument;
 
