@@ -4,10 +4,10 @@ use sqlx::SqlitePool;
 
 use crate::db::Db;
 
-#[derive(Debug)]
-struct UncloneableState {
+// #[derive(Debug)]
+// struct UncloneableState {
     
-}
+// }
 
 /// The state of the entire application
 #[derive(Debug, Clone)]

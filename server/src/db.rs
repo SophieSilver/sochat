@@ -1,7 +1,7 @@
 //! A module for interacting with the database
 
 use common::types::{message_id::MessageId, Id, UnreadMessage, UserId};
-use sqlx::{QueryBuilder, SqlitePool};
+use sqlx::{Execute, QueryBuilder, SqlitePool};
 use std::future::Future;
 use tokio_stream::StreamExt;
 
@@ -19,7 +19,7 @@ macro_rules! send_future {
 pub trait Db {
     /// Insert a user with the given ID into the database
     fn insert_user(&self, id: &UserId) -> send_future!(sqlx::Result<()>);
-    
+
     /// Insert a message into the database
     fn insert_message(
         &self,
@@ -28,19 +28,17 @@ pub trait Db {
         recipient: &UserId,
         content: &[u8],
     ) -> send_future!(sqlx::Result<()>);
-    
+
     /// Mark a message as received so that it will not be returned by subsequent calls to `fetch_unreceived_messages`
     fn mark_messages_received(
         &self,
-        sender: &UserId,
         recipient: &UserId,
         ids: &[MessageId],
     ) -> send_future!(sqlx::Result<()>);
-    
+
     /// Fetch messages between two users that haven't been marked as received
     fn fetch_unreceived_messages(
         &self,
-        sender: &UserId,
         recipient: &UserId,
         limit: u32,
     ) -> send_future!(sqlx::Result<Box<[UnreadMessage]>>);
@@ -92,7 +90,6 @@ impl Db for SqlitePool {
 
     async fn mark_messages_received(
         &self,
-        sender: &UserId,
         recipient: &UserId,
         ids: &[MessageId],
     ) -> sqlx::Result<()> {
@@ -109,20 +106,17 @@ impl Db for SqlitePool {
         for batch in ids.chunks(BATCH_SIZE) {
             // dynamically create a query with as many ? placeholders as we need
             let mut query_builder = QueryBuilder::new(
-                "
+                "--sql
                 UPDATE messages
-                SET is_received = TRUE
-                WHERE sender_id = ",
+                    SET is_received = TRUE
+                    WHERE
+                        recipient_id =",
             );
+            query_builder.push_bind(recipient.as_bytes());
 
-            query_builder
-                .push_bind(sender.as_bytes())
-                .push(" AND recipient_id = ")
-                .push_bind(recipient.as_bytes())
-                .push(" AND id IN (");
+            query_builder.push(" AND id IN (");
 
             let mut placeholders = query_builder.separated(',');
-
             for id in batch {
                 placeholders.push_bind(id.as_bytes());
             }
@@ -130,6 +124,7 @@ impl Db for SqlitePool {
             query_builder.push(");");
 
             let query = query_builder.build();
+            dbg!(query.sql());
             query.execute(self).await?;
         }
 
@@ -138,24 +133,24 @@ impl Db for SqlitePool {
 
     async fn fetch_unreceived_messages(
         &self,
-        sender: &UserId,
         recipient: &UserId,
         limit: u32,
     ) -> sqlx::Result<Box<[UnreadMessage]>> {
-        let sender = sender.as_bytes();
         let recipient = recipient.as_bytes();
 
         sqlx::query_as!(
             UnreadMessage,
             "--sql
-            SELECT id as 'id: MessageId', content FROM messages
-            WHERE sender_id = ?
-                AND recipient_id = ?
+            SELECT
+                id as 'id: MessageId',
+                sender_id as 'sender_id: UserId',
+                content
+            FROM messages
+            WHERE recipient_id = ?
                 AND is_received = FALSE
             ORDER BY id ASC     -- we can do that, because message ids are UUIDv7s
             LIMIT ?;
             ",
-            sender,
             recipient,
             limit,
         )
@@ -273,7 +268,7 @@ mod tests {
         .execute(&pool)
         .await?;
 
-        let messages = pool.fetch_unreceived_messages(&user1, &user2, 100).await?;
+        let messages = pool.fetch_unreceived_messages(&user2, 100).await?;
 
         assert_eq!(messages.len(), 1);
         assert_eq!(messages[0].id, id2);
@@ -288,10 +283,10 @@ mod tests {
         // how many messages to mark as received
         const RECEIVED_COUNT: usize = 300;
 
-        let user1 = UserId::generate();
-        let user2 = UserId::generate();
-        pool.insert_user(&user1).await?;
-        pool.insert_user(&user2).await?;
+        let sender = UserId::generate();
+        let recipient = UserId::generate();
+        pool.insert_user(&sender).await?;
+        pool.insert_user(&recipient).await?;
 
         let messages = (0..MESSAGE_COUNT)
             .map(|i| {
@@ -303,7 +298,8 @@ mod tests {
             .collect_vec();
 
         for (id, content) in &messages {
-            pool.insert_message(id, &user1, &user2, content).await?;
+            pool.insert_message(id, &sender, &recipient, content)
+                .await?;
         }
 
         // mark the first several messages as received
@@ -315,13 +311,13 @@ mod tests {
 
         let received_ids = received_pile.iter().map(|(id, _)| id.clone()).collect_vec();
 
-        pool.mark_messages_received(&user1, &user2, &received_ids)
-            .await?;
+        pool.mark_messages_received(&recipient, &received_ids).await?;
 
         let unreceived = pool
-            .fetch_unreceived_messages(&user1, &user2, MESSAGE_COUNT as _)
+            .fetch_unreceived_messages(&recipient, MESSAGE_COUNT as _)
             .await?;
-
+        dbg!(&unreceived);
+        dbg!(&unreceived_pile);
         for message in unreceived.iter() {
             assert_eq!(
                 unreceived_pile[&message.id].as_slice(),

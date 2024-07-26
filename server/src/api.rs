@@ -13,23 +13,16 @@ use axum::{
     http::StatusCode,
     routing, Router,
 };
-use common::types::{message_id::MessageId, Id, UnreadMessage, UserId};
+use common::types::{
+    api_params::{FetchMessagesParams, MarkReceivedParams, SendMessageParams},
+    message_id::MessageId,
+    Id, UnreadMessage, UserId,
+};
 use extractors::{Cbor, OctetStream};
 use serde::Deserialize;
 use smallvec::SmallVec;
 use state::AppState;
 use tracing::instrument;
-
-#[derive(Debug, Clone, Copy, Deserialize)]
-struct MessageParams {
-    pub sender_id: UserId,
-    pub recipient_id: UserId,
-}
-
-#[derive(Debug, Clone, Copy, Deserialize)]
-struct LimitQueryParam {
-    pub limit: u32,
-}
 
 #[instrument(skip_all, ret)]
 async fn register_user(state: State<AppState>) -> AppResult<OctetStream<UserId>> {
@@ -43,12 +36,13 @@ async fn register_user(state: State<AppState>) -> AppResult<OctetStream<UserId>>
 #[instrument(skip_all, ret)]
 async fn send_message(
     state: State<AppState>,
-    Path(MessageParams {
-        sender_id,
+    Cbor(SendMessageParams {
+        user_id: sender_id,
         recipient_id,
-    }): Path<MessageParams>,
-    content: Bytes,
-) -> AppResult<OctetStream<MessageId>> {
+        content,
+    }): Cbor<SendMessageParams>,
+) -> AppResult<OctetStream<MessageId>> //
+{
     tracing::info!("enter");
     let message_id = MessageId::generate();
 
@@ -70,17 +64,16 @@ async fn send_message(
 #[instrument[skip_all, fields(message_count = message_ids.len())]]
 async fn mark_received(
     state: State<AppState>,
-    Path(MessageParams {
-        sender_id,
-        recipient_id,
-    }): Path<MessageParams>,
-    Cbor(message_ids): Cbor<SmallVec<[MessageId; 4]>>, // the most common case would only have 1 ID
+    Cbor(MarkReceivedParams {
+        user_id: sender_id,
+        message_ids,
+    }): Cbor<MarkReceivedParams>,
 ) -> AppResult<StatusCode> {
     tracing::info!("enter");
     // TODO: have a limit and make it configurable
     state
         .db()
-        .mark_messages_received(&sender_id, &recipient_id, &message_ids)
+        .mark_messages_received(&sender_id, &message_ids)
         .await?;
 
     Ok(StatusCode::NO_CONTENT)
@@ -89,25 +82,25 @@ async fn mark_received(
 #[instrument(skip_all, fields(limit))]
 async fn fetch_messages(
     state: State<AppState>,
-    Path(MessageParams {
-        sender_id,
-        recipient_id,
-    }): Path<MessageParams>,
-    limit: Option<Query<LimitQueryParam>>,
+    Cbor(FetchMessagesParams {
+        user_id: recipient_id,
+        limit,
+    }): Cbor<FetchMessagesParams>,
 ) -> AppResult<Cbor<Box<[UnreadMessage]>>> {
     tracing::info!("enter");
     // TODO: make this configurable
-    const DEFAULT_LIMIT: u32 = 10;
+    const DEFAULT_LIMIT: u32 = 16;
     const MAX_LIMIT: u32 = 32;
 
-    let limit = limit
-        .map(|wrapper| wrapper.0.limit)
-        .unwrap_or(DEFAULT_LIMIT)
-        .min(MAX_LIMIT);
+    let limit = if limit != 0 {
+        limit.min(MAX_LIMIT)
+    } else {
+        DEFAULT_LIMIT
+    };
 
     let messages = state
         .db()
-        .fetch_unreceived_messages(&sender_id, &recipient_id, limit)
+        .fetch_unreceived_messages(&recipient_id, limit)
         .await?;
 
     tracing::info!(count = messages.len(), "Return");
@@ -120,18 +113,9 @@ pub fn router(app_state: AppState) -> Router<()> {
     use routing::method_routing as method;
 
     Router::new()
-        .route("/users", method::post(register_user))
-        .route(
-            "/messages/from/:sender_id/to/:recipient_id",
-            method::post(send_message),
-        )
-        .route(
-            "/messages/from/:sender_id/to/:recipient_id",
-            method::get(fetch_messages),
-        )
-        .route(
-            "/messages/from/:sender_id/to/:recipient_id/received",
-            method::post(mark_received),
-        )
+        .route("/register_user", method::post(register_user))
+        .route("/send_message", method::post(send_message))
+        .route("/fetch_messages", method::get(fetch_messages))
+        .route("/mark_received", method::post(mark_received))
         .with_state(app_state.clone())
 }

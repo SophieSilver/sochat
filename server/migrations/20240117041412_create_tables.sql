@@ -18,10 +18,11 @@ CREATE TABLE IF NOT EXISTS messages (
 -- used when the recipient wants to fetch messages from a particular user (or from all users) 
 -- that haven't yet been received
 CREATE INDEX IF NOT EXISTS idx_messages_recieved_recipient_sender ON messages (is_received, recipient_id, sender_id);
--- when we want all messages between a particular set of users but don't care about receive status
-CREATE INDEX IF NOT EXISTS idx_messages_recipient_sender ON messages(recipient_id, sender_id);
--- when we want all messages from a particular sender
-CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id);
+
+-- -- when we want all messages between a particular set of users but don't care about receive status
+-- CREATE INDEX IF NOT EXISTS idx_messages_recipient_sender ON messages(recipient_id, sender_id);
+-- -- when we want all messages from a particular sender
+-- CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id);
 
 CREATE TABLE IF NOT EXISTS signing_keys (
     id BLOB PRIMARY KEY,

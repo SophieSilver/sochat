@@ -60,6 +60,7 @@ pub type AppResult<T> = Result<T, AppError>;
 
 impl IntoResponse for AppError {
     fn into_response(self) -> axum::response::Response {
+        // TODO: change format
         (self.code, Json(self.error)).into_response()
     }
 }
