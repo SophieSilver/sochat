@@ -61,7 +61,8 @@ async fn mark_received(
         user_id: sender_id,
         message_ids,
     }): Cbor<MarkReceivedParams>,
-) -> AppResult<StatusCode> {
+) -> AppResult<StatusCode> //
+{
     tracing::info!("enter");
     // TODO: have a limit and make it configurable
     state
@@ -79,7 +80,8 @@ async fn fetch_messages(
         user_id: recipient_id,
         limit,
     }): Cbor<FetchMessagesParams>,
-) -> AppResult<Cbor<Box<[UnreadMessage]>>> {
+) -> AppResult<Cbor<Box<[UnreadMessage]>>> //
+{
     tracing::info!("enter");
     // TODO: make this configurable
     const DEFAULT_LIMIT: u32 = 16;
