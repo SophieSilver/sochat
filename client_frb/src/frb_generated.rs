@@ -41,7 +41,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.1.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 884587943;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 63776043;
 
 // Section: executor
 
@@ -125,6 +125,28 @@ fn wire__crate__api__service__Service_get_message_impl(
         },
     )
 }
+fn wire__crate__api__service__Service_init_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "Service_init",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::service::Service::init().await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__service__Service_message_count_impl(
     that: impl CstDecode<
         RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Service>>,
@@ -174,22 +196,6 @@ fn wire__crate__api__service__Service_message_count_impl(
                     &*api_from_guard,
                     &*api_to_guard,
                 ))?;
-                Ok(output_ok)
-            })())
-        },
-    )
-}
-fn wire__crate__api__service__Service_new_impl(
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::DcoCodec, _>(
-        flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "Service_new",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
-        },
-        move || {
-            transform_result_dco::<_, _, ()>((move || {
-                let output_ok = Result::<_, ()>::Ok(crate::api::service::Service::new())?;
                 Ok(output_ok)
             })())
         },
@@ -1388,18 +1394,17 @@ mod io {
     }
 
     #[no_mangle]
+    pub extern "C" fn frbgen_client_wire__crate__api__service__Service_init(port_: i64) {
+        wire__crate__api__service__Service_init_impl(port_)
+    }
+
+    #[no_mangle]
     pub extern "C" fn frbgen_client_wire__crate__api__service__Service_message_count(
         that: usize,
         from: usize,
         to: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__crate__api__service__Service_message_count_impl(that, from, to)
-    }
-
-    #[no_mangle]
-    pub extern "C" fn frbgen_client_wire__crate__api__service__Service_new(
-    ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
-        wire__crate__api__service__Service_new_impl()
     }
 
     #[no_mangle]
