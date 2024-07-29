@@ -3,11 +3,13 @@
 use ::core::{future::Future, marker::Send, pin::Pin};
 
 use axum::{
+    body::Body,
     extract::{FromRequest, Request},
-    http::StatusCode,
+    http::{header, HeaderValue, StatusCode},
+    response::IntoResponse,
 };
-use bytes::Bytes;
-use serde::de::DeserializeOwned;
+use bytes::{BufMut, Bytes, BytesMut};
+use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{
     api::extractors::utils::content_type_matches,
@@ -58,4 +60,29 @@ where
     }
 }
 
+impl<T> IntoResponse for Postcard<T>
+where
+    T: Serialize + 'static,
+{
+    fn into_response(self) -> axum::response::Response {
+        let mut buf = BytesMut::new().writer();
 
+        let result = postcard::to_io(&self.0, &mut buf);
+        if let Err(_) = result {
+            return AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Could not serialize response",
+            )
+            .into_response();
+        }
+
+        let bytes = buf.into_inner().freeze();
+        let mut res = Body::from(bytes).into_response();
+        res.headers_mut().insert(
+            header::CONTENT_TYPE,
+            HeaderValue::from_static("application/postcard"),
+        );
+
+        res
+    }
+}
