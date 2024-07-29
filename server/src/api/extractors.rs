@@ -39,6 +39,7 @@ macro_rules! impl_wrapper {
 pub mod utils;
 pub mod cbor;
 pub mod octet_stream;
+pub mod postcard;
 
 pub use cbor::Cbor;
 pub use octet_stream::OctetStream;
