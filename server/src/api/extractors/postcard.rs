@@ -71,7 +71,7 @@ where
         if let Err(_) = result {
             return AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Could not serialize response",
+                "Failed to serialize response",
             )
             .into_response();
         }
