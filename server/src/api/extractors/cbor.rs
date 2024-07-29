@@ -5,7 +5,7 @@ use std::{future::Future, pin::Pin};
 use axum::{
     body::Body,
     extract::{FromRequest, Request},
-    http::{header, HeaderMap, HeaderValue, StatusCode},
+    http::{header, HeaderValue, StatusCode},
     response::{IntoResponse, Response},
 };
 use bytes::{BufMut, Bytes, BytesMut};
