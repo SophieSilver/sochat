@@ -14,6 +14,8 @@ use serde::{de::DeserializeOwned, Serialize};
 
 use crate::error::{AppError, IntoAppResult};
 
+use super::utils::content_type_matches;
+
 /// Allows serializing and deserializing types to/from the CBOR format using [`serde`]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Cbor<T>(pub T);
@@ -35,21 +37,8 @@ where
         'life0: 'async_trait,
         Self: 'async_trait,
     {
-        fn content_type_is_cbor(headers: &HeaderMap) -> bool {
-            headers
-                .get(header::CONTENT_TYPE)
-                .and_then(|content_type| content_type.to_str().ok())
-                .and_then(|content_type| content_type.parse::<mime::Mime>().ok())
-                .map(|content_type| {
-                    content_type.type_() == "application"
-                        && (content_type.subtype() == "cbor"
-                            || content_type.suffix().map_or(false, |name| name == "cbor"))
-                })
-                .unwrap_or(false)
-        }
-
         let fut = async {
-            if !content_type_is_cbor(req.headers()) {
+            if !content_type_matches(req.headers(), "cbor") {
                 return Err(AppError::new(
                     StatusCode::BAD_REQUEST,
                     "Expected a request with Content-Type: application/cbor",

@@ -36,7 +36,7 @@ macro_rules! impl_wrapper {
         }
     };
 }
-
+pub mod utils;
 pub mod cbor;
 pub mod octet_stream;
 
