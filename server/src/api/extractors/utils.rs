@@ -1,8 +1,14 @@
 //! Utils for extractors
 
-use axum::http::{header, HeaderMap, StatusCode};
+use std::fmt::Debug;
 
-use crate::error::{AppError, AppResult};
+use axum::{
+    extract::{FromRequest, Request},
+    http::{header, HeaderMap, StatusCode},
+};
+use bytes::Bytes;
+
+use crate::error::{AppError, AppResult, IntoAppResult};
 
 /// Check if the content type matches `application/{type_name}`
 fn content_type_matches(headers: &HeaderMap, type_name: &str) -> bool {
@@ -32,4 +38,25 @@ pub fn ensure_content_type_matches(headers: &HeaderMap, type_name: &str) -> AppR
             ),
         )),
     }
+}
+
+/// Retrieve the request body as bytes and deserialize it using the user provided closure.
+pub async fn deserialize_bytes_from_request<S, T, F, E>(
+    req: Request,
+    state: &S,
+    f: F,
+) -> AppResult<T>
+where
+    S: Send + Sync,
+    F: FnOnce(&[u8]) -> Result<T, E>,
+    E: Debug,
+{
+    let bytes = Bytes::from_request(req, state)
+        .await
+        .map_err(|e| AppError::new(e.status(), e.body_text()))?;
+
+    let value = f(&bytes)
+        .with_code_and_message(StatusCode::BAD_REQUEST, "Failed to parse the request body")?;
+
+    Ok(value)
 }

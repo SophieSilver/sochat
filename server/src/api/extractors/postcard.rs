@@ -8,12 +8,12 @@ use axum::{
     http::{header, HeaderValue, StatusCode},
     response::IntoResponse,
 };
-use bytes::{BufMut, Bytes, BytesMut};
+use bytes::{BufMut, BytesMut};
 use serde::{de::DeserializeOwned, Serialize};
 
-use crate::error::{AppError, IntoAppResult};
+use crate::error::AppError;
 
-use super::utils::ensure_content_type_matches;
+use super::utils::{deserialize_bytes_from_request, ensure_content_type_matches};
 
 /// Allows serializing and deserializing types to/from the Postcard format using [`serde`]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -38,14 +38,9 @@ where
         let fut = async {
             ensure_content_type_matches(req.headers(), "postcard")?;
 
-            let bytes = Bytes::from_request(req, state)
-                .await
-                .map_err(|e| AppError::new(e.status(), e.body_text()))?;
-
-            let inner = postcard::from_bytes::<T>(&bytes).with_code_and_message(
-                StatusCode::BAD_REQUEST,
-                "Failed to parse the request body",
-            )?;
+            let inner =
+                deserialize_bytes_from_request(req, state, |bytes| postcard::from_bytes(bytes))
+                    .await?;
 
             Ok(Self(inner))
         };

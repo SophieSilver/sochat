@@ -3,11 +3,12 @@
 use crate::error::{AppError, IntoAppResult};
 use axum::{
     extract::{FromRequest, Request},
-    http::StatusCode,
     response::{IntoResponse, Response},
 };
 use bytes::Bytes;
 use std::{fmt::Debug, future::Future, pin::Pin};
+
+use super::utils::deserialize_bytes_from_request;
 
 /// Allows serializing and deserializing types from bytes using TryInto and TryFrom traits
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -18,7 +19,7 @@ impl_wrapper!(OctetStream);
 impl<S, T> FromRequest<S> for OctetStream<T>
 where
     S: Send + Sync,
-    T: for<'a> TryFrom<&'a [u8]>,
+    for<'a> T: TryFrom<&'a [u8]>,
     for<'a> <T as TryFrom<&'a [u8]>>::Error: Debug,
 {
     type Rejection = AppError;
@@ -32,14 +33,11 @@ where
         Self: 'async_trait,
     {
         let fut = async {
-            let bytes = Bytes::from_request(req, state)
-                .await
-                .map_err(|e| AppError::new(e.status(), e.body_text()))?;
-
-            let inner = T::try_from(&bytes).with_code_and_message(
-                StatusCode::BAD_REQUEST,
-                "Failed to parse the request body",
-            )?;
+            let inner = deserialize_bytes_from_request(req, state, |bytes| {
+                // mapping error to a String solves complicated lifetime issues
+                T::try_from(bytes).map_err(|e| format!("{e:?}"))
+            })
+            .await?;
 
             Ok(Self(inner))
         };

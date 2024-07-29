@@ -8,13 +8,13 @@ use axum::{
     http::{header, HeaderValue, StatusCode},
     response::{IntoResponse, Response},
 };
-use bytes::{BufMut, Bytes, BytesMut};
+use bytes::{BufMut, BytesMut};
 use common::utils;
 use serde::{de::DeserializeOwned, Serialize};
 
-use crate::error::{AppError, IntoAppResult};
+use crate::error::AppError;
 
-use super::utils::ensure_content_type_matches;
+use super::utils::{deserialize_bytes_from_request, ensure_content_type_matches};
 
 /// Allows serializing and deserializing types to/from the CBOR format using [`serde`]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -40,14 +40,9 @@ where
         let fut = async {
             ensure_content_type_matches(req.headers(), "cbor")?;
 
-            let bytes = Bytes::from_request(req, state)
-                .await
-                .map_err(|e| AppError::new(e.status(), e.body_text()))?;
-
-            let inner = utils::cbor::from_reader(&*bytes).with_code_and_message(
-                StatusCode::BAD_REQUEST,
-                "Failed to parse the request body",
-            )?;
+            let inner =
+                deserialize_bytes_from_request(req, state, |bytes| utils::cbor::from_reader(bytes))
+                    .await?;
 
             Ok(Self(inner))
         };
