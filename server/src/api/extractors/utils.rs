@@ -3,10 +3,12 @@
 use std::fmt::Debug;
 
 use axum::{
+    body::Body,
     extract::{FromRequest, Request},
-    http::{header, HeaderMap, StatusCode},
+    http::{header, HeaderMap, HeaderValue, StatusCode},
+    response::{IntoResponse, Response},
 };
-use bytes::Bytes;
+use bytes::{buf::Writer, BufMut, Bytes, BytesMut};
 
 use crate::error::{AppError, AppResult, IntoAppResult};
 
@@ -59,4 +61,30 @@ where
         .with_code_and_message(StatusCode::BAD_REQUEST, "Failed to parse the request body")?;
 
     Ok(value)
+}
+
+/// Serialize the provided type into response using the provided closure and add Content-Type to headers
+///
+/// The `Content-Type` header will be set to `application/{type_name}`
+pub fn serialize_into_response<T, F, E>(value: T, f: F, type_name: &str) -> Response
+where
+    E: Debug,
+    F: FnOnce(T, &mut Writer<BytesMut>) -> Result<(), E>,
+{
+    let mut buf = BytesMut::new().writer();
+
+    let result = f(value, &mut buf).with_message("Failed to serialize response");
+    if let Err(e) = result {
+        return e.into_response();
+    }
+
+    let bytes = buf.into_inner().freeze();
+    let mut res = Body::from(bytes).into_response();
+    res.headers_mut().insert(
+        header::CONTENT_TYPE,
+        HeaderValue::from_str(&format!("application/{type_name}"))
+            .expect("Constructing a HeaderValue must not fail"),
+    );
+
+    res
 }
