@@ -14,7 +14,7 @@ use serde::{de::DeserializeOwned, Serialize};
 
 use crate::error::{AppError, IntoAppResult};
 
-use super::utils::content_type_matches;
+use super::utils::ensure_content_type_matches;
 
 /// Allows serializing and deserializing types to/from the CBOR format using [`serde`]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -38,12 +38,7 @@ where
         Self: 'async_trait,
     {
         let fut = async {
-            if !content_type_matches(req.headers(), "cbor") {
-                return Err(AppError::new(
-                    StatusCode::BAD_REQUEST,
-                    "Expected a request with Content-Type: application/cbor",
-                ));
-            }
+            ensure_content_type_matches(req.headers(), "cbor")?;
 
             let bytes = Bytes::from_request(req, state)
                 .await
