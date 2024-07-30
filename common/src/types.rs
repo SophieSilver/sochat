@@ -5,6 +5,7 @@
 pub mod id;
 pub mod error;
 pub mod message;
+pub mod api_params;
 
 pub use error::*;
 pub use id::*;

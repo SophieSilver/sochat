@@ -5,7 +5,7 @@ use serde_with::serde_as;
 
 use crate::utils::BytesOrBase64;
 
-use super::message_id::MessageId;
+use super::{message_id::MessageId, UserId};
 
 /// Message that has not yet been received
 #[serde_as]
@@ -13,6 +13,8 @@ use super::message_id::MessageId;
 pub struct UnreadMessage {
     /// ID of the message
     pub id: MessageId,
+    /// ID of the sender of the message
+    pub sender_id: UserId,
     /// The actual content of the message
     #[serde_as(as = "BytesOrBase64")]
     pub content: Box<[u8]>,
