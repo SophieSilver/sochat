@@ -6,7 +6,7 @@ use axum::{
     extract::{FromRequest, Request},
     response::{IntoResponse, Response},
 };
-use common::utils;
+use common::cbor;
 use serde::{de::DeserializeOwned, Serialize};
 
 use crate::error::AppError;
@@ -39,7 +39,7 @@ where
             ensure_content_type_matches(req.headers(), "cbor")?;
 
             let inner =
-                deserialize_bytes_from_request(req, state, |bytes| utils::cbor::from_reader(bytes))
+                deserialize_bytes_from_request(req, state, |bytes| cbor::from_reader(bytes))
                     .await?;
 
             Ok(Self(inner))
@@ -56,7 +56,7 @@ where
     fn into_response(self) -> Response {
         serialize_into_response(
             self.0,
-            |value, writer| ciborium::into_writer(&value, writer),
+            |value, writer| cbor::into_writer(&value, writer),
             "cbor",
         )
     }
