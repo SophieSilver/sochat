@@ -1,48 +1,29 @@
 //! Communication with a backend server
 use bytes::Bytes;
-use common::types::{Id, MessageId, UnreadMessage, UserId};
+use common::{
+    from_passthrough,
+    types::{Id, MessageId, UnreadMessage, UserId},
+};
 use reqwest::Client;
 use thiserror::Error;
 
 use crate::http_utils::{
-    error::{CborError, CborSerializeError, ResponseError, StatusError},
+    error::{HttpError, SerializationError, StatusError},
     RequestBuilderExt, ResponseExt,
 };
-
+// TODO: switch to postcard
+// TODO: adapt to new API
 // TODO: unhardcode this
 const SERVER_ADDR: &str = "http://127.0.0.1:11800";
 
 #[derive(Debug, Error)]
-#[error(transparent)]
-pub enum SerializationError {
-    Cbor(#[from] CborError),
-    Id(#[from] common::types::id::IdSliceWrongSizeError),
-}
-
-#[derive(Debug, Error)]
-#[error("error while communicating with the server")]
+#[error("Error while communicating with the backend")]
 pub enum ServerConnectionError {
-    Request(#[from] reqwest::Error),
-    Serialize(#[from] SerializationError),
+    Http(#[from] HttpError),
     Status(#[from] StatusError),
 }
-
-impl From<ResponseError> for ServerConnectionError {
-    fn from(value: ResponseError) -> Self {
-        match value {
-            ResponseError::Request(e) => Self::from(e),
-            ResponseError::Deserialize(e) => {
-                Self::Serialize(SerializationError::Cbor(CborError::from(e)))
-            }
-        }
-    }
-}
-
-impl From<CborSerializeError> for ServerConnectionError {
-    fn from(value: CborSerializeError) -> Self {
-        Self::Serialize(SerializationError::Cbor(CborError::from(value)))
-    }
-}
+from_passthrough!(reqwest::Error => HttpError => ServerConnectionError);
+from_passthrough!(SerializationError => HttpError => ServerConnectionError);
 
 /// Connection to a backend server
 ///
@@ -137,7 +118,8 @@ impl ServerConnection {
     {
         let ids = ids.as_ref();
 
-        let _response = self.client
+        let _response = self
+            .client
             .post(format!(
                 "{SERVER_ADDR}/messages/from/{sender}/to/{recipient}/received"
             ))

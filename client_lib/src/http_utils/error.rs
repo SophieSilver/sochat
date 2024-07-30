@@ -1,44 +1,37 @@
-use std::{error::Error as StdError, fmt::Display, io};
+use std::{error::Error as StdError, fmt::Display};
 
-use common::types::ApiError;
+use common::{
+    cbor::CborError, from_passthrough, types::{id, ApiError}
+};
 use reqwest::StatusCode;
 use thiserror::Error;
 
-// TODO: put this in common
-/// Error when serializing or deserializing CBOR
-#[derive(Debug, Error)]
-#[error(transparent)]
-pub enum CborError {
-    Serialize(#[from] ciborium::ser::Error<io::Error>),
-    Deserialize(#[from] ciborium::de::Error<io::Error>),
-}
+pub type HttpResult<T> = Result<T, HttpError>;
 
-impl From<CborSerializeError> for CborError {
-    fn from(value: CborSerializeError) -> Self {
-        Self::Serialize(value.0)
-    }
-}
-
-/// Error when serializing an object with CBOR
 #[derive(Debug, Error)]
-#[error(transparent)]
-pub struct CborSerializeError(#[from] ciborium::ser::Error<io::Error>);
-
-/// Error when trying to parse request body.
-#[derive(Debug, Error)]
-#[error(transparent)]
-pub enum ResponseError {
-    /// Error that initiated from the request itself
+pub enum HttpError {
+    #[error("error while serializing request body")]
+    Serialization(#[from] SerializationError),
+    #[error("error while sending request")]
     Request(#[from] reqwest::Error),
+}
 
-    /// Error while deserializing the response body with CBOR
-    Deserialize(#[from] ciborium::de::Error<io::Error>),
+from_passthrough!(CborError => SerializationError => HttpError);
+from_passthrough!(postcard::Error => SerializationError => HttpError);
+from_passthrough!(id::IdSliceWrongSizeError => SerializationError => HttpError);
+
+#[derive(Debug, Error)]
+#[error(transparent)]
+pub enum SerializationError {
+    Cbor(#[from] CborError),
+    Postcard(#[from] postcard::Error),
+    Id(#[from] id::IdSliceWrongSizeError),
 }
 
 #[derive(Debug)]
 pub struct StatusError {
     pub status: StatusCode,
-    pub source: Result<ApiError, ResponseError>,
+    pub source: Result<ApiError, HttpError>,
 }
 
 impl Display for StatusError {
