@@ -1,5 +1,4 @@
 //! Module that defines API endpoints for the server
-
 pub mod extractors;
 pub mod state;
 
@@ -13,7 +12,7 @@ use common::types::{
     message_id::MessageId,
     Id, UnreadMessage, UserId,
 };
-use extractors::{Cbor, OctetStream};
+use extractors::{Postcard, OctetStream};
 use state::AppState;
 use tracing::instrument;
 
@@ -29,11 +28,11 @@ async fn register_user(state: State<AppState>) -> AppResult<OctetStream<UserId>>
 #[instrument(skip_all, ret)]
 async fn send_message(
     state: State<AppState>,
-    Cbor(SendMessageParams {
+    Postcard(SendMessageParams {
         user_id: sender_id,
         recipient_id,
         content,
-    }): Cbor<SendMessageParams>,
+    }): Postcard<SendMessageParams>,
 ) -> AppResult<OctetStream<MessageId>> //
 {
     tracing::info!("enter");
@@ -57,10 +56,10 @@ async fn send_message(
 #[instrument[skip_all, fields(message_count = message_ids.len())]]
 async fn mark_received(
     state: State<AppState>,
-    Cbor(MarkReceivedParams {
+    Postcard(MarkReceivedParams {
         user_id: sender_id,
         message_ids,
-    }): Cbor<MarkReceivedParams>,
+    }): Postcard<MarkReceivedParams>,
 ) -> AppResult<StatusCode> //
 {
     tracing::info!("enter");
@@ -76,11 +75,11 @@ async fn mark_received(
 #[instrument(skip_all, fields(limit))]
 async fn fetch_messages(
     state: State<AppState>,
-    Cbor(FetchMessagesParams {
+    Postcard(FetchMessagesParams {
         user_id: recipient_id,
         limit,
-    }): Cbor<FetchMessagesParams>,
-) -> AppResult<Cbor<Box<[UnreadMessage]>>> //
+    }): Postcard<FetchMessagesParams>,
+) -> AppResult<Postcard<Box<[UnreadMessage]>>> //
 {
     tracing::info!("enter");
     // TODO: make this configurable
