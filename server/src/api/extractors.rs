@@ -43,3 +43,4 @@ pub mod postcard;
 
 pub use cbor::Cbor;
 pub use octet_stream::OctetStream;
+pub use postcard::Postcard;
