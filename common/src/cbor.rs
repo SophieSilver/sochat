@@ -43,7 +43,7 @@ use serde::{de::DeserializeOwned, Serialize};
 use thiserror::Error;
 
 /// Deserialize the value from a given reader
-pub fn from_reader<T: DeserializeOwned, R: Read>(reader: R) -> Result<T, CborDeserializeError> {
+pub fn from_reader<T: DeserializeOwned, R: Read>(reader: R) -> Result<T, CborError> {
     const BUFFER_SIZE: usize = 128 * 1024;
 
     thread_local! {
@@ -56,6 +56,6 @@ pub fn from_reader<T: DeserializeOwned, R: Read>(reader: R) -> Result<T, CborDes
 }
 
 /// Serialize the value into a given writer
-pub fn into_writer<T: Serialize, W: Write>(value: &T, writer: W) -> Result<(), CborSerializeError> {
+pub fn into_writer<T: Serialize + ?Sized, W: Write>(value: &T, writer: W) -> Result<(), CborError> {
     Ok(ciborium::into_writer(value, writer)?)
 }
