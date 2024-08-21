@@ -1,0 +1,32 @@
+{
+  "db_name": "SQLite",
+  "query": "--sql\n            SELECT\n                id as 'id: MessageId',\n                sender_id as 'sender_id: UserId',\n                content\n            FROM messages\n            WHERE recipient_id = ?\n                AND is_received = FALSE\n            ORDER BY id ASC     -- we can do that, because message ids are UUIDv7s\n            LIMIT ?;\n            ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id: MessageId",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "sender_id: UserId",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "content",
+        "ordinal": 2,
+        "type_info": "Blob"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "d4ff8f9c0ab83faca9c9a0985e98926628b2d8e6adc6b71087bfb945d2cedb72"
+}
