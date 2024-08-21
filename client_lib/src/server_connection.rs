@@ -2,7 +2,10 @@
 use bytes::Bytes;
 use common::{
     from_passthrough,
-    types::{Id, MessageId, UnreadMessage, UserId},
+    types::{
+        api_params::{FetchMessagesParams, MarkReceivedParams, SendMessageParams},
+        Id, MessageId, UnreadMessage, UserId,
+    },
 };
 use reqwest::Client;
 use thiserror::Error;
@@ -11,8 +14,7 @@ use crate::http_utils::{
     error::{HttpError, SerializationError, StatusError},
     RequestBuilderExt, ResponseExt,
 };
-// TODO: switch to postcard
-// TODO: adapt to new API
+
 // TODO: unhardcode this
 const SERVER_ADDR: &str = "http://127.0.0.1:11800";
 
@@ -49,7 +51,7 @@ impl ServerConnection {
     pub async fn register_user(&self) -> Result<UserId, ServerConnectionError> {
         let response = self
             .client
-            .post(format!("{SERVER_ADDR}/users"))
+            .post(format!("{SERVER_ADDR}/register_user"))
             .send()
             .await?
             .filter_status_error()
@@ -62,19 +64,15 @@ impl ServerConnection {
     }
 
     /// Send a message from one user to another
-    pub async fn send_message<M: Into<Bytes>>(
+    pub async fn send_message(
         &self,
-        sender: UserId,
-        recipient: UserId,
-        content: M,
+        params: &SendMessageParams,
     ) -> Result<MessageId, ServerConnectionError> //
     {
         let response = self
             .client
-            .post(format!(
-                "{SERVER_ADDR}/messages/from/{sender}/to/{recipient}"
-            ))
-            .body(content.into())
+            .post(format!("{SERVER_ADDR}/send_message"))
+            .postcard(params)?
             .send()
             .await?
             .filter_status_error()
@@ -89,16 +87,13 @@ impl ServerConnection {
     /// Fetch unread messages from one user to another
     pub async fn fetch_messages(
         &self,
-        sender: UserId,
-        recipient: UserId,
-        limit: u32,
+        params: &FetchMessagesParams,
     ) -> Result<Box<[UnreadMessage]>, ServerConnectionError> //
     {
         let response = self
             .client
-            .get(format!(
-                "{SERVER_ADDR}/messages/from/{sender}/to/{recipient}?limit={limit}"
-            ))
+            .get(format!("{SERVER_ADDR}/fetch_messages"))
+            .postcard(params)?
             .send()
             .await?
             .filter_status_error()
@@ -109,21 +104,15 @@ impl ServerConnection {
         Ok(messages)
     }
 
-    pub async fn mark_messages_received<I: AsRef<[MessageId]>>(
+    pub async fn mark_messages_received(
         &self,
-        sender: UserId,
-        recipient: UserId,
-        ids: I,
+        params: &MarkReceivedParams,
     ) -> Result<(), ServerConnectionError> //
     {
-        let ids = ids.as_ref();
-
         let _response = self
             .client
-            .post(format!(
-                "{SERVER_ADDR}/messages/from/{sender}/to/{recipient}/received"
-            ))
-            .cbor(ids)?
+            .post(format!("{SERVER_ADDR}/mark_received"))
+            .postcard(params)?
             .send()
             .await?
             .filter_status_error()

@@ -9,9 +9,11 @@ edition = "2021"
 bytes = { version = "1.6.0", features = ["serde"] }
 ciborium = "0.2.2"
 common = { version = "0.1.0", path = "../common" }
+postcard = { version = "1.0.9", features = ["use-std"] }
 reqwest = { version = "0.12.5", default-features = false, features = [
     "http2",
     "charset",
+    "json",
     "macos-system-configuration",
     "rustls-tls-manual-roots",
     "rustls-tls-webpki-roots",

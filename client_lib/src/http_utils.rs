@@ -1,4 +1,4 @@
-//! Various extensions to the HTTP client.
+//! Various extensions to the reqwest HTTP client.
 //!
 //! These extensions provide the default configurations for the http client,
 //! as well as additional serialization formats for request bodies
@@ -53,6 +53,12 @@ pub trait RequestBuilderExt: Sealed + Sized {
     /// # Errors
     /// This method fails when serializing the payload with CBOR fails
     fn cbor<T: Serialize + ?Sized>(self, cbor: &T) -> HttpResult<Self>;
+
+    /// Send a Postcard body
+    ///
+    /// # Errors
+    /// This method fails when serializing the payload fails
+    fn postcard<T: Serialize + ?Sized>(self, value: &T) -> HttpResult<Self>;
 }
 
 /// Extension trait for [`reqwest::Response`]
@@ -65,20 +71,9 @@ pub trait ResponseExt: Sealed + Sized {
     /// * Trying to deserialize the response body with CBOR fails
     fn cbor<T: DeserializeOwned>(self) -> impl Future<Output = HttpResult<T>> + Send;
 
+    fn postcard<T: DeserializeOwned>(self) -> impl Future<Output = HttpResult<T>> + Send;
+
     /// Check if the status code indicates an error, if so return the error, otherwise return the original response.
-    ///
-    /// # Returns
-    /// This function returns a double result.
-    ///
-    /// The outer result indicates whether fetching and deserializing the response body was successful.
-    ///
-    /// The inner result indicates whether the request succeded or not.
-    ///
-    /// Thus, this function returns:
-    /// - `Ok(Ok(self))` if the response's status isn't an error.
-    /// - `Ok(Err(api_error))` if the response's status is an error.
-    /// - `Err(response_error)` if the response's status is an error but
-    /// fetching or deserializing the response body has failed.
     fn filter_status_error(self) -> impl Future<Output = Result<Self, StatusError>> + Send;
 }
 
@@ -103,10 +98,17 @@ impl RequestBuilderExt for RequestBuilder {
     fn cbor<T: Serialize + ?Sized>(mut self, cbor: &T) -> HttpResult<Self> {
         // TODO: use Bytes here for cheaper cloning
         let mut buf = Vec::<u8>::new();
-
         cbor::into_writer(cbor, &mut buf)?;
 
         self = self.header(header::CONTENT_TYPE, "application/cbor");
+
+        Ok(self.body(buf))
+    }
+
+    fn postcard<T: Serialize + ?Sized>(mut self, value: &T) -> HttpResult<Self> {
+        let buf = postcard::to_stdvec(value)?;
+
+        self = self.header(header::CONTENT_TYPE, "application/postcard");
 
         Ok(self.body(buf))
     }
@@ -119,6 +121,12 @@ impl ResponseExt for Response {
         Ok(cbor::from_reader(&bytes as &[u8])?)
     }
 
+    async fn postcard<T: DeserializeOwned>(self) -> HttpResult<T> {
+        let value = postcard::from_bytes(&self.bytes().await?)?;
+
+        Ok(value)
+    }
+
     async fn filter_status_error(self) -> Result<Self, StatusError> {
         let status = self.status();
         let is_error = status.is_client_error() || status.is_server_error();
@@ -127,10 +135,7 @@ impl ResponseExt for Response {
             return Ok(self);
         }
 
-        let error = self
-            .json::<ApiError>()
-            .await
-            .map_err(|e| e.into());
+        let error = self.json::<ApiError>().await.map_err(|e| e.into());
 
         Err(StatusError {
             status,
