@@ -12,7 +12,7 @@ macro_rules! impl_sqlx_decode_from_bytes {
             for<'a> <Self as TryFrom<&'a [u8]>>::Error: std::error::Error + Send + Sync + 'static,
         {
             fn decode(
-                value: <DB as sqlx::database::HasValueRef<'r>>::ValueRef,
+                value: <DB as sqlx::Database>::ValueRef<'r>,
             ) -> Result<Self, sqlx::error::BoxDynError> {
                 let value = <&[u8] as sqlx::Decode<DB>>::decode(value)?;
 
