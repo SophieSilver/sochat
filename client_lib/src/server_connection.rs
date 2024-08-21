@@ -1,5 +1,4 @@
 //! Communication with a backend server
-use bytes::Bytes;
 use common::{
     from_passthrough,
     types::{
