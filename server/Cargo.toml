@@ -23,11 +23,11 @@ serde = { version = "1", features = ["derive", "alloc", "rc"] }
 serde_json = { version = "1", features = ["alloc"] }
 serde_with = { version = "3", features = ["base64", "chrono"] }
 smallvec = { version = "1.13", features = ["union", "serde", "write", "const_generics"] }
-sqlx = { version = "0.7", features = ["sqlite", "runtime-tokio"] }
+sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio"] }
 thiserror = "1.0"
 tokio = { version = "1", features = ["full"] }
 tokio-stream = "0.1"
-tower = "0.4.13"
+tower = "0.5"
 tower-http = { version = "0.5.2", features = ["trace"] }
 tracing = { version = "0.1.40", features = ["log"] }
 tracing-subscriber = "0.3.18"
