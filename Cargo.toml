@@ -4,6 +4,8 @@ members = ["client_frb", "server", "common", "client_lib"]
 
 [profile.release]
 strip = "debuginfo"
+codegen-units = 1
+lto = "fat"
 # [profile.dev.package."*"]
 # inherits = "release"
 # opt-level = 3
