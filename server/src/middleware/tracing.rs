@@ -29,6 +29,12 @@ pub struct MakeSpanWithConnectionInfo<T> {
     _phantom: PhantomData<T>,
 }
 
+impl<T> Default for MakeSpanWithConnectionInfo<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<T> MakeSpanWithConnectionInfo<T> {
     /// Create a new `MakeSpanWithConnectionInfo`.
     pub fn new() -> Self {
@@ -132,7 +138,7 @@ impl TraceLayerExt for TraceLayer<HttpMakeClassifier> {
         T: Clone + Display + Send + Sync + 'static,
     {
         let trace_layer = TraceLayer::new_for_http();
-        let amended = trace_layer.make_span_with(MakeSpanWithConnectionInfo::<T>::new());
-        amended
+        
+        trace_layer.make_span_with(MakeSpanWithConnectionInfo::<T>::new())
     }
 }

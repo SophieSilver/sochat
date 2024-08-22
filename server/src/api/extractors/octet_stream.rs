@@ -56,7 +56,7 @@ where
         (&self.0)
             .try_into()
             .with_generic_error()
-            .map(|b| Bytes::copy_from_slice(b))
+            .map(Bytes::copy_from_slice)
             .into_response()
     }
 }

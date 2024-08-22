@@ -305,11 +305,11 @@ mod tests {
         // mark the first several messages as received
         let (received_pile, unreceved_pile) = messages.split_at(RECEIVED_COUNT);
         let unreceived_pile = unreceved_pile
-            .into_iter()
+            .iter()
             .cloned()
             .collect::<HashMap<_, _>>();
 
-        let received_ids = received_pile.iter().map(|(id, _)| id.clone()).collect_vec();
+        let received_ids = received_pile.iter().map(|(id, _)| *id).collect_vec();
 
         pool.mark_messages_received(&recipient, &received_ids).await?;
 
