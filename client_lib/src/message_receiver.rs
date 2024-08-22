@@ -12,6 +12,10 @@ pub struct MessageReceiver {
 }
 
 impl MessageReceiver {
+    /// Create a new MessageReceiver with the provided closure as the callback
+    /// 
+    /// # Panics
+    /// This function panics if called outside of the tokio runtime
     pub fn new<F>(connection: ServerConnection, user_id: UserId, mut callback: F) -> Self
     where
         F: FnMut(Result<UnreadMessage, ServerConnectionError>) + Send + 'static,
