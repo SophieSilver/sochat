@@ -29,6 +29,8 @@ from_passthrough!(SerializationError => HttpError => ServerConnectionError);
 /// Connection to a backend server
 ///
 /// Used to send and receive messages, as well as register new users
+/// 
+/// This struct is cheaply cloneable
 #[derive(Debug, Clone)]
 pub struct ServerConnection {
     client: Client,
