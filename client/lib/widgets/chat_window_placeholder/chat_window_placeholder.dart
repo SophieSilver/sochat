@@ -6,7 +6,7 @@ class ChatWindowPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    // final colorScheme = theme.colorScheme;
     final textStyle = theme.textTheme;
 
     return Center(

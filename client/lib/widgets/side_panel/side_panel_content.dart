@@ -1,4 +1,5 @@
 import 'package:client/service/conversation.dart';
+import 'package:client/service/rust_service.dart';
 import 'package:client/src/rust/api/types/id.dart';
 import 'package:client/widgets/side_panel/contact_list/contact_list.dart';
 import 'package:client/widgets/side_panel/new_conversation_tab/new_conversation_tab.dart';
@@ -18,7 +19,7 @@ class _SidePanelContentState extends State<SidePanelContent> {
   int? selectedConversation;
 
   void addConversation(UserId other) {
-    final UserId selfId = UserId.parse("AAAAAAAAAAAAAAAAAAAAAA");
+    final UserId selfId = RustService.instance.thisId;
 
     if (other.equals(selfId)) {
       return;
@@ -28,8 +29,6 @@ class _SidePanelContentState extends State<SidePanelContent> {
     this.setState(() {
       this.conversations.add(newConversation);
     });
-
-    // TODO: switch to the new convo
   }
 
   void selectConversation(int conversationIndex) {
