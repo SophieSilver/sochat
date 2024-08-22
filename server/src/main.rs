@@ -13,7 +13,7 @@ use tracing_subscriber::util::SubscriberInitExt;
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::FmtSubscriber::builder()
         .with_target(true)
-        .with_max_level(Level::TRACE)
+        .with_max_level(Level::DEBUG)
         .finish()
         .init();
     

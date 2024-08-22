@@ -1,6 +1,4 @@
 //! Module that defines API endpoints for the server
-pub mod extractors;
-pub mod state;
 
 use crate::{
     db::Db,
@@ -12,9 +10,12 @@ use common::types::{
     message_id::MessageId,
     Id, UnreadMessage, UserId,
 };
-use extractors::{Postcard, OctetStream};
+use extractors::{OctetStream, Postcard};
 use state::AppState;
 use tracing::instrument;
+
+pub mod extractors;
+pub mod state;
 
 #[instrument(skip_all, ret)]
 async fn register_user(state: State<AppState>) -> AppResult<OctetStream<UserId>> {
