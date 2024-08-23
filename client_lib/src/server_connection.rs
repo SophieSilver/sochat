@@ -100,7 +100,7 @@ impl ServerConnection {
             .filter_status_error()
             .await?;
 
-        let messages = response.cbor::<Box<[UnreadMessage]>>().await?;
+        let messages = response.postcard::<Box<[UnreadMessage]>>().await?;
 
         Ok(messages)
     }
