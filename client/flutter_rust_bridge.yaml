@@ -1,7 +1,0 @@
-rust_input: crate::api
-rust_root: ../client_frb
-dart_output: lib/src/rust
-full_dep: true
-web: false
-dart_type_rename:
-  Service: RustServiceInstance

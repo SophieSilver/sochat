@@ -40,7 +40,7 @@ impl Display for StatusError {
     }
 }
 
-impl std::error::Error for StatusError {
+impl StdError for StatusError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         let source = match &self.source {
             Ok(api_error) => api_error as &dyn StdError,

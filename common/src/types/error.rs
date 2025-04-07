@@ -5,6 +5,8 @@ use std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
+// TODO: have an enum with multiple variants
+
 /// Generic error type with a message
 #[derive(Debug, Clone, Error, Serialize, Deserialize)]
 #[error("{error}")]
