@@ -7,7 +7,7 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use common::cbor;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 
 use crate::error::AppError;
 
@@ -27,25 +27,13 @@ where
 {
     type Rejection = AppError;
 
-    fn from_request<'life0, 'async_trait>(
-        req: Request,
-        state: &'life0 S,
-    ) -> Pin<Box<dyn Future<Output = Result<Self, Self::Rejection>> + Send + 'async_trait>>
-    where
-        'life0: 'async_trait,
-        Self: 'async_trait,
-    {
-        let fut = async {
-            ensure_content_type_matches(req.headers(), "cbor")?;
+    async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
+        ensure_content_type_matches(req.headers(), "cbor")?;
 
-            let inner =
-                deserialize_bytes_from_request(req, state, |bytes| cbor::from_reader(bytes))
-                    .await?;
+        let inner =
+            deserialize_bytes_from_request(req, state, |bytes| cbor::from_reader(bytes)).await?;
 
-            Ok(Self(inner))
-        };
-
-        Box::pin(fut)
+        Ok(Self(inner))
     }
 }
 

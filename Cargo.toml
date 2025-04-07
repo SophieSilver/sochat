@@ -1,11 +1,11 @@
 [workspace]
 resolver = "2"
-members = ["client_frb", "server", "common", "client_lib"]
+members = ["server", "common", "client_lib"]
 
 [profile.release]
 strip = "debuginfo"
-codegen-units = 1
-lto = "fat"
+# codegen-units = 1
+# lto = "fat"
 # [profile.dev.package."*"]
 # inherits = "release"
 # opt-level = 3

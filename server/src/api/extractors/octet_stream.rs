@@ -24,25 +24,14 @@ where
 {
     type Rejection = AppError;
 
-    fn from_request<'life0, 'async_trait>(
-        req: Request,
-        state: &'life0 S,
-    ) -> Pin<Box<dyn Future<Output = Result<Self, Self::Rejection>> + Send + 'async_trait>>
-    where
-        'life0: 'async_trait,
-        Self: 'async_trait,
-    {
-        let fut = async {
-            let inner = deserialize_bytes_from_request(req, state, |bytes| {
-                // mapping error to a String solves complicated lifetime issues
-                T::try_from(bytes).map_err(|e| format!("{e:?}"))
-            })
-            .await?;
+    async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
+        let inner = deserialize_bytes_from_request(req, state, |bytes| {
+            // mapping error to a String solves complicated lifetime issues
+            T::try_from(bytes).map_err(|e| format!("{e:?}"))
+        })
+        .await?;
 
-            Ok(Self(inner))
-        };
-
-        Box::pin(fut)
+        Ok(Self(inner))
     }
 }
 
