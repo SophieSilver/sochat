@@ -2,13 +2,13 @@
 
 use std::hash::Hash;
 
-use serde::{Deserialize, Serialize};
+use serde::{de::DeserializeOwned, Serialize};
 use thiserror::Error;
 
 /// A trait with common methods for IDs
 ///
 /// Contains common serialization methods for ID types
-pub trait Id: Sized + Copy + Eq + Hash + Serialize + for<'de> Deserialize<'de> {
+pub trait Id: Sized + Copy + Eq + Hash + Serialize + DeserializeOwned {
     /// Create a new ID
     fn generate() -> Self;
 
