@@ -7,8 +7,12 @@ class RustService {
   static RustServiceInstance get instance => _instance;
 
   static Future<void> init() async {
-    _instance = await RustServiceInstance.internalInit(); 
+    _instance = await RustServiceInstance.internalInit();
+    print(_instance.thisId);
     _messageNotificationStream = _instance.internalInitMessageStream();
-  }
 
+    _messageNotificationStream.listen((_) {
+      // TODO:
+    });
+  }
 }

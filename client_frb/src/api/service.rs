@@ -1,6 +1,6 @@
 use anyhow::anyhow;
 use client_lib::{
-    common::types::{UnreadMessage, UserId},
+    common::types::{api_params::SendMessageParams, UnreadMessage, UserId},
     http_utils::ClientExt,
     message_receiver::MessageReceiver,
     reqwest::Client,
@@ -74,13 +74,17 @@ impl Service {
                             &this.this_id,
                             String::from_utf8(content.into()).unwrap(),
                         );
-                        message_notification_sink
+                        // TODO: log/trace intead
+                        let _ = message_notification_sink
                             .add(())
-                            .expect("Sending data to Dart must not fail");
+                            .inspect_err(|e| eprintln!("{e}"));
                     }
-                    Err(e) => message_notification_sink
-                        .add_error(anyhow!(e))
-                        .expect("Sending data to Dart must not fail"),
+
+                    Err(e) => {
+                        let _ = message_notification_sink
+                            .add_error(anyhow!(e))
+                            .inspect_err(|e| eprintln!("{e}"));
+                    }
                 };
             });
 
@@ -121,9 +125,22 @@ impl Service {
     }
 
     #[frb(sync)]
-    pub fn send_message(&self, to: &UserId, message: String) {
-        dbg!(&self);
-        self.store_message(&self.this_id, to, message);
+    pub fn send_message(&self, &to: &UserId, message: String) {
+        self.store_message(&self.this_id, &to, message.clone());
+        let user_id = self.this_id;
+        let connection = self.connection.clone();
+
+        self.tokio_handle.spawn(async move {
+            connection
+                .send_message(&SendMessageParams {
+                    user_id,
+                    recipient_id: to,
+                    content: message.into(),
+                })
+                .await
+                // TODO: handle the error
+                .unwrap();
+        });
     }
 
     fn store_message(&self, from: &UserId, to: &UserId, message: String) {
