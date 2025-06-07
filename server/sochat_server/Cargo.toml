@@ -1,5 +1,5 @@
 [package]
-name = "server"
+name = "sochat_server"
 version = "0.1.0"
 edition = "2024"
 
@@ -7,12 +7,12 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.97"
-axum = { version = "0.8.3", features = ["ws"] }
+axum = { version = "0.8.4", features = ["ws"] }
 axum-server = { version = "0.7.2", features = ["tls-rustls"] }
 base64 = "0.22.1"
 bytes = "1.10.1"
 chrono = "0.4.40"
-common = { version = "0.1.0", path = "../common" }
+common = { version = "0.1.0", path = "../../common" }
 # ed25519-dalek = { version = "2.1.1", features = ["rand_core"] }
 futures-util = "0.3.31"
 itertools = "0.14"

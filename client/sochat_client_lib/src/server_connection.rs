@@ -46,7 +46,6 @@ impl ServerConnection {
         &self.client
     }
 
-    // TODO: implement retries if no connection
     // TODO: implement timeouts
     /// Register a new user on the server and return its ID
     pub async fn register_user(&self) -> Result<UserId, ServerConnectionError> {
@@ -85,7 +84,7 @@ impl ServerConnection {
         Ok(message_id)
     }
 
-    /// Fetch unread messages from one user to another
+    /// Fetch unread messages
     pub async fn fetch_messages(
         &self,
         params: &FetchMessagesParams,

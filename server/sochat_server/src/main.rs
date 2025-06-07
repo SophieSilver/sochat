@@ -1,5 +1,5 @@
 // #![cfg_attr(debug_assertions, allow(unused))]
-use server::{
+use sochat_server::{
     api::{self, state::AppState},
     middleware::tracing::TraceLayerExt,
 };

@@ -114,9 +114,9 @@ dependencies = [
 
 [[package]]
 name = "axum"
-version = "0.8.3"
+version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "de45108900e1f9b9242f7f2e254aa3e2c029c921c258fe9e6b4217eeebd54288"
+checksum = "021e862c184ae977658b36c4500f7feac3221ca5da43e3f25bd04ab6c79a29b5"
 dependencies = [
  "axum-core",
  "base64",
@@ -363,20 +363,6 @@ dependencies = [
  "glob",
  "libc",
  "libloading",
-]
-
-[[package]]
-name = "client_lib"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "ciborium",
- "common",
- "postcard",
- "reqwest",
- "serde",
- "thiserror",
- "tokio",
 ]
 
 [[package]]
@@ -2193,36 +2179,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "server"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "axum",
- "axum-server",
- "base64",
- "bytes",
- "chrono",
- "common",
- "futures-util",
- "itertools 0.14.0",
- "mime",
- "postcard",
- "serde",
- "serde_json",
- "serde_with",
- "smallvec",
- "sqlx",
- "thiserror",
- "tokio",
- "tokio-stream",
- "tower",
- "tower-http",
- "tracing",
- "tracing-subscriber",
- "uuid",
-]
-
-[[package]]
 name = "sha1"
 version = "0.10.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2294,6 +2250,50 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8917285742e9f3e1683f0a9c4e6b57960b7314d0b08d30d1ecd426713ee2eee9"
 dependencies = [
  "serde",
+]
+
+[[package]]
+name = "sochat_client_lib"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "ciborium",
+ "common",
+ "postcard",
+ "reqwest",
+ "serde",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "sochat_server"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "axum-server",
+ "base64",
+ "bytes",
+ "chrono",
+ "common",
+ "futures-util",
+ "itertools 0.14.0",
+ "mime",
+ "postcard",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "smallvec",
+ "sqlx",
+ "thiserror",
+ "tokio",
+ "tokio-stream",
+ "tower",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]

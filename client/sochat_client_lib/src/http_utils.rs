@@ -11,10 +11,9 @@ use std::{future::Future, time::Duration};
 
 // TODO: add postcard methods
 
-// ERRORS
 pub mod error;
 
-// SEALED TRAIT
+// Sealed trait
 mod private {
     use reqwest::{Client, RequestBuilder, Response};
 
@@ -26,11 +25,9 @@ mod private {
 
 use private::Sealed;
 
-// CONSTANTS
 const DEFAULT_CONNECT_TIMEOUT: Duration = Duration::from_secs(15);
 const USER_AGENT: &str = "SoChatClient/0.0";
 
-// EXTENSION TRAITS
 /// Extension trait for [`reqwest::Client`]
 pub trait ClientExt: Sealed + Sized {
     /// Create a new HTTP client configured for sochat with built in root certificate
@@ -77,7 +74,6 @@ pub trait ResponseExt: Sealed + Sized {
     fn filter_status_error(self) -> impl Future<Output = Result<Self, StatusError>> + Send;
 }
 
-// IMPLS
 impl ClientExt for Client {
     fn sochat_new() -> reqwest::Result<Self> {
         default_builder().tls_built_in_root_certs(true).build()
@@ -143,8 +139,6 @@ impl ResponseExt for Response {
         })
     }
 }
-
-// HELPERS
 
 fn default_builder() -> ClientBuilder {
     Client::builder()

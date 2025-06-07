@@ -5,6 +5,8 @@ use tokio::{task, time::MissedTickBehavior};
 
 use crate::server_connection::{ServerConnection, ServerConnectionError};
 
+// TODO: use a channel instead of a callback
+
 /// Type that receives messages from the server and calls the provided callback on new messages
 #[derive(Debug)]
 pub struct MessageReceiver {
@@ -13,7 +15,7 @@ pub struct MessageReceiver {
 
 impl MessageReceiver {
     /// Create a new MessageReceiver with the provided closure as the callback
-    /// 
+    ///
     /// # Panics
     /// This function panics if called outside of the tokio runtime
     pub fn new<F>(connection: ServerConnection, user_id: UserId, mut callback: F) -> Self
