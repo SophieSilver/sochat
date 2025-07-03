@@ -1,7 +1,5 @@
 //! Postcard extractor for axum
 
-use ::core::{future::Future, marker::Send, pin::Pin};
-
 use axum::{
     extract::{FromRequest, Request},
     response::IntoResponse,

@@ -1,7 +1,5 @@
 //! The CBOR extractor for Axum
 
-use std::{future::Future, pin::Pin};
-
 use axum::{
     extract::{FromRequest, Request},
     response::{IntoResponse, Response},

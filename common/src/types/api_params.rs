@@ -1,10 +1,7 @@
 //! Parameters that are sent with requests to the server
 
-const SMALL_VEC_SIZE: usize = 4;
-
 use bytes::Bytes;
 use serde::{Deserialize, Serialize};
-use smallvec::SmallVec;
 
 use super::{MessageId, UserId};
 
@@ -29,7 +26,7 @@ pub struct MarkReceivedParams {
     /// i.e. the recipient
     pub user_id: UserId,
     /// Message IDs to mark received
-    pub message_ids: SmallVec<[MessageId; SMALL_VEC_SIZE]>,
+    pub message_ids: Vec<MessageId>,
 }
 
 /// Parameters for `fetch_messages` method

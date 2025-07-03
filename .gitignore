@@ -5,3 +5,4 @@ target
 !.gitignore
 *.db*
 logs
+test_dbs

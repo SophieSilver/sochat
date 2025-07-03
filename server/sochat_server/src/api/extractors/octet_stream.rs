@@ -6,7 +6,7 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use bytes::Bytes;
-use std::{fmt::Debug, future::Future, pin::Pin};
+use std::fmt::Debug;
 
 use super::utils::deserialize_bytes_from_request;
 
