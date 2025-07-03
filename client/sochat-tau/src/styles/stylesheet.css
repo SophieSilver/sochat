@@ -1,0 +1,45 @@
+:root {
+  --bg-color-dark: #110f14;
+  --primary-accent-dark: #d4aeff;
+  --primary-accent-tint0-dark: #b98ee9;
+  --primary-accent-tint1-dark: #9361cc;
+  --bg-selected-dark: #573281;
+  --bg-selected-tint0-dark: #633697;
+  --bg-selected-tint1-dark: #7441ad;
+  --on-primary-accent-dark: #1b0b30;
+  --bg-elevated-color0-dark: #1f1827;
+  --bg-elevated-color1-dark: #312541;
+  --bg-elevated-color2-dark: #412f5a;
+  --fg-color-dark: #ffffff;
+  --divider-color-dark: #232027;
+  
+  --line-height: 1.5;
+  --container-pad-vertical: 0.9em;
+  --container-pad-horizontal: 1em;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-row-reverse {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-column-reverse {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.rounded-container {
+  line-height: var(--line-height);
+  border-radius: calc(var(--container-pad-vertical) + var(--line-height) * 0.5em);
+  padding: var(--container-pad-vertical) var(--container-pad-horizontal);
+}

@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["server/*", "common", "client/sochat_client_lib"]
-exclude = ["client/sochat-tau/src-tauri"]
+members = ["server/*", "common", "client/sochat_client_lib", "client/sochat-tau/src-tauri"]
+# exclude = ["client/sochat-tau/src-tauri"]
 
 [profile.release]
 strip = "debuginfo"
@@ -13,4 +13,4 @@ strip = "debuginfo"
 
 
 [profile.dev.package.sqlx-macros]
-opt-level = 3
+opt-level = 1
