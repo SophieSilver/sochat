@@ -40,7 +40,7 @@ impl Db for SqlitePool {
 
         sqlx::query!(
             "--sql
-            INSERT INTO users VALUES (?);
+            INSERT INTO Users VALUES (?);
             ",
             id_bytes,
         )

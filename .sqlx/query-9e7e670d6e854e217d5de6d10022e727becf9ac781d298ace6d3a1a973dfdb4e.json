@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "--sql\n            INSERT OR IGNORE INTO Hubs VALUES (?);\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "9e7e670d6e854e217d5de6d10022e727becf9ac781d298ace6d3a1a973dfdb4e"
+}

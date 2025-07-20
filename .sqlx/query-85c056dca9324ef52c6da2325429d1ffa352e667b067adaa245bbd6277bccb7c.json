@@ -1,0 +1,32 @@
+{
+  "db_name": "SQLite",
+  "query": "--sql\n            SELECT id, hub_url, user_id AS 'user_id: UserId' FROM Accounts;\n            ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "hub_url",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "user_id: UserId",
+        "ordinal": 2,
+        "type_info": "Blob"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "85c056dca9324ef52c6da2325429d1ffa352e667b067adaa245bbd6277bccb7c"
+}

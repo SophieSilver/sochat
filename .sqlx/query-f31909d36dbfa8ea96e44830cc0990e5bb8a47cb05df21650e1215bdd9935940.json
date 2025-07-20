@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "--sql\n            INSERT INTO Accounts (hub_url, user_id)\n                VALUES (?, ?)\n            RETURNING id;\n            ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "f31909d36dbfa8ea96e44830cc0990e5bb8a47cb05df21650e1215bdd9935940"
+}
