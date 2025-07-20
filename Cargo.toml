@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["server/*", "common", "client/sochat_client_lib", "client/sochat-tau/src-tauri"]
+members = ["server/*", "common", "client/sochat_client_lib", "client/sochat-tau/src-tauri", "integration_tests"]
 # exclude = ["client/sochat-tau/src-tauri"]
 
 [profile.release]

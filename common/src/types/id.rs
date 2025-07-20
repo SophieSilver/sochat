@@ -25,7 +25,7 @@ pub trait Id: Sized + Copy + Eq + Hash + Serialize + DeserializeOwned {
     ///
     /// As such this method should only be used to deserialize byte strings obtained via the `as_bytes` method
     /// of the same struct
-    fn from_bytes(bytes: &[u8]) -> Result<Self, IdSliceWrongSizeError>;
+    fn from_bytes(bytes: &[u8]) -> Result<Self, IdParseError>;
 }
 
 /// Automatically implement `AsRef<[u8]>`, `TryFrom<&[u8]>`, as well as `From<&T>` for `&[u8]`
@@ -45,26 +45,24 @@ macro_rules! impl_additional_traits_for_id {
         }
 
         impl TryFrom<&[u8]> for $t {
-            type Error = $crate::types::id::IdSliceWrongSizeError;
+            type Error = $crate::types::id::IdParseError;
 
             fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
                 <Self as $crate::types::id::Id>::from_bytes(value)
             }
         }
-
-        $crate::impl_sqlx_decode_from_bytes!($t);
     };
 }
 
-/// An error type that indicates that the user tried to convert a byte slice into an ID, but the slice was the wrong size.
+/// Error while parsing an ID from a byte slice
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Error)]
-#[error("Tried to create an ID from a byte slice of the wrong size")]
-pub struct IdSliceWrongSizeError;
+#[error("failed to parse an ID from a byte slice")]
+pub struct IdParseError;
 
 pub mod compact_uuid;
 pub use compact_uuid::*;
 
 pub mod message_id;
 pub mod user_id;
-pub use user_id::*;
 pub use message_id::*;
+pub use user_id::*;

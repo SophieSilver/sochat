@@ -1,7 +1,7 @@
 use std::{error::Error as StdError, fmt::Display};
 
 use common::{
-    cbor::CborError, from_passthrough, types::{id, ApiError}
+    cbor::CborError, forward_from_impl, types::{id, ApiError}
 };
 use reqwest::StatusCode;
 use thiserror::Error;
@@ -16,16 +16,16 @@ pub enum HttpError {
     Request(#[from] reqwest::Error),
 }
 
-from_passthrough!(CborError => SerializationError => HttpError);
-from_passthrough!(postcard::Error => SerializationError => HttpError);
-from_passthrough!(id::IdSliceWrongSizeError => SerializationError => HttpError);
+forward_from_impl!(CborError => SerializationError => HttpError);
+forward_from_impl!(postcard::Error => SerializationError => HttpError);
+forward_from_impl!(id::IdParseError => SerializationError => HttpError);
 
 #[derive(Debug, Error)]
 #[error(transparent)]
 pub enum SerializationError {
     Cbor(#[from] CborError),
     Postcard(#[from] postcard::Error),
-    Id(#[from] id::IdSliceWrongSizeError),
+    Id(#[from] id::IdParseError),
 }
 
 #[derive(Debug)]
@@ -36,6 +36,7 @@ pub struct StatusError {
 
 impl Display for StatusError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // reqwest::Error::source()
         write!(f, "backend server returned an error code {}", self.status)
     }
 }

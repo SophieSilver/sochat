@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE Messages SET is_received = TRUE WHERE id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "113eeed01d5a3552b61eb872a18b457f01e2e7f4fd3c89390b41454de778ac78"
+}

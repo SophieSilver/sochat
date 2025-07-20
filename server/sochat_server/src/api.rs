@@ -4,11 +4,11 @@ use crate::{
     db::Db,
     error::{AppError, AppResult},
 };
-use axum::{extract::State, http::StatusCode, routing, Router};
+use axum::{Router, extract::State, http::StatusCode, routing};
 use common::types::{
+    Id, UnreadMessage, UserId,
     api_params::{FetchMessagesParams, MarkReceivedParams, SendMessageParams},
     message_id::MessageId,
-    Id, UnreadMessage, UserId,
 };
 use extractors::{OctetStream, Postcard};
 use state::AppState;
@@ -80,7 +80,7 @@ async fn fetch_messages(
         user_id: recipient_id,
         limit,
     }): Postcard<FetchMessagesParams>,
-) -> AppResult<Postcard<Box<[UnreadMessage]>>> //
+) -> AppResult<Postcard<Vec<UnreadMessage>>> //
 {
     tracing::info!("enter");
     // TODO: make this configurable

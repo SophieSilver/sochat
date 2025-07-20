@@ -14,13 +14,13 @@ use serde_with::serde_as;
 use thiserror::Error;
 use uuid::Uuid;
 
-use super::{Id, IdSliceWrongSizeError};
+use super::{Id, IdParseError};
 /// An error that happened when parsing a [`CompactUuid`]
 #[derive(Debug, Clone, PartialEq, Eq, Error)]
 #[error("Could not parse ID")]
 pub enum CompactUuidParseError {
     /// The Byte slice is the wrong size
-    IdSliceWrongSize(#[from] IdSliceWrongSizeError),
+    IdSliceWrongSize(#[from] IdParseError),
     /// Error when decoding from base64
     Base64Error(#[from] base64::DecodeError),
 }
@@ -30,7 +30,7 @@ impl From<base64::DecodeSliceError> for CompactUuidParseError {
         match value {
             base64::DecodeSliceError::DecodeError(decode_error) => Self::Base64Error(decode_error),
             base64::DecodeSliceError::OutputSliceTooSmall => {
-                Self::IdSliceWrongSize(IdSliceWrongSizeError)
+                Self::IdSliceWrongSize(IdParseError)
             }
         }
     }
@@ -52,9 +52,9 @@ impl Display for CompactUuid {
         let engine = base64::prelude::BASE64_URL_SAFE_NO_PAD;
         let size = engine
             .encode_slice(self.uuid.as_bytes(), &mut buf)
-            .expect("Buf must be sufficiently large");
+            .expect("buf must be sufficiently large");
 
-        let encoded = std::str::from_utf8(&buf[..size]).expect("Base64 should be valid UTF8");
+        let encoded = std::str::from_utf8(&buf[..size]).expect("base64 should be valid UTF8");
 
         f.write_str(encoded)
     }
@@ -92,10 +92,26 @@ impl Id for CompactUuid {
         self.uuid.as_bytes()
     }
 
-    fn from_bytes(bytes: &[u8]) -> Result<Self, IdSliceWrongSizeError> {
+    fn from_bytes(bytes: &[u8]) -> Result<Self, IdParseError> {
         Ok(Self {
-            uuid: Uuid::from_slice(bytes).map_err(|_| IdSliceWrongSizeError)?,
+            uuid: Uuid::from_slice(bytes).map_err(|_| IdParseError)?,
         })
+    }
+}
+
+// Because of lifetime and variance shenanigans,
+// it's hard to implement a zero-copy sqlx::Encode for CompactUuid
+// (I tried)
+
+impl<'r, DB> sqlx::Decode<'r, DB> for CompactUuid
+where
+    DB: sqlx::Database,
+    for<'a> &'a [u8]: sqlx::Decode<'a, DB>,
+{
+    fn decode(value: DB::ValueRef<'r>) -> Result<Self, sqlx::error::BoxDynError> {
+        let value = <&[u8]>::decode(value)?;
+
+        Ok(Self::try_from(value)?)
     }
 }
 
@@ -116,10 +132,13 @@ impl_additional_traits_for_id!(CompactUuid);
 /// * [`AsRef<\[u8\]>`]
 /// * [`From<&Self>`] for `&[u8]`
 /// * [`TryFrom<&\[u8\]>`]
-/// * [`sqlx::Decode`]
 ///
 /// # Examples
 /// ```
+/// # use common::types::id::CompactUuid;
+/// # use serde::{Serialize, Deserialize};
+/// # use common::impl_compact_uuid_wrapper;
+/// 
 /// #[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 /// #[serde(transparent)]
 /// pub struct UuidWrapper(CompactUuid);
@@ -160,7 +179,7 @@ macro_rules! impl_compact_uuid_wrapper {
                 self.0.as_bytes()
             }
 
-            fn from_bytes(bytes: &[u8]) -> Result<Self, $crate::types::id::IdSliceWrongSizeError> {
+            fn from_bytes(bytes: &[u8]) -> Result<Self, $crate::types::id::IdParseError> {
                 Ok(Self($crate::types::id::CompactUuid::from_bytes(bytes)?))
             }
         }

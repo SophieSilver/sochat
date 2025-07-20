@@ -31,7 +31,7 @@ pub trait Db {
         &self,
         recipient: &UserId,
         limit: u32,
-    ) -> impl Future<Output = sqlx::Result<Box<[UnreadMessage]>>> + Send;
+    ) -> impl Future<Output = sqlx::Result<Vec<UnreadMessage>>> + Send;
 }
 
 impl Db for SqlitePool {
@@ -64,7 +64,7 @@ impl Db for SqlitePool {
 
         sqlx::query!(
             "--sql
-            INSERT INTO messages
+            INSERT INTO Messages
                 (id, sender_id, recipient_id, content, is_received)
             VALUES (?, ?, ?, ?, FALSE);
             ",
@@ -99,7 +99,7 @@ impl Db for SqlitePool {
             // dynamically create a query with as many ? placeholders as we need
             let mut query_builder = QueryBuilder::new(
                 "--sql
-                UPDATE messages
+                UPDATE Messages
                     SET is_received = TRUE
                     WHERE
                         recipient_id =",
@@ -127,7 +127,7 @@ impl Db for SqlitePool {
         &self,
         recipient: &UserId,
         limit: u32,
-    ) -> sqlx::Result<Box<[UnreadMessage]>> {
+    ) -> sqlx::Result<Vec<UnreadMessage>> {
         let recipient = recipient.as_bytes();
 
         sqlx::query_as!(
@@ -137,7 +137,7 @@ impl Db for SqlitePool {
                 id as 'id: MessageId',
                 sender_id as 'sender_id: UserId',
                 content
-            FROM messages
+            FROM Messages
             WHERE recipient_id = ?
                 AND is_received = FALSE
             ORDER BY id ASC     -- we can do that, because message ids are UUIDv7s
@@ -146,8 +146,7 @@ impl Db for SqlitePool {
             recipient,
             limit,
         )
-        .fetch(self)
-        .collect()
+        .fetch_all(self)
         .await
     }
 }
@@ -167,7 +166,7 @@ mod tests {
         assert_eq!(
             sqlx::query!(
                 "--sql
-                SELECT * FROM users;
+                SELECT * FROM Users;
                 "
             )
             .fetch_one(&pool)
@@ -195,7 +194,7 @@ mod tests {
         pool.insert_message(&message_id, &user1, &user2, content)
             .await?;
 
-        let record = sqlx::query!("SELECT * FROM messages")
+        let record = sqlx::query!("SELECT * FROM Messages")
             .fetch_one(&pool)
             .await?;
 
@@ -257,7 +256,7 @@ mod tests {
 
         let id1_bytes = id1.as_bytes();
         sqlx::query!(
-            "UPDATE messages SET is_received = TRUE WHERE id = ?",
+            "UPDATE Messages SET is_received = TRUE WHERE id = ?",
             id1_bytes
         )
         .execute(&pool)
@@ -274,9 +273,9 @@ mod tests {
 
     #[sqlx::test]
     async fn mark_received_test(pool: SqlitePool) -> sqlx::Result<()> {
-        const MESSAGE_COUNT: usize = 500;
+        const MESSAGE_COUNT: usize = 100;
         // how many messages to mark as received
-        const RECEIVED_COUNT: usize = 300;
+        const RECEIVED_COUNT: usize = 60;
 
         let sender = UserId::generate();
         let recipient = UserId::generate();

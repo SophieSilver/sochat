@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 /// ID of a user
 #[repr(transparent)]
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, sqlx::Decode)]
 #[serde(transparent)]
 pub struct UserId(CompactUuid);
 

@@ -30,9 +30,9 @@
 /// let c: C = A.into();
 /// ```
 #[macro_export]
-macro_rules! from_passthrough {
+macro_rules! forward_from_impl {
     ($a:ty => $b:ty => $c:ty) => {
-        impl From<$a> for $c {
+        impl ::std::convert::From<$a> for $c {
             fn from(value: $a) -> $c {
                 <$b>::from(value).into()
             }
