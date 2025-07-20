@@ -5,6 +5,7 @@ use sqlx::{
     SqlitePool,
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions},
 };
+use tracing_subscriber::{EnvFilter, fmt::format::FmtSpan};
 
 pub struct AbortGuard {
     handle: tokio::task::AbortHandle,
@@ -14,6 +15,14 @@ impl Drop for AbortGuard {
     fn drop(&mut self) {
         self.handle.abort();
     }
+}
+
+pub fn init_tracing() {
+    let _ = tracing_subscriber::fmt::fmt()
+        .with_env_filter(EnvFilter::from_default_env())
+        .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
+        .compact()
+        .try_init();
 }
 
 pub fn spawn_test_server(tcp: TcpListener) -> AbortGuard {
