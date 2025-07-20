@@ -131,7 +131,7 @@ impl ResponseExt for Response {
 
         let error = self.json::<ApiError>().await?;
 
-        Err(crate::Error::Api(error))
+        Err(crate::ErrorKind::Api(error).into())
     }
 }
 

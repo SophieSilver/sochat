@@ -3,7 +3,6 @@
 use common::types::{Id, UnreadMessage, UserId, message_id::MessageId};
 use sqlx::{Execute, QueryBuilder, SqlitePool};
 use std::future::Future;
-use tokio_stream::StreamExt;
 
 /// Trait for polymorphically running queries on different databases
 pub trait Db {

@@ -10,7 +10,7 @@ use sqlx::{
 };
 use std::{path::Path, sync::Arc};
 use thiserror::Error;
-use tokio_stream::StreamExt;
+use tokio_stream::{Stream, StreamExt};
 
 pub use sqlx::sqlite;
 
@@ -42,6 +42,7 @@ impl Storage {
             .filename(filename)
             .create_if_missing(true)
             .pragma("foreign_keys", "ON")
+            .optimize_on_close(true, None)
             .journal_mode(SqliteJournalMode::Wal);
 
         Self::with_connection_pool(SqlitePool::connect_with(options).await?).await
@@ -50,7 +51,6 @@ impl Storage {
     pub async fn connect_in_memory() -> sqlx::Result<Self> {
         let options = SqliteConnectOptions::new()
             .in_memory(true)
-            .filename("aboba")
             .pragma("foreign_keys", "ON");
 
         // because of
@@ -102,14 +102,17 @@ impl Storage {
         Ok(AccountId(result.id))
     }
 
-    pub(crate) async fn load_accounts(&self) -> sqlx::Result<Vec<AccountRecord>> {
+    pub(crate) fn load_accounts(
+        &self,
+    ) -> impl Stream<Item = sqlx::Result<AccountRecord>> + use<'_> //
+    {
         sqlx::query!(
             "--sql
             SELECT id, hub_url, user_id AS 'user_id: UserId' FROM Accounts;
             "
         )
         .fetch(&self.pool)
-        .map(|out| {
+        .map(|out| -> sqlx::Result<_> {
             let out = out?;
 
             Ok(AccountRecord {
@@ -122,7 +125,5 @@ impl Storage {
                 },
             })
         })
-        .collect()
-        .await
     }
 }

@@ -3,6 +3,8 @@ use std::sync::Arc;
 use common::forward_from_impl;
 use reqwest::Client;
 use thiserror::Error;
+use tokio_stream::StreamExt;
+use tracing::instrument;
 use url::Url;
 
 use crate::{
@@ -33,6 +35,8 @@ impl SochatClient {
         }
     }
 
+    /// Register a new account with a given Hub URL
+    #[instrument(skip_all, fields(%hub_url), ret)]
     pub async fn register_account(&self, hub_url: Arc<Url>) -> crate::Result<Account> {
         // TODO: flesh out hubs (certificates, some info, etc.)
         self.state.storage.store_hub(&hub_url).await?;
@@ -54,5 +58,21 @@ impl SochatClient {
             api_client,
             record: account_record,
         })
+    }
+
+    /// Get a list of already registered accounts
+    pub async fn get_accounts(&self) -> crate::Result<Vec<Account>> {
+        self.state
+            .storage
+            .load_accounts()
+            .map(|record| -> crate::Result<_> {
+                let record = record?;
+                let api_client = ApiClient::new(Client::sochat_new()?, record.info.hub_url.clone());
+                let account = Account { api_client, record };
+
+                Ok(account)
+            })
+            .collect()
+            .await
     }
 }

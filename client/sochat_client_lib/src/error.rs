@@ -1,6 +1,10 @@
 use std::error::Error as StdError;
 
-use common::{cbor::CborError, forward_from_impl, types::{ApiError, IdParseError}};
+use common::{
+    cbor::CborError,
+    forward_from_impl,
+    types::{ApiError, IdParseError},
+};
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -30,24 +34,31 @@ impl SerializationError {
 }
 
 #[derive(Debug, Error)]
-pub enum Error {
+pub enum ErrorKind {
     #[error("HTTP error")]
     Http(#[source] reqwest::Error),
     #[error("serialization error")]
-    Serialization(#[from] SerializationError),
+    Serialization(#[source] SerializationError),
     #[error("storage error")]
     Storage(#[from] sqlx::Error),
-    #[error("hub API returned an error")]
+    #[error("hub API error")]
     Api(#[from] ApiError),
 }
 
-forward_from_impl!(serde_json::Error => SerializationError => Error);
-forward_from_impl!(CborError => SerializationError => Error);
-forward_from_impl!(postcard::Error => SerializationError => Error);
-forward_from_impl!(IdParseError => SerializationError => Error);
+// manual impl so that we have impls for all variants of serialization errors
+impl<T> From<T> for ErrorKind
+where
+    SerializationError: From<T>,
+{
+    fn from(value: T) -> Self {
+        let error = SerializationError::from(value);
+
+        Self::Serialization(error)
+    }
+}
 
 // manual impl because we want to turn decode errors into serialization errors
-impl From<reqwest::Error> for Error {
+impl From<reqwest::Error> for ErrorKind {
     fn from(value: reqwest::Error) -> Self {
         if value.is_decode() {
             Self::Serialization(
@@ -56,6 +67,38 @@ impl From<reqwest::Error> for Error {
             )
         } else {
             Self::Http(value)
+        }
+    }
+}
+
+#[derive(Debug, Error)]
+#[error(transparent)]
+pub struct Error {
+    kind: Box<ErrorKind>,
+}
+
+impl Error {
+    pub fn from_kind(kind: ErrorKind) -> Self {
+        kind.into()
+    }
+
+    pub fn kind(&self) -> &ErrorKind {
+        &self.kind
+    }
+
+    // note: this can't be a trait as that would break the blanket impl
+    pub fn into_kind(self) -> ErrorKind {
+        *self.kind
+    }
+}
+
+impl<T> From<T> for Error
+where
+    ErrorKind: From<T>,
+{
+    fn from(value: T) -> Self {
+        Self {
+            kind: Box::new(value.into()),
         }
     }
 }

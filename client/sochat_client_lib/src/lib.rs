@@ -12,7 +12,7 @@ pub mod message_receiver;
 pub mod storage;
 
 pub mod error;
-pub use error::Error;
+pub use error::ErrorKind;
 pub use error::Result;
 
 pub mod sochat_client;
