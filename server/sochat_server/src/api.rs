@@ -19,7 +19,6 @@ pub mod state;
 
 #[instrument(skip_all, ret)]
 async fn register_user(state: State<AppState>) -> AppResult<OctetStream<UserId>> {
-    tracing::info!("enter");
     let new_id = UserId::generate();
     state.db().insert_user(&new_id).await?;
 
@@ -36,7 +35,6 @@ async fn send_message(
     }): Postcard<SendMessageParams>,
 ) -> AppResult<OctetStream<MessageId>> //
 {
-    tracing::info!("enter");
     let message_id = MessageId::generate();
 
     let result = state
@@ -63,7 +61,6 @@ async fn mark_received(
     }): Postcard<MarkReceivedParams>,
 ) -> AppResult<StatusCode> //
 {
-    tracing::info!("enter");
     // TODO: have a limit and make it configurable
     state
         .db()
@@ -82,7 +79,6 @@ async fn fetch_messages(
     }): Postcard<FetchMessagesParams>,
 ) -> AppResult<Postcard<Vec<UnreadMessage>>> //
 {
-    tracing::info!("enter");
     // TODO: make this configurable
     const DEFAULT_LIMIT: u32 = 16;
     const MAX_LIMIT: u32 = 32;
