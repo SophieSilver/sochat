@@ -3,9 +3,11 @@ use std::error::Error as StdError;
 use common::{
     cbor::CborError,
     forward_from_impl,
-    types::{ApiError, IdParseError},
+    types::{ApiError, IdParseError, UserId},
 };
 use thiserror::Error;
+
+use crate::chat::{ChatData, ChatId};
 
 #[derive(Debug, Error)]
 pub enum SerializationError {
@@ -33,6 +35,16 @@ impl SerializationError {
     }
 }
 
+/// Error in application logic
+///
+/// This is an error kind that is expected to occur the most
+/// and the application is supposed to be most prepared in dealing with it
+#[derive(Debug, Error)]
+pub enum AppError {
+    #[error("chat with user {other_id} already exists")]
+    ChatAlreadyExists { other_id: UserId },
+}
+
 #[derive(Debug, Error)]
 pub enum ErrorKind {
     #[error("HTTP error")]
@@ -43,6 +55,8 @@ pub enum ErrorKind {
     Storage(#[from] sqlx::Error),
     #[error("hub API error")]
     Api(#[from] ApiError),
+    #[error(transparent)]
+    Application(#[from ]AppError),
 }
 
 // manual impl so that we have impls for all variants of serialization errors

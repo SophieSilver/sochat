@@ -1,4 +1,7 @@
-use crate::account::{AccountId, AccountInfo, AccountRecord};
+use crate::{
+    account::{AccountData, AccountId, AccountRecord},
+    chat::{ChatData, ChatId, ChatRecord},
+};
 use common::{
     forward_from_impl,
     types::{Id, UserId},
@@ -83,23 +86,24 @@ impl Storage {
         Ok(())
     }
 
-    pub(crate) async fn store_account(&self, info: &AccountInfo) -> sqlx::Result<AccountId> {
-        let hub_url = info.hub_url.as_str();
-        let user_id = info.user_id.as_bytes();
+    pub(crate) async fn store_account(&self, data: &AccountData) -> sqlx::Result<AccountId> {
+        let hub_url = data.hub_url.as_str();
+        let user_id = data.user_id.as_bytes();
 
-        let result = sqlx::query!(
+        let id = sqlx::query!(
             "--sql
             INSERT INTO Accounts (hub_url, user_id)
-                VALUES (?, ?)
-            RETURNING id;
+            VALUES (?, ?)
+            RETURNING id as 'id: AccountId';
             ",
             hub_url,
             user_id,
         )
         .fetch_one(&self.pool)
-        .await?;
+        .await?
+        .id;
 
-        Ok(AccountId(result.id))
+        Ok(id)
     }
 
     pub(crate) fn load_accounts(
@@ -111,13 +115,10 @@ impl Storage {
             SELECT id, hub_url, user_id AS 'user_id: UserId' FROM Accounts;
             "
         )
-        .fetch(&self.pool)
-        .map(|out| -> sqlx::Result<_> {
-            let out = out?;
-
+        .try_map(|out| {
             Ok(AccountRecord {
                 id: AccountId(out.id),
-                info: AccountInfo {
+                data: AccountData {
                     hub_url: Arc::new(
                         Url::parse(&out.hub_url).map_err(|e| sqlx::Error::Decode(e.into()))?,
                     ),
@@ -125,5 +126,57 @@ impl Storage {
                 },
             })
         })
+        .fetch(&self.pool)
+    }
+
+    pub(crate) async fn store_chat(&self, data: ChatData) -> sqlx::Result<ChatId> {
+        let other_id = data.other_id.as_bytes();
+
+        let id = sqlx::query!(
+            "--sql
+            INSERT INTO Chats (account_id, other_id)
+            VALUES (?, ?)
+            RETURNING id AS 'id: ChatId';
+            ",
+            data.account_id,
+            other_id,
+        )
+        .fetch_one(&self.pool)
+        .await?
+        .id;
+
+        Ok(id)
+    }
+    
+    // TODO: pagination and sorting
+    pub(crate) fn load_chats_for_account<'a>(
+        &'a self,
+        account_id: &'a AccountId, // lifetime helps with a borrow checker error in the query! macro
+    ) -> impl Stream<Item = sqlx::Result<ChatRecord>> + use<'a> //
+    {
+        sqlx::query!(
+            "--sql
+            SELECT
+                id AS 'id: ChatId',
+                account_id AS 'account_id: AccountId',
+                other_id AS 'other_id: UserId'
+            FROM Chats
+            WHERE account_id = ?;
+            ",
+            // don't even ask why (macro bullshit)
+            *account_id
+        )
+        .map(|out| ChatRecord {
+            id: out.id,
+            data: ChatData {
+                account_id: out.account_id,
+                other_id: out.other_id,
+            },
+        })
+        .fetch(&self.pool)
+    }
+
+    pub(crate) fn store_message() {
+
     }
 }

@@ -17,10 +17,10 @@ async fn registering_account_works() -> anyhow::Result<()> {
 
     let client = SochatClient::new(storage);
     let _ = client.register_account(server_url.clone()).await?;
-    assert_eq!(client.get_accounts().await?.len(), 1);
+    assert_eq!(client.fetch_accounts().await?.len(), 1);
 
     let _ = client.register_account(server_url).await?;
-    assert_eq!(client.get_accounts().await?.len(), 2);
+    assert_eq!(client.fetch_accounts().await?.len(), 2);
 
     Ok(())
 }

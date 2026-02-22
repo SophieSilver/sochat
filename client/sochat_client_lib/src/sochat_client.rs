@@ -8,7 +8,7 @@ use tracing::instrument;
 use url::Url;
 
 use crate::{
-    account::{Account, AccountInfo, AccountRecord},
+    account::{Account, AccountData, AccountRecord},
     api_client::ApiClient,
     http_utils::ClientExt,
     storage::Storage,
@@ -46,29 +46,34 @@ impl SochatClient {
 
         // FIXME: what if we die after registering the user and before saving it to storage?
 
-        let account_info = AccountInfo { hub_url, user_id };
-        let account_id = self.state.storage.store_account(&account_info).await?;
+        let account_data = AccountData { hub_url, user_id };
+        let account_id = self.state.storage.store_account(&account_data).await?;
 
         let account_record = AccountRecord {
             id: account_id,
-            info: account_info,
+            data: account_data,
         };
 
         Ok(Account {
             api_client,
             record: account_record,
+            storage: self.state.storage.clone(),
         })
     }
 
     /// Get a list of already registered accounts
-    pub async fn get_accounts(&self) -> crate::Result<Vec<Account>> {
+    pub async fn fetch_accounts(&self) -> crate::Result<Vec<Account>> {
         self.state
             .storage
             .load_accounts()
             .map(|record| -> crate::Result<_> {
                 let record = record?;
-                let api_client = ApiClient::new(Client::sochat_new()?, record.info.hub_url.clone());
-                let account = Account { api_client, record };
+                let api_client = ApiClient::new(Client::sochat_new()?, record.data.hub_url.clone());
+                let account = Account {
+                    api_client,
+                    record,
+                    storage: self.state.storage.clone(),
+                };
 
                 Ok(account)
             })

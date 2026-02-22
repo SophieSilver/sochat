@@ -10,6 +10,7 @@ pub mod chat;
 pub mod http_utils;
 pub mod message_receiver;
 pub mod storage;
+pub mod message;
 
 pub mod error;
 pub use error::ErrorKind;
